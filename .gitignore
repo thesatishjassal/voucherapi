@@ -1,0 +1,19 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment and dependency manager files
+.env
+venv/
+.venv/
+env/
+.env/
+
+# IDE files
+.vscode/
+
+# Other files you may not want to push
+*.log
+*.db
