@@ -1,3 +1,4 @@
+from app.schemas.user_schema import UserResponse
 from database import get_db_connection
 from app.models import user
 from mysql.connector import Error
@@ -25,7 +26,7 @@ def create_users(user: user):
 def get_users():
         connection = get_db_connection()
         if connection is None:
-            return None
+            return []
         
         cursor =  connection.cursor(dictionary = True)
         query = "SELECT * FROM users"
@@ -33,8 +34,13 @@ def get_users():
         try:
             cursor.execute(query)
             users = cursor.fetchall()
+            user_responses = [
+                UserResponse(id=user['id'], name=user['name'], email=user['email'])
+                    for user in users
+                ]
             cursor.close()
-            return users
+            connection.close()
+            return user_responses
         except Error  as e:
             cursor.close()
             connection.close()

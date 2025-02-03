@@ -4,4 +4,4 @@ from app.api.user import router as user_router  # import the router with user ro
 app = FastAPI()
 
 # Registering the router with a prefix (optional)
-# app.include_router(user_router, prefix="/api")
+app.include_router(user_router)
