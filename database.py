@@ -1,24 +1,17 @@
-import mysql.connector
 import os
 from dotenv import load_dotenv
-from mysql.connector import Error
+from supabase import create_client, Client
 
 load_dotenv()
 
-DB_HOST = os.getenv("DATABASE_HOST")
-DB_USER = os.getenv("DATABASE_USER")
-DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DB_NAME = os.getenv("DATABASE_NAME")
+SB_URL = os.getenv("SUPABASE_URL")
+SB_APIKEY = os.getenv("SUPABASE_API_KEY")
 
 def get_db_connection():
     try:
-        connection = mysql.connector.connect(
-        host = DB_HOST,
-        user = DB_USER,
-        # password= DB_PASSWORD,
-        database = DB_NAME
-        )
+        connection: Client = create_client(SB_URL, SB_APIKEY)
+        print("Supabase connection successful!")
         return connection
-    except Error as e:
-        print(f"Error: {e}")
+    except Exception as e:
+        print(f"Supabase Error: {e}")
         return None
