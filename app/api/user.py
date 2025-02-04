@@ -1,8 +1,11 @@
 from typing import List
 from fastapi import FastAPI, APIRouter, HTTPException
+from sqlalchemy.orm import Session
 from app.models import user
 from app.controllers.user_crud import get_users, create_users
 from app.models.user import UserResponse
+from database import get_db_connection
+from app.schema.user_schema import UserCreate, UserResponse
 
 app = FastAPI()
 
