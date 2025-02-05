@@ -1,17 +1,22 @@
-import os
-from dotenv import load_dotenv
-from supabase import create_client, Client
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from models import User, Base  # Import your model
 
-load_dotenv()
+SQL_DB_URL = "postgresql://postgres:123@localhost/vocherdb"
 
-SB_URL = os.getenv("SUPABASE_URL")
-SB_APIKEY = os.getenv("SUPABASE_API_KEY")
+engine = create_engine(SQL_DB_URL)
+
+# Create the tables if they do not exist
+# Base = declarative_base()
+print("Creating tables...")
+Base.metadata.create_all(bind=engine)
+print("Tables created.")
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db_connection():
+    db = SessionLocal()
     try:
-        connection: Client = create_client(SB_URL, SB_APIKEY)
-        print("Supabase connection successful!")
-        return connection
-    except Exception as e:
-        print(f"Supabase Error: {e}")
-        return None
+        yield db
+    finally:
+        db.close()
