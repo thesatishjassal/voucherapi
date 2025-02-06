@@ -11,35 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      image: postgres:latest
-      env:
-        POSTGRES_USER: testuser
-        POSTGRES_PASSWORD: testpass
-        POSTGRES_DB: testDB
-      ports:
-        -5432: 5432
-      options: >-
-        --health-cmd="pg_isready" -U testuser -d testDB
-        --health-interval=10s
-        -health-retirees=5
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testDB
+        ports:
+          -5432: 5432
+        options: >-
+          --health-cmd "pg_isready -U testuser -d testDB"
+          --health-interval 10s
+          --health-retirees 5
 
-    steps:
-    - name: Checkout Code
-      uses: actions/checkot@v3
+      steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: action/setup-python@4
-      with:
-        python-version: '3.10'
+      - name: Setup Python
+        uses: actions/setup-python@4
+        with:
+          python-version: '3.10'
 
-    - name: Install Dependecies
-      run: | 
-        pip install --upgrade pip
-        pip install -r requirements.txt
-      
-    - name: Run Test
-      env:
-        DATABASE_URL:postgresql://testuser:testpassword@localhost:5432/testdb
-      run: |
-        pytest --disables-warnings 
-         
+      - name: Install Dependecies
+        run: | 
+          pip install --upgrade pip
+          pip install -r requirements.txt
+        
+      - name: Run Test
+        env:
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+        run: |
+          pytest --disables-warnings 
+          
