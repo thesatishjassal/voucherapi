@@ -1,8 +1,5 @@
 from sqlalchemy import Column, Integer, String, Index
-from sqlalchemy.orm import declarative_base
-from database import Base
-
-Base = declarative_base()
+from database import Base  # Use the Base already defined in your database module
 
 class User(Base):
     __tablename__ = "users"
@@ -13,5 +10,4 @@ class User(Base):
     password = Column(String)
 
     def __repr__(self):
-        return f"<User(id={self.id}, name={self.name}, phone={self.phone} , password={self.password})>"
-    
+        return f"<User(id={self.id}, name={self.name}, phone={self.phone}, password={self.password})>"

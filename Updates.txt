@@ -1,0 +1,14 @@
+Stock:
+
+    avg qty
+    min qty
+    30  day order qty
+    Product Aging
+    Product Filter By name, qty, price, Rack code sale ,stcok etc
+    
+----------------------------
+
+Quotation Muture Status
+Penidng 
+Done
+Completed
