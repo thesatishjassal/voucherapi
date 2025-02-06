@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database import Base  # The same Base defined in database.py
-from models import User   # This will register the User model with Base
+from base import Base  # Import the shared Base
+from models import User  # This ensures the User model is registered with Base
 
 # Define the database URL
 SQL_DB_URL = "postgresql://postgres:123@localhost/vocherdb"
