@@ -10,13 +10,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: testDB
+    services:  
+      postgres: 
+        image: postgres:latest 
+        env:  
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         ports:
           -5432: 5432
         options: >-
@@ -40,7 +40,7 @@ jobs:
         
       - name: Run Test
         env:
-          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
         run: |
           pytest --disables-warnings 
           
