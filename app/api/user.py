@@ -5,6 +5,8 @@ from app.schema.user_schema import UserResponse
 from database import get_db_connection
 from app.schema.user_schema import UserCreate, UserResponse
 from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Response, HTTPException
+import secrets
 
 app = FastAPI()
 
@@ -15,12 +17,21 @@ def read_root():
     return {"Hello": "World"}
 
 @router.post("/users/", response_model=UserResponse)
-async def create_new_user(user: UserCreate, db:Session = Depends(get_db_connection)):
+async def create_new_user(user: UserCreate, response: Response, db:Session = Depends(get_db_connection)):
     db_user = get_user_by_phone(user.phone, db)
     if db_user:
         raise HTTPException(status_code=400, detail="Phone Number alredy exist!")
     else:
         result = create_user(user,db)
+        session_id = secrets.token_hex(16)
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            path="/"
+        )
         return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={"message": f"User added successfully, {result}"}
