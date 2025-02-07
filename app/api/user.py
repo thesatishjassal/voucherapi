@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.user_crud import get_users, create_user, get_user_by_phone
+from app.controllers.user_crud import get_users, create_user, get_user_by_phone, create_login
 from app.schema.user_schema import UserResponse
 from database import get_db_connection
 from app.schema.user_schema import UserCreate, UserResponse
@@ -31,7 +31,8 @@ async def create_new_user(user: UserCreate, db:Session = Depends(get_db_connecti
             "user": {
                 "id": result.id,
                 "name": result.name,
-                "phone": result.phone
+                "phone": result.phone,
+                "password": result.password
             },
             "session_id": session_id
         }
@@ -40,6 +41,10 @@ async def create_new_user(user: UserCreate, db:Session = Depends(get_db_connecti
 @router.get("/users/", response_model=list[UserResponse])
 async def get_all_users(db:Session = Depends(get_db_connection)):
     return get_users(db=db)
+
+@router.get("/login/")
+async def login(db:Session = Depends(get_db_connection)):
+    return create_login()
 
 # Include the router in the main app
 app.include_router(router)
