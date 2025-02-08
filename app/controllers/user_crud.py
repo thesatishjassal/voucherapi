@@ -1,7 +1,6 @@
-from http.client import HTTPException
 from sqlalchemy.orm import Session
-from app.models.user import Login, User
-from app.schema.user_schema import UserCreate, UserLogin, UserResponse
+from app.models.user import User
+from app.schema.user_schema import UserCreate
 from app.models.user import Base
 import bcrypt
 
@@ -23,12 +22,9 @@ def check_password(plain_text_password, hashed_password):
 def get_users(db: Session):
     return db.query(User).all()
 
-def create_login(user_data: UserLogin, db: Session):
-    user = Login(phone= user_data.phone, password=user_data.password)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+def create_login():
+    return "Logged In"
+
 
 def get_user_by_phone(phone: str, db: Session):
     return db.query(User).filter(User.phone == phone).first()
