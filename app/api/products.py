@@ -1,0 +1,68 @@
+from fastapi import FastAPI
+from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
+from sqlalchemy.orm import Session
+from app.controllers.products import create_products, get_products, update_product, delete_product
+from app.schema.products import ProductsCreate, ProductsResponse, ProductsUpdate
+from database import get_db_connection
+from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Response, HTTPException
+import secrets
+
+app = FastAPI()
+
+router = APIRouter()
+
+@router.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+@router.post("/products/", response_model=ProductsResponse)
+async def create_new_products(products: ProductsCreate, db:Session = Depends(get_db_connection)):
+        result = create_products(products,db)
+        return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={
+            "message": "Products added successfully",
+            "products": {
+                "id": result.id,
+                "itemCode": result.itemCode,
+                "ItemName": result.itemName,
+                "Description": result.description,
+                "Brand": result.brand,
+                "HSNcode": result.hsncode,
+                "Category": result.category,
+                "SubCategory": result.subCategory,
+                "Size": result.size,
+                "Model": result.model,
+                "Price": result.model,
+                "Quantity": result.quatity,
+                "RackCode": result.rackCode,
+                "Thumbnail": result.thumbnail,
+                "Color": result.color
+            }
+        }
+    )
+
+@router.get("/products/", response_model=list[ProductsResponse])
+async def get_all_products(db:Session = Depends(get_db_connection)):
+    return get_products(db=db)
+
+@router.put("/products/{product_id}")
+def update_product_api(product_id: int, product_data: ProductsUpdate, db: Session= Depends(get_db_connection)):
+    print("Update Product", {product_id})
+    try:
+        updated_product=update_product(product_data, product_id, db)
+        return {"message": "Product updated successfully", "Product":  updated_product}
+    except HTTPException as e:
+        raise e
+    
+@router.delete("/products/{product_id}")
+def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)):
+    try:
+        result = delete_product(product_id, db)
+        return result
+    except HTTPException as e:
+        raise e
+
+# Include the router in the main app
+app.include_router(router)

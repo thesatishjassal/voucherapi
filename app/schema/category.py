@@ -10,4 +10,9 @@ class  CategoryResponse(BaseModel):
     name: Optional[str] = None
     slug: Optional[str] = None
 
+class CategoryUpdate(BaseModel):
+    name: str
+    slug: str
+
+
 model_config = ConfigDict(from_attributes=True)

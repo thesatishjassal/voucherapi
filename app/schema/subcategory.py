@@ -12,4 +12,9 @@ class  SubCategoryResponse(BaseModel):
     slug: Optional[str] = None
     slug: Optional[str] = None
 
+class SubCategoryUpdate(BaseModel):
+    catname: str
+    subcatname: str
+    slug: str
+
 model_config = ConfigDict(from_attributes=True)
