@@ -27,9 +27,17 @@ def get_users(db: Session):
 
 def create_login(login_data: UserCreate,  db: Session):
     user = get_user_by_phone(login_data.phone, db)
+
     if user:
         if check_password(login_data.password, user.password):
-            return "Logged In"
+             return {
+                "message": "Login successful",
+                "user_details": {
+                    "user_id": user.id,
+                    "phone": user.phone,
+                    "name": user.name
+                }
+            }
         else:
             return "Invalid credentials"
     else:

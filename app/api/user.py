@@ -19,8 +19,13 @@ def read_root():
 async def create_new_user(user: UserCreate, db: Session = Depends(get_db_connection)):
     db_user = get_user_by_phone(user.phone, db)
     if db_user:
-        raise HTTPException(status_code=400, detail="Phone Number already exists!")
-    
+        # raise HTTPException(status_code=400, detail="Phone Number already exists!")
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "message": "Phone Number already exists!",
+            }
+        )
     result = create_user(user, db)
     session_id = secrets.token_hex(16)
 
@@ -45,17 +50,32 @@ async def get_all_users(db: Session = Depends(get_db_connection)):
 @router.post("/login/")
 async def login(user: UserLogin, db: Session = Depends(get_db_connection)):
     result = create_login(user, db)
-    session_id = secrets.token_hex(16)
-    if "error" in result:
-        raise HTTPException(status_code=401, detail=result["error"])
     print(result)
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={
-            "message": "Login successful",
-            "session_id": session_id
-        }
-    )
+    session_id = secrets.token_hex(16)
+    if result =="Invalid credentials":
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "message": "invalid credentials",
+            }
+        )
+    if result =="User not found":
+       return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "message": "user not found",
+            }
+        )
+    if "message" in result and result["message"] == "Login successful":
+        session_id = secrets.token_hex(16)  # Generate a session ID (token)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "message": result["message"],
+                "session_id": session_id,
+                "user_details": result["user_details"]
+            }
+        )
 
 # Include the router in the main app
 app.include_router(router)
