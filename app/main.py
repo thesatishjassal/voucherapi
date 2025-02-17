@@ -11,7 +11,7 @@ app = FastAPI()
 # Allow CORS for specific origins (localhost:3000, etc.)
 origins = [
     "http://localhost:3000",  # Local development frontend
-    "http://127.0.0.1:5500",  # Another local dev frontend
+    # "http://127.0.0.1:5500",  # Another local dev frontend
     "https://vocherapp.vercel.app",  # Your actual frontend URL
 ]
 
