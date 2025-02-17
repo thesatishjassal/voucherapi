@@ -13,7 +13,7 @@ origins = [
     "http://localhost:3000", 
     "http://127.0.0.1:5500",  # ✅ Allow this origin
     "https://vocherapp.vercel.app",
-    "http://147.93.107.232:5500"
+    "https://147.93.107.232:5500"
 ]
 
 
