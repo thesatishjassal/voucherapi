@@ -12,7 +12,8 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",  # Local development frontend
     "https://vocherapp.vercel.app",  # Your actual frontend URL
-    "https://api.panvic.in",  # Your new API domain
+    "https://api.panvic.in",
+    "http://127.0.0.1:5500"  # Your new API domain
 ]
 
 # Add CORS middleware
@@ -38,4 +39,4 @@ def read_root():
 # Run with Uvicorn if this script is executed directly
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=80)  # Run on port 80 for production
+    uvicorn.run(app, host="127.0.0.1", port=5500)  # Run on port 80 for production
