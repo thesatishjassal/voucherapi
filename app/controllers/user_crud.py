@@ -1,22 +1,18 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schema.user_schema import UserCreate, UserLogin
-import bcrypt
 
 def create_user(user_data: UserCreate, db: Session):
-    plain_password = user_data.password.encode('utf-8')  # Convert password to bytes
-    salt = bcrypt.gensalt()  # Generate a salt
-    hashed_password = bcrypt.hashpw(plain_password, salt)  # Hash the password
-    user = User(name=user_data.name, phone=user_data.phone, password=hashed_password)  # Create a user object
+    # Directly store the plain password without hashing
+    user = User(name=user_data.name, phone=user_data.phone, password=user_data.password)  # Store plain password
     db.add(user)  # Add the user to the session
     db.commit()  # Commit the session to save the user
     db.refresh(user)  # Refresh to load the user with the latest data from the database
     return user
 
-def check_password(plain_text_password: str, hashed_password: str):
-    if isinstance(hashed_password, str):
-        hashed_password = hashed_password.encode('utf-8')  # Ensure hashed_password is bytes
-    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_password)
+def check_password(plain_text_password: str, stored_password: str):
+    # Directly compare the plain text password with the stored password
+    return plain_text_password == stored_password
 
 def get_users(db: Session):
     return db.query(User).all()
@@ -25,7 +21,7 @@ def create_login(login_data: UserLogin, db: Session):
     user = get_user_by_phone(login_data.phone, db)
 
     if user:
-        # Check if the provided password matches the hashed password in the database
+        # Check if the provided password matches the stored plain password
         if check_password(login_data.password, user.password):
             return {
                 "message": "Login successful",
