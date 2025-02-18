@@ -17,7 +17,7 @@ def read_root():
 
 @router.post("/clients/", response_model=ClientResponse)
 async def create_new_client(client: ClientCreate, db:Session = Depends(get_db_connection)):
-    db_user = get_client_by_phone(client.Client_Phone, db)
+    db_user = get_client_by_phone(client.client_phone, db)
     if db_user:
         raise HTTPException(status_code=400, detail="Phone Number alredy exist!")
     else:
@@ -29,17 +29,17 @@ async def create_new_client(client: ClientCreate, db:Session = Depends(get_db_co
             "message": "User added successfully",
             "user": {
                 "id": result.id,
-                "BuisnessName": result.BuisnessName,
-                "GST Number": result.GST_Number,
+                "buisnessname": result.buisnessname,
+                "GST Number": result.gst_number,
                 "Address": result.Address,
                 "Address": result.Address,
                 "City": result.City,
                 "State": result.State,
-                "Picode": result.Pincode,
+                "Picode": result.pincode,
                 "Client Name": result.Client_Name,
-                "Client Phone": result.Client_Phone,
-                "Client Email": result.Client_Email,
-                "Client Type": result.Client_Type
+                "Client Phone": result.client_phone,
+                "Client Email": result.client_email,
+                "Client Type": result.client_type
             },
             "session_id": session_id
         }

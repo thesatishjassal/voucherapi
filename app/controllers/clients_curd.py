@@ -5,7 +5,7 @@ from app.schema.clients_schema import ClientCreate, ClientUpdate
 from database import get_db_connection as db
 
 def create_client(client_data: ClientCreate, db: Session):
-    client = Clients(BuisnessName=client_data.BuisnessName, GST_Number= client_data.GST_Number, Address= client_data.Address, Pincode=client_data.Pincode, City=client_data.City, State=client_data.State, Client_Name=client_data.Client_Name, Client_Phone=client_data.Client_Phone, Client_Email=client_data.Client_Email, Client_Type=client_data.Client_Type)
+    client = Clients(buisnessname=client_data.buisnessname, gst_number= client_data.gst_number, Address= client_data.Address, pincode=client_data.pincode, City=client_data.City, State=client_data.State, Client_Name=client_data.Client_Name, client_phone=client_data.client_phone, client_email=client_data.client_email, client_type=client_data.client_type)
     db.add(client)
     db.commit()
     db.refresh(client)
@@ -20,26 +20,26 @@ def update_client(client_data: ClientUpdate, client_id: int, db: Session):
     client = db.query(Clients).filter(Clients.id == client_id).first()
     if client:
         # Update the client details with the new data
-        if client_data.BuisnessName:
-            client.BuisnessName = client_data.BuisnessName
-        if client_data.GST_Number:
-            client.GST_Number = client_data.GST_Number
+        if client_data.buisnessname:
+            client.buisnessname = client_data.buisnessname
+        if client_data.gst_number:
+            client.gst_number = client_data.gst_number
         if client_data.Address:
             client.Address = client_data.Address
-        if client_data.Pincode:
-            client.Pincode = client_data.Pincode
+        if client_data.pincode:
+            client.pincode = client_data.pincode
         if client_data.City:
             client.City = client_data.City
         if client_data.State:
-            client.State = client_data.State
+            client.State= client_data.State
         if client_data.Client_Name:
             client.Client_Name = client_data.Client_Name
-        if client_data.Client_Phone:
-            client.Client_Phone = client_data.Client_Phone
-        if client_data.Client_Email:
-            client.Client_Email = client_data.Client_Email
-        if client_data.Client_Type:
-            client.Client_Type = client_data.Client_Type
+        if client_data.client_phone:
+            client.client_phone = client_data.client_phone
+        if client_data.client_email:
+            client.client_email = client_data.client_email
+        if client_data.client_type:
+            client.client_type = client_data.client_type
         # Commit the transaction and refresh the client object to get the updated state
         db.commit()
         db.refresh(client)
@@ -61,4 +61,4 @@ def delete_client(client_id: int, db: Session):
         raise HTTPException(status_code=404, detail="Client not found")
 
 def get_client_by_phone(phone: str, db: Session):
-    return db.query(Clients).filter(Clients.Client_Phone == phone).first()
+    return db.query(Clients).filter(Clients.client_phone == phone).first()

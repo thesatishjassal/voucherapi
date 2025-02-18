@@ -6,16 +6,16 @@ class Clients(Base):
     __table_args__ = {"extend_existing": True}  # Optional, only if needed
     
     id = Column(Integer, primary_key=True, index=True)
-    BuisnessName = Column(String)
+    buisnessname = Column(String)
     Address = Column(String)
-    GST_Number = Column(String)
-    Pincode = Column(String)
+    gst_number = Column(String)
+    pincode = Column(String)
     City = Column(String)
-    State = Column(String)
+    State= Column(String)
     Client_Name = Column(String)
-    Client_Phone = Column(String(15), unique=True, index=True)  # E.164 format max length 15
-    Client_Email = Column(String)
-    Client_Type = Column(String)
+    client_phone = Column(String(15), unique=True, index=True)  # E.164 format max length 15
+    client_email = Column(String)
+    client_type = Column(String)
 
     def __repr__(self):
-        return f"<Clients (id={self.id}, BuisnessName={self.BuisnessName}, Address={self.Address}, GST_Number={self.GST_Number}, Pincode={self.Pincode},City={self.City}, State={self.State}, Client_Name={self.Client_Name}, Client_Phone={self.Client_Phone},  Client_Email={self. Client_Email},  Client_Type={self. Client_Type})>"
+        return f"<Clients (id={self.id}, buisnessname={self.buisnessname}, Address={self.Address}, gst_number={self.gst_number}, pincode={self.pincode},City={self.City}, State={self.State}, Client_Name={self.Client_Name}, client_phone={self.client_phone},  client_email={self. client_email},  client_type={self. client_type})>"
