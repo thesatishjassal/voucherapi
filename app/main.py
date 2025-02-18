@@ -11,17 +11,15 @@ app = FastAPI()
 # Allow CORS for specific origins (localhost:3000, etc.)
 origins = [
     "http://localhost:3000",  # Local development frontend
-    "https://www.panvic.in",  # Your actual frontend URL
-    "https://api.panvic.in",  # Your new API domain
+    "https://www.panvic.in",  # Production frontend
 ]
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allows requests from specific origins
+    allow_origins=origins,  # ✅ Make sure this includes "https://www.panvic.in"
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],  # ✅ Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # ✅ Allow all headers
 )
 
 # Register routers for different APIs
