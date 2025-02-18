@@ -36,7 +36,7 @@ async def create_new_client(client: ClientCreate, db:Session = Depends(get_db_co
                 "city": result.city,
                 "state": result.state,
                 "Picode": result.pincode,
-                "Client Name": result.Client_Name,
+                "Client Name": result.client_name,
                 "Client Phone": result.client_phone,
                 "Client Email": result.client_email,
                 "Client Type": result.client_type

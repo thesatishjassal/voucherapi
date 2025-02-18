@@ -8,7 +8,7 @@ class ClientCreate(BaseModel):
     city: str
     state: str
     pincode: str
-    Client_Name: Optional[str] = None
+    client_name: Optional[str] = None
     client_phone: constr(min_length=10, max_length=15)
     client_email: str
     client_type: str
@@ -21,7 +21,7 @@ class ClientResponse(BaseModel):
     city: str
     state: str
     pincode: str
-    Client_Name: str
+    client_name: str
     client_phone: constr(min_length=10, max_length=15)
     client_email: str
     client_type: str
@@ -33,7 +33,7 @@ class ClientUpdate(BaseModel):
     pincode: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
-    Client_Name: Optional[str] = None
+    client_name: Optional[str] = None
     client_phone: Optional[str] = None
     client_email: Optional[str] = None
     client_type: Optional[str] = None
