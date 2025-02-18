@@ -34,13 +34,12 @@ def test_create_user(test_db: Session):
 
 def test_create_user_duplicate_phone(test_db: Session):
     unique_phone = generate_unique_phone() 
-    # First user creation
+    # First user creation.
     client.post("/users/", json={"name": "John Doe", "phone": unique_phone, "password": "pass"})
 
     # Second attempt with duplicate phone
     response = client.post("/users/", json={"name": "Rakesh", "phone": unique_phone, "password": "pass"})
     
-    print("Response JSON:", response.json())  # Debugging
 
     assert response.status_code == 400
     assert "message" in response.json(), "Error response is missing 'message' key"
