@@ -4,6 +4,7 @@ from base import Base  # Import the shared Base from base.py
 class Clients(Base):
     __tablename__ = "clients"
     __table_args__ = {"extend_existing": True}  # Optional, only if needed
+    __table_args__ = {'schema': 'public'}  # Specify the schema explicitly
 
     id = Column(Integer, primary_key=True, index=True)
     BuisnessName = Column(String)
