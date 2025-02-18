@@ -4,9 +4,9 @@ from pydantic import BaseModel, ConfigDict, constr
 class ClientCreate(BaseModel):
     buisnessname: str
     gst_number: Optional[str] = None
-    Address: str
-    City: str
-    State: str
+    address: str
+    city: str
+    state: str
     pincode: str
     Client_Name: Optional[str] = None
     client_phone: constr(min_length=10, max_length=15)
@@ -17,9 +17,9 @@ class ClientResponse(BaseModel):
     id: int
     buisnessname: str
     gst_number: str
-    Address: str
-    City: str
-    State: str
+    address: str
+    city: str
+    state: str
     pincode: str
     Client_Name: str
     client_phone: constr(min_length=10, max_length=15)
@@ -29,10 +29,10 @@ class ClientResponse(BaseModel):
 class ClientUpdate(BaseModel):
     buisnessname: Optional[str] = None
     gst_number: Optional[str] = None
-    Address: Optional[str] = None
+    address: Optional[str] = None
     pincode: Optional[str] = None
-    City: Optional[str] = None
-    State: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     Client_Name: Optional[str] = None
     client_phone: Optional[str] = None
     client_email: Optional[str] = None

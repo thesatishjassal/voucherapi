@@ -5,7 +5,7 @@ from app.schema.clients_schema import ClientCreate, ClientUpdate
 from database import get_db_connection as db
 
 def create_client(client_data: ClientCreate, db: Session):
-    client = Clients(buisnessname=client_data.buisnessname, gst_number= client_data.gst_number, Address= client_data.Address, pincode=client_data.pincode, City=client_data.City, State=client_data.State, Client_Name=client_data.Client_Name, client_phone=client_data.client_phone, client_email=client_data.client_email, client_type=client_data.client_type)
+    client = Clients(buisnessname=client_data.buisnessname, gst_number= client_data.gst_number, address= client_data.address, pincode=client_data.pincode, city=client_data.city, state=client_data.state, Client_Name=client_data.Client_Name, client_phone=client_data.client_phone, client_email=client_data.client_email, client_type=client_data.client_type)
     db.add(client)
     db.commit()
     db.refresh(client)
@@ -24,14 +24,14 @@ def update_client(client_data: ClientUpdate, client_id: int, db: Session):
             client.buisnessname = client_data.buisnessname
         if client_data.gst_number:
             client.gst_number = client_data.gst_number
-        if client_data.Address:
-            client.Address = client_data.Address
+        if client_data.address:
+            client.address = client_data.address
         if client_data.pincode:
             client.pincode = client_data.pincode
-        if client_data.City:
-            client.City = client_data.City
-        if client_data.State:
-            client.State= client_data.State
+        if client_data.city:
+            client.city = client_data.city
+        if client_data.state:
+            client.state= client_data.state
         if client_data.Client_Name:
             client.Client_Name = client_data.Client_Name
         if client_data.client_phone:
