@@ -50,23 +50,20 @@ async def get_all_users(db: Session = Depends(get_db_connection)):
 @router.post("/login/")
 async def login(user: UserLogin, db: Session = Depends(get_db_connection)):
     result = create_login(user, db)
-    print(result)
-    session_id = secrets.token_hex(16)
-    if result =="Invalid credentials":
+    
+    if result["message"] == "Invalid credentials":
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={
-                "message": "invalid credentials",
-            }
+            content={"message": result["message"]}
         )
-    if result =="User not found":
-       return JSONResponse(
+    
+    if result["message"] == "User not found":
+        return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={
-                "message": "user not found",
-            }
+            content={"message": result["message"]}
         )
-    if "message" in result and result["message"] == "Login successful":
+    
+    if result["message"] == "Login successful":
         session_id = secrets.token_hex(16)  # Generate a session ID (token)
         return JSONResponse(
             status_code=status.HTTP_200_OK,

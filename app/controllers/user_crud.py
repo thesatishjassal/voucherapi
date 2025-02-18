@@ -21,7 +21,7 @@ def create_login(login_data: UserLogin, db: Session):
     user = get_user_by_phone(login_data.phone, db)
 
     if user:
-        # Check if the provided password matches the stored plain password
+        # Check if the provided password matches the stored hashed password
         if check_password(login_data.password, user.password):
             return {
                 "message": "Login successful",
@@ -32,9 +32,10 @@ def create_login(login_data: UserLogin, db: Session):
                 }
             }
         else:
-            return {"message": "Invalid credentials"}  # More informative error message
+            return {"message": "Invalid credentials"}  # Incorrect password
+    
     else:
-        return {"message": "User not found"}  # More informative error message
+        return {"message": "User not found"}  # User does not exist
 
 def get_user_by_phone(phone: str, db: Session):
     return db.query(User).filter(User.phone == phone).first()
