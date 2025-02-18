@@ -23,7 +23,7 @@ class ClientResponse(BaseModel):
     pincode: str
     client_name: str
     client_phone: constr(min_length=10, max_length=15)
-    client_email: str
+    client_email:  Optional[str] = None
     client_type: str
 
 class ClientUpdate(BaseModel):

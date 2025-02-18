@@ -14,7 +14,7 @@ class Clients(Base):
     state = Column(String(100))
     client_name = Column(String(255))
     client_phone = Column(String(15), unique=True, index=True)  # E.164 format max length 15
-    client_email = Column(String(255))
+    client_email = Column(String(255), nullable=True)  # Made optional
     client_type = Column(String(50))
 
     def __repr__(self):
