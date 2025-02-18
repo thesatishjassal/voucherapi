@@ -11,7 +11,8 @@ app = FastAPI()
 # Allow CORS for specific origins (localhost:3000, etc.)
 origins = [
     "http://localhost:3000",  # Local development frontend
-    "https://panvic.in",  # Your actual frontend URL
+    "https://www.panvic.in",  # Your actual frontend URL
+    "https://api.panvic.in",  # Your new API domain
 ]
 
 # Add CORS middleware
