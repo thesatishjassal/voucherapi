@@ -5,7 +5,7 @@ from app.schema.category import CategoryCreate, CategoryResponse, CategoryUpdate
 from app.models.user import Base
 
 def create_catgeory(category_data: CategoryCreate, db: Session):
-    category = Category(name=category_data.catname, slug= category_data.slug)
+    category = Category(catname=category_data.catname, slug= category_data.slug)
     print(category)
     db.add(category)
     db.commit()
