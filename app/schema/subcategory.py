@@ -9,7 +9,7 @@ class SubCategoryCreate(BaseModel):
 class  SubCategoryResponse(BaseModel):
     id: int
     catname: Optional[str] = None
-    slug: Optional[str] = None
+    subcatname: Optional[str] = None
     slug: Optional[str] = None
 
 class SubCategoryUpdate(BaseModel):
