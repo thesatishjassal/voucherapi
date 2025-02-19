@@ -15,7 +15,7 @@ class Products(Base):
     price = Column(String, name="price")
     quantity = Column(String, name="quantity")
     rackCode = Column(String, name="rackcode")
-    thumbnail = Column(String, name="thumbnail")
+    thumbnail = Column(String, name="thumbnail", nullable=True)
     size = Column(String, name="size")
     color = Column(String, name="color")
     model = Column(String, name="model")

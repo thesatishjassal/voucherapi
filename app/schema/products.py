@@ -11,7 +11,7 @@ class ProductsCreate(BaseModel):
     price: str
     quantity: str
     rackCode: str
-    thumbnail: str
+    thumbnail: Optional[str] = None
     size: str
     color: str
     model: str
