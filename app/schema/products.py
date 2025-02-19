@@ -9,7 +9,7 @@ class ProductsCreate(BaseModel):
     category: str
     subCategory: str
     price: str
-    quatity: str
+    quantity: str
     rackCode: str
     thumbnail: str
     size: str
@@ -25,7 +25,7 @@ class ProductsUpdate(BaseModel):
     category: Optional[str] = None
     subCategory: Optional[str] = None
     price: Optional[str] = None
-    quatity: Optional[str] = None
+    quantity: Optional[str] = None
     rackCode: Optional[str] = None
     thumbnail: Optional[str] = None
     size: Optional[str] = None
@@ -42,7 +42,7 @@ class ProductsResponse(BaseModel):
     category: Optional[str] = None
     subCategory: Optional[str] = None
     price: Optional[str] = None
-    quatity: Optional[str] = None
+    quantity: Optional[str] = None
     rackCode: Optional[str] = None
     thumbnail: Optional[str] = None
     size: Optional[str] = None

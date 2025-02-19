@@ -35,7 +35,7 @@ async def create_new_products(products: ProductsCreate, db:Session = Depends(get
                 "Size": result.size,
                 "Model": result.model,
                 "Price": result.model,
-                "Quantity": result.quatity,
+                "Quantity": result.quantity,
                 "RackCode": result.rackCode,
                 "Thumbnail": result.thumbnail,
                 "Color": result.color

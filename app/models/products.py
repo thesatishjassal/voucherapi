@@ -13,7 +13,7 @@ class Products(Base):
     category = Column(String, name="category")
     subCategory = Column(String, name="subcategory")
     price = Column(String, name="price")
-    quatity = Column(String, name="quatity")
+    quantity = Column(String, name="quantity")
     rackCode = Column(String, name="rackcode")
     thumbnail = Column(String, name="thumbnail")
     size = Column(String, name="size")
@@ -22,4 +22,4 @@ class Products(Base):
     brand = Column(String, name="brand")
 
     def __repr__(self):
-        return f"<Products (id={self.id}, hsncode={self.hsncode},itemCode={self.itemCode},itemName={self.itemName},description={self.description},category={self.category}, subCategory={self.subCategory},price={self.price}, quatity={self.quatity},rackCode={self.rackCode}, thumbnail={self.thumbnail}, size={self.size},color={self.color},model={self.model},brand={self.brand})>"
+        return f"<Products (id={self.id}, hsncode={self.hsncode},itemCode={self.itemCode},itemName={self.itemName},description={self.description},category={self.category}, subCategory={self.subCategory},price={self.price}, quantity={self.quantity},rackCode={self.rackCode}, thumbnail={self.thumbnail}, size={self.size},color={self.color},model={self.model},brand={self.brand})>"

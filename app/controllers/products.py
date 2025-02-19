@@ -27,8 +27,8 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
             product.hsncode = product_data.hsncode
         if product_data.price:
             product.price = product_data.price
-        if product_data.quatity:
-            product.quatity = product_data.quatity
+        if product_data.quantity:
+            product.quantity = product_data.quantity
         if product_data.rackCode:
             product.rackCode = product_data.rackCode
         if product_data.category:

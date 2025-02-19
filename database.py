@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from base import Base  # Ensure base.py has Base = declarative_base()
 
-SQL_DB_URL = "postgresql://postgres:123@localhost/postgres"
+SQL_DB_URL = "postgresql://postgres:123@localhost/vocherdb"
 
 print("🔄 Connecting to Database...")
 engine = create_engine(SQL_DB_URL)
