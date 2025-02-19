@@ -24,7 +24,7 @@ async def create_new_category(category: CategoryCreate, db:Session = Depends(get
             "message": "category added successfully",
             "user": {
                 "id": result.id,
-                "name": result.name,
+                "name": result.catname,
                 "slug": result.slug,
             }
         }

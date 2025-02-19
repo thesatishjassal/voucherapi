@@ -5,7 +5,7 @@ from app.schema.category import CategoryCreate, CategoryResponse, CategoryUpdate
 from app.models.user import Base
 
 def create_catgeory(category_data: CategoryCreate, db: Session):
-    category = Category(name=category_data.name, slug= category_data.slug)
+    category = Category(name=category_data.catname, slug= category_data.slug)
     print(category)
     db.add(category)
     db.commit()
@@ -19,8 +19,8 @@ def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
     category = db.query(Category).filter(categorydata.id == categoryid).first()
     if category:
         # Update the client details with the new data
-        if category.name:
-            category.name = category.name
+        if category.catname:
+            category.catname = category.catname
         if category.slug:
             category.slug = category.slug
         db.commit()

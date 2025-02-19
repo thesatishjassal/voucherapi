@@ -6,8 +6,8 @@ class Category(Base):
     __table_args__ = {"extend_existing": True}  # Optional, only if needed
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+    catname = Column(String)
     slug = Column(String)
 
     def __repr__(self):
-        return f"<Category (id={self.id}, Name={self.name}, Slug={self.slug}>"
+        return f"<Category (id={self.id}, Name={self.catname}, Slug={self.slug}>"
