@@ -16,10 +16,10 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # ✅ Make sure this includes "https://www.panvic.in"
+    allow_origins=["https://www.panvik.in"],
     allow_credentials=True,
-    allow_methods=["*"],  # ✅ Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # ✅ Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Register routers for different APIs
