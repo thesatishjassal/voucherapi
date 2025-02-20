@@ -8,3 +8,4 @@ pytest-asyncio
 uuid
 httpx
 bcrypt
+python-multipart
