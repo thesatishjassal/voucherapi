@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.category_crud import create_catgeory, get_categories, update_category
+from app.controllers.category_crud import create_catgeory, get_categories, update_category, delete_category, get_categoriesby_id
 from app.schema.category import CategoryResponse, CategoryCreate, CategoryUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
@@ -34,6 +34,11 @@ async def create_new_category(category: CategoryCreate, db:Session = Depends(get
 async def get_all_categories(db:Session = Depends(get_db_connection)):
     return get_categories(db=db)
 
+
+@router.get("/category/{category_id}", response_model=list[CategoryResponse])
+async def get_categoriesbyid(category_id: int, db:Session = Depends(get_db_connection)):
+    return get_categoriesby_id(category_id, db=db)
+
 @router.put("/category/{category_id}")
 def update_category_api(category_id: int, category_data: CategoryUpdate, db: Session= Depends(get_db_connection)):
     print(category_id)
@@ -43,13 +48,13 @@ def update_category_api(category_id: int, category_data: CategoryUpdate, db: Ses
     except HTTPException as e:
         raise e
     
-# @router.delete("/client/{category_id}")
-# def delete_category_api(category_id: int, db: Session = Depends(get_db_connection)):
-#     try:
-#         result = delete_client(category_id, db)
-#         return result
-#     except HTTPException as e:
-#         raise e
+@router.delete("/client/{category_id}")
+def delete_category_api(category_id: int, db: Session = Depends(get_db_connection)):
+    try:
+        result = delete_category(category_id, db)
+        return result
+    except HTTPException as e:
+        raise e
 
 # Include the router in the main app
 app.include_router(router)

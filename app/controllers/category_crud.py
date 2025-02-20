@@ -15,6 +15,9 @@ def create_catgeory(category_data: CategoryCreate, db: Session):
 def get_categories(db: Session):
     return db.query(Category).all()
 
+def get_categoriesby_id(category_id: int, db: Session):
+    return db.query(Category).filter(category_id ==category_id).first()
+
 def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
     category = db.query(Category).filter(categorydata.id == categoryid).first()
     if category:
@@ -29,4 +32,14 @@ def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
         return category
     else:
         # If client is not found, raise an exception
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+def delete_category(category_id: int, db: Session):
+    # Find the existing client by ID
+    category =  db.query(Category).filter(category_id ==category_id).first()
+    if category:
+        db.delete(category)
+        db.commit()
+        return {"Message" : "category Deleted Successfuly!"}
+    else:
         raise HTTPException(status_code=404, detail="Client not found")
