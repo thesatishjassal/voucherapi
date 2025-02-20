@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.subcategory_crud import create_subcatgeory, get_subcategories
+from app.controllers.subcategory_crud import create_subcatgeory, get_subcategories, delete_subcategory
 from app.schema.subcategory import SubCategoryCreate, SubCategoryResponse
 from database import get_db_connection
 from fastapi.responses import JSONResponse
@@ -44,13 +44,13 @@ async def get_all_subcategories(db:Session = Depends(get_db_connection)):
 #     except HTTPException as e:
 #         raise e
     
-# @router.delete("/client/{client_id}")
-# def delete_client_api(client_id: int, db: Session = Depends(get_db_connection)):
-#     try:
-#         result = delete_client(client_id, db)
-#         return result
-#     except HTTPException as e:
-#         raise e
+@router.delete("/subcategory/{subcategory_id}")
+def delete_subcategory_api(subcategory_id: int, db: Session = Depends(get_db_connection)):
+    try:
+        result = delete_subcategory(subcategory_id, db)
+        return result
+    except HTTPException as e:
+        raise e
 
 # Include the router in the main app
 app.include_router(router)

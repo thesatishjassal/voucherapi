@@ -32,3 +32,13 @@ def update_subcategory(subcategorydata: SubCategoryUpdate, subcategoryid: int, d
     else:
         # If client is not found, raise an exception
         raise HTTPException(status_code=404, detail="Client not found")
+    
+def delete_subcategory(subcategory_id: int, db: Session):
+    # Find the existing client by ID
+    subcategory =  db.query(SubCategory).filter(subcategory_id ==subcategory_id).first()
+    if subcategory:
+        db.delete(subcategory)
+        db.commit()
+        return {"Message" : "Subcategory Deleted Successfuly!"}
+    else:
+        raise HTTPException(status_code=404, detail="Subcategory not found")
