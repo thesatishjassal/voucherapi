@@ -34,11 +34,6 @@ async def create_new_category(category: CategoryCreate, db:Session = Depends(get
 async def get_all_categories(db:Session = Depends(get_db_connection)):
     return get_categories(db=db)
 
-
-# @router.get("/category/{category_id}", response_model=list[CategoryResponse])
-# async def get_categoriesbyid(category_id: int, db:Session = Depends(get_db_connection)):
-#     return get_categoriesby_id(category_id, db=db)
-
 @router.put("/category/{category_id}")
 def update_category_api(category_id: int, category_data: CategoryUpdate, db: Session= Depends(get_db_connection)):
     print(category_id)

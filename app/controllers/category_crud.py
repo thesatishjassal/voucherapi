@@ -15,9 +15,6 @@ def create_catgeory(category_data: CategoryCreate, db: Session):
 def get_categories(db: Session):
     return db.query(Category).all()
 
-# def get_categoriesby_id(category_id: int, db: Session):
-    # return db.query(Category).filter(category_id ==category_id).first()
-
 def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
     category = db.query(Category).filter(categorydata.id == categoryid).first()
     if category:
