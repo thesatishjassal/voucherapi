@@ -48,11 +48,16 @@ async def create_new_products(products: ProductsCreate, db: Session = Depends(ge
         return JSONResponse(
             status_code=e.status_code,
             content={
-                "message": "Validation error",
-                "errors": e.detail["errors"]  # Returning the list of errors
+                "message": e.detail["message"],  # Returns "Validation error"
+                "errors": e.detail["errors"]     # Returns the list of errors
             }
         )
-
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": "Something went wrong", "error": str(e)}
+        )
+    
 @router.get("/products/", response_model=list[ProductsResponse])
 async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)

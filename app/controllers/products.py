@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.schema.products import ProductsCreate, ProductsUpdate
 
+from fastapi import HTTPException
+
 def create_products(products_data: ProductsCreate, db: Session):
     # Check for existing product
     existing_product = db.query(Products).filter(
@@ -20,14 +22,25 @@ def create_products(products_data: ProductsCreate, db: Session):
         if existing_product.itemName == products_data.itemName:
             errors.append("Product Name already exists.")
 
-        raise HTTPException(status_code=400, detail={"message": "Validation error", "errors": errors})
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Validation Error",
+                "errors": errors
+            }
+        )
 
     # Create and save the product
     products = Products(**products_data.model_dump())
     db.add(products)
     db.commit()
     db.refresh(products)
-    return products
+
+    return {
+        "message": "Product created successfully!",
+        "product": products
+    }
+
 
 def get_products(db: Session):
     return db.query(Products).all()
