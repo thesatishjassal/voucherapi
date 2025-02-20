@@ -43,7 +43,7 @@ def update_category_api(category_id: int, category_data: CategoryUpdate, db: Ses
     except HTTPException as e:
         raise e
     
-@router.delete("/client/{category_id}")
+@router.delete("/category/{category_id}")
 def delete_category_api(category_id: int, db: Session = Depends(get_db_connection)):
     try:
         result = delete_category(category_id, db)
