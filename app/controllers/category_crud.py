@@ -33,7 +33,7 @@ def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
     
 def delete_category(category_id: int, db: Session):
     # Find the existing client by ID
-    category =  db.query(Category).filter(category_id ==category_id).first()
+    category =  db.query(Category).filter(Category.id ==category_id).first()
     if category:
         db.delete(category)
         db.commit()

@@ -35,7 +35,7 @@ def update_subcategory(subcategorydata: SubCategoryUpdate, subcategoryid: int, d
     
 def delete_subcategory(subcategory_id: int, db: Session):
     # Find the existing client by ID
-    subcategory =  db.query(SubCategory).filter(subcategory_id ==subcategory_id).first()
+    subcategory =  db.query(SubCategory).filter(SubCategory.id == subcategory_id).first()
     if subcategory:
         db.delete(subcategory)
         db.commit()
