@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.category_crud import create_catgeory, get_categories, update_category, delete_category, get_categoriesby_id
+from app.controllers.category_crud import create_catgeory, get_categories, update_category, delete_category
 from app.schema.category import CategoryResponse, CategoryCreate, CategoryUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
