@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.products import create_products, get_products, update_product, delete_product
+from app.controllers.products import create_products, get_products, delete_product
 from app.schema.products import ProductsCreate, ProductsResponse, ProductsUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, HTTPException
+from app.models.products import Products
 
 app = FastAPI()
 
@@ -61,25 +62,25 @@ async def create_new_products(products: ProductsCreate, db: Session = Depends(ge
 async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)
 
-@router.patch("/products/{product_id}")
-def update_product_api(
+@router.patch("/products/{product_id}", response_model=ProductsResponse)
+def update_product_partial(
     product_id: int, 
-    product_data: ProductsUpdate, 
+    product_data: ProductsUpdate,  # ✅ Use Pydantic model instead of dict
     db: Session = Depends(get_db_connection)
 ):
-    print(f"Update Product: {product_id}")  # Improved logging
+    product = db.query(Products).filter(Products.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
 
-    try:
-        updated_product = update_product(product_data, product_id, db)
-        
-        return {
-            "message": "Product updated successfully", 
-            "product": updated_product.__dict__  # Convert SQLAlchemy object to dict
-        }
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+    # ✅ Update only provided fields
+    update_data = product_data.model_dump(exclude_unset=True)  # Ignore unset fields
+    for key, value in update_data.items():
+        setattr(product, key, value)
+
+    db.commit()
+    db.refresh(product)
+
+    return {"message": "Product updated successfully", "product": product}
     
 @router.delete("/products/{product_id}")
 def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)):
