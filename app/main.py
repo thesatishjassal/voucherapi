@@ -6,9 +6,17 @@ from app.api.subcategory import router as subcategory_router  # import the route
 from app.api.products import router as products_router  # import the router with product routes
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 app = FastAPI()
-
+# Middleware to allow larger file uploads
+app.add_middleware(
+    TrustedHostMiddleware, allowed_hosts=["*"]
+)
+app.add_middleware(
+    GZipMiddleware, minimum_size=1000  # Optional: Enable compression
+)
 # Allow CORS for specific origins (localhost:3000, etc.)
 origins = [
     "http://localhost:3000",  # Local development frontend
@@ -30,6 +38,19 @@ app.include_router(subcategory_router)
 app.include_router(products_router)
 app.include_router(category_router)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# Increase max request size
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+
+class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        max_size = 3 * 1024 * 1024  # 🔥 Increase to 10MB (Change as needed)
+        if request.headers.get("content-length") and int(request.headers["content-length"]) > max_size:
+            return Response("413 Request Entity Too Large", status_code=413)
+        return await call_next(request)
+
+app.add_middleware(MaxUploadSizeMiddleware)
 
 @app.get("/")
 def read_root():
