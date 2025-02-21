@@ -5,6 +5,7 @@ from app.api.category import router as category_router  # import the router with
 from app.api.subcategory import router as subcategory_router  # import the router with subcategory routes
 from app.api.products import router as products_router  # import the router with product routes
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -28,6 +29,7 @@ app.include_router(clients_router)
 app.include_router(subcategory_router)
 app.include_router(products_router)
 app.include_router(category_router)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 def read_root():
