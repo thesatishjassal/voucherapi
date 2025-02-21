@@ -3,7 +3,42 @@ from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.schema.products import ProductsCreate, ProductsUpdate
 
-from fastapi import HTTPException
+# from fastapi import HTTPException
+from fastapi import UploadFile, File
+# from sqlalchemy.orm import Session
+# from app.models.products import Products
+import shutil
+import os
+import uuid  # For unique file names
+
+UPLOAD_DIR = "uploads/"  # Define the upload directory
+os.makedirs(UPLOAD_DIR, exist_ok=True)  # Ensure the directory exists
+
+
+def upload_thumbnail(product_id: int, db: Session, file: UploadFile = File(...)):
+    product = db.query(Products).filter(Products.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Extract file extension (e.g., .jpg, .png)
+    ext = os.path.splitext(file.filename)[-1].lower()
+    if ext not in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
+        raise HTTPException(status_code=400, detail="Invalid file format. Use JPG, PNG, GIF, or WebP.")
+
+    # Generate a unique filename
+    file_name = f"product_{product_id}_{uuid.uuid4().hex}{ext}"
+    file_path = os.path.join(UPLOAD_DIR, file_name)
+
+    # Save the file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Update the product thumbnail
+    product.thumbnail = file_path
+    db.commit()
+    db.refresh(product)
+
+    return {"message": "Thumbnail uploaded successfully!", "thumbnail": file_path}
 
 def create_products(products_data: ProductsCreate, db: Session):
     # Check for existing product
@@ -79,6 +114,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
     else:
         # If product is not found, raise an exception
         raise HTTPException(status_code=404, detail="Product not found")
+
 
 def delete_product(product_id: int, db: Session):
     # Find the existing product by ID

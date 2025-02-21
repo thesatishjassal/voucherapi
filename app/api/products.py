@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.products import create_products, get_products, update_product, delete_product
+from app.controllers.products import create_products, get_products, update_product, delete_product, upload_thumbnail
 from app.schema.products import ProductsCreate, ProductsResponse, ProductsUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
@@ -78,6 +78,30 @@ def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)
         return result
     except HTTPException as e:
         raise e
+
+# ✅ **New Thumbnail Upload Endpoint**
+@router.post("/products/{product_id}/upload-thumbnail/")
+async def upload_product_thumbnail(
+    product_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db_connection)
+):
+    try:
+        result = upload_thumbnail(product_id, file, db)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=result
+        )
+    except HTTPException as e:
+        return JSONResponse(
+            status_code=e.status_code,
+            content={"message": e.detail}
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": "Thumbnail upload failed", "error": str(e)}
+        )
 
 # Include the router in the main app
 app.include_router(router)
