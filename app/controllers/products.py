@@ -65,7 +65,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
     # ✅ Handle thumbnail update separately (if provided)
     if product_data.thumbnail:
         product.thumbnail = product_data.thumbnail  # Can be Base64 or URL
-
+    
     # Commit the changes
     db.commit()
     db.refresh(product)

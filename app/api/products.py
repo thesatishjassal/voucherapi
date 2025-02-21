@@ -5,8 +5,7 @@ from app.controllers.products import create_products, get_products, update_produ
 from app.schema.products import ProductsCreate, ProductsResponse, ProductsUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Response, HTTPException
-import secrets
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -62,7 +61,7 @@ async def create_new_products(products: ProductsCreate, db: Session = Depends(ge
 async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)
 
-@router.put("/products/{product_id}")
+@router.patch("/products/{product_id}")
 def update_product_api(
     product_id: int, 
     product_data: ProductsUpdate, 
@@ -81,7 +80,6 @@ def update_product_api(
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
-
     
 @router.delete("/products/{product_id}")
 def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)):
