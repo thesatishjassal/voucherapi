@@ -20,10 +20,10 @@ def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
     print(categoryid)
     if category:
         # Update the client details with the new data
-        if category.catname:
-            category.catname = category.catname
-        if category.slug:
-            category.slug = category.slug
+        if categorydata.catname:
+            category.catname = categorydata.catname
+        if categorydata.slug:
+            category.slug = categorydata.slug
         db.commit()
         db.refresh(category)
         

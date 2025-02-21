@@ -35,11 +35,17 @@ async def get_all_categories(db:Session = Depends(get_db_connection)):
     return get_categories(db=db)
 
 @router.put("/category/{category_id}")
-def update_category_api(category_id: int, category_data: CategoryUpdate, db: Session= Depends(get_db_connection)):
+async def update_category_api(category_id: int, category_data: CategoryUpdate, db: Session= Depends(get_db_connection)):
     print(category_id)
     try:
-        updated_client= update_category(category_data, category_id, db)
-        return {"message": "category updated successfully", "client": updated_client}
+        updated_client = update_category(category_data, category_id, db)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "message": "category updated successfully",
+                "client": updated_client
+            }
+        )
     except HTTPException as e:
         raise e
     
