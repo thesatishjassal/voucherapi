@@ -83,15 +83,17 @@ def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)
 @router.post("/products/{product_id}/upload/")
 async def upload_product_thumbnail(
     product_id: int,
-    file: UploadFile = File(..., description="Upload an image file"),
+    file: UploadFile = File(...),  # ✅ Ensure `File(...)` is present
     db: Session = Depends(get_db_connection)
 ):
+    if not file:
+        raise HTTPException(status_code=400, detail="File is required")
+
+    print(f"Received file: {file.filename}")  # Debugging Line
+
     try:
         result = upload_thumbnail(product_id, db, file)
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content=result
-        )
+        return JSONResponse(status_code=status.HTTP_200_OK, content=result)
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -99,6 +101,7 @@ async def upload_product_thumbnail(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"message": "Thumbnail upload failed", "error": str(e)}
         )
+
             
 # Include the router in the main app
 app.include_router(router)
