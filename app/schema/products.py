@@ -51,6 +51,5 @@ class ProductsResponse(BaseModel):
     model: str
     brand: str
     message: str
-    product: Product  # type: ignore # Now refers to the defined Product class
-
+   
     model_config = ConfigDict(from_attributes=True)
