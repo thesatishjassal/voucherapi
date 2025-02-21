@@ -55,13 +55,9 @@ def create_products(products_data: ProductsCreate, db: Session):
             errors.append("Item Code already exists.")
         if existing_product.itemName == products_data.itemName:
             errors.append("Product Name already exists.")
-
         raise HTTPException(
             status_code=400,
-            detail={
-                "message": "Validation Error",
-                "errors": errors
-            }
+            detail={"message": "Validation Error", "errors": errors}
         )
 
     # Create and save the product
@@ -70,8 +66,7 @@ def create_products(products_data: ProductsCreate, db: Session):
     db.commit()
     db.refresh(products)
     
-    return products  # Return just the product object
-
+    return products  # Returns a Products object
 
 def get_products(db: Session):
     return db.query(Products).all()

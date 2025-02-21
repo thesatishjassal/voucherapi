@@ -22,12 +22,13 @@ from fastapi import HTTPException
 async def create_new_products(products: ProductsCreate, db: Session = Depends(get_db_connection)):
     try:
         result = create_products(products, db)
-        return ProductsResponse(  # Use the response model directly
-            message="Product added successfully",
-            product=result
-        )
+        print(result.__dict__)
+        product_dict = result.__dict__.copy()
+        product_dict["message"] = "Product added successfully"
+        print(product_dict)
+        return ProductsResponse(**product_dict)
     except HTTPException as e:
-        raise e  # Let FastAPI handle HTTPException
+        raise e
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
