@@ -63,13 +63,20 @@ async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)
 
 @router.put("/products/{product_id}")
-def update_product_api(product_id: int, product_data: ProductsUpdate, db: Session= Depends(get_db_connection)):
-    print("Update Product", {product_id})
-    try:
-        updated_product=update_product(product_data, product_id, db)
-        return {"message": "Product updated successfully", "Product":  updated_product}
-    except HTTPException as e:
-        raise e
+def update_product_api(
+    product_id: int, 
+    product_data: ProductsUpdate, 
+    db: Session = Depends(get_db_connection)
+):
+    print("Update Product:", product_id)  # Fixed print statement
+
+    updated_product = update_product(product_data, product_id, db)
+
+    return {
+        "message": "Product updated successfully", 
+        "product": updated_product.model_dump()  # Ensure proper JSON response
+    }
+
     
 @router.delete("/products/{product_id}")
 def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)):

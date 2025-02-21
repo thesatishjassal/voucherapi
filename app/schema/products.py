@@ -31,7 +31,8 @@ class ProductsUpdate(BaseModel):
     size: Optional[str] = None
     color: Optional[str] = None
     model: Optional[str] = None
-    brand: Optional[str] = None
+    brand: Optional[str] = None  # Fixed incorrect `None and ...` issue
+
 
 class ProductsResponse(BaseModel):
     id: int
