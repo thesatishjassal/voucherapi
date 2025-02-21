@@ -22,40 +22,16 @@ from fastapi import HTTPException
 async def create_new_products(products: ProductsCreate, db: Session = Depends(get_db_connection)):
     try:
         result = create_products(products, db)
-        return JSONResponse(
-            status_code=status.HTTP_201_CREATED,
-            content={
-                "message": "Product added successfully",
-                "product": {
-                    "id": result.id,
-                    "itemCode": result.itemCode,
-                    "itemName": result.itemName,
-                    "description": result.description,
-                    "brand": result.brand,
-                    "hsncode": result.hsncode,
-                    "category": result.category,
-                    "subCategory": result.subCategory,
-                    "size": result.size,
-                    "model": result.model,
-                    "price": result.price,
-                    "quantity": result.quantity,
-                    "rackCode": result.rackCode,
-                    "color": result.color
-                }
-            }
+        return ProductsResponse(  # Use the response model directly
+            message="Product added successfully",
+            product=result
         )
     except HTTPException as e:
-        return JSONResponse(
-            status_code=e.status_code,
-            content={
-                "message": e.detail["message"],  # Returns "Validation error"
-                "errors": e.detail["errors"]     # Returns the list of errors
-            }
-        )
+        raise e  # Let FastAPI handle HTTPException
     except Exception as e:
-        return JSONResponse(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"message": "Something went wrong", "error": str(e)}
+            detail={"message": "Something went wrong", "error": str(e)}
         )
     
 @router.get("/products/", response_model=list[ProductsResponse])

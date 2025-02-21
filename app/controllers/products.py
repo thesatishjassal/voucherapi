@@ -69,11 +69,8 @@ def create_products(products_data: ProductsCreate, db: Session):
     db.add(products)
     db.commit()
     db.refresh(products)
-
-    return {
-        "message": "Product created successfully!",
-        "product": products
-    }
+    
+    return products  # Return just the product object
 
 
 def get_products(db: Session):
