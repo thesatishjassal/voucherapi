@@ -16,7 +16,8 @@ def get_categories(db: Session):
     return db.query(Category).all()
 
 def update_category(categorydata: CategoryUpdate, categoryid: int, db: Session):
-    category = db.query(Category).filter(categorydata.id == categoryid).first()
+    category = db.query(Category).filter(Category.id == categoryid).first()
+    print(categoryid)
     if category:
         # Update the client details with the new data
         if category.catname:
