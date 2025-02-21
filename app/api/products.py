@@ -83,9 +83,12 @@ def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)
 @router.post("/products/{product_id}/upload/")
 async def upload_product_thumbnail(
     product_id: int,
-    file: UploadFile = File(...),
+    file: UploadFile = File(...),  # Ensure `File(...)` is used to require the field
     db: Session = Depends(get_db_connection)
 ):
+    if not file:
+        raise HTTPException(status_code=400, detail="File is required")
+
     try:
         result = upload_thumbnail(product_id, file, db)
         return JSONResponse(
@@ -93,10 +96,7 @@ async def upload_product_thumbnail(
             content=result
         )
     except HTTPException as e:
-        return JSONResponse(
-            status_code=e.status_code,
-            content={"message": e.detail}
-        )
+        raise e
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
