@@ -1,39 +1,64 @@
-from fastapi import FastAPI
-from app.api.user import router as user_router  # import the router with user routes
-from app.api.clients import router as clients_router  # import the router with client routes
-from app.api.category import router as category_router  # import the router with category routes
-from app.api.subcategory import router as subcategory_router  # import the router with subcategory routes
-from app.api.products import router as products_router  # import the router with product routes
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from pathlib import Path
+from sqlalchemy.orm import Session
+from database import get_db_connection  # Import database session
+from app.models.products import Products  # Import the Product model
 
 app = FastAPI()
 
-# Allow CORS for specific origins (localhost:3000, etc.)
+# Allowed origins for CORS
 origins = [
-    "http://localhost:3000",  # Local development frontend
-    "https://www.panvik.in",  # Production frontend
+    "http://localhost:3000",
+    "https://www.panvik.in",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://www.panvik.in"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Register routers for different APIs
-app.include_router(user_router)
-app.include_router(clients_router)
-app.include_router(subcategory_router)
-app.include_router(products_router)
-app.include_router(category_router)
+UPLOAD_DIR = "uploads"
+Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to user API"}
+@app.post("/products/{product_id}/upload")
+async def upload_product_image(
+    product_id: int, 
+    file: UploadFile = File(...), 
+    db: Session = Depends(get_db_connection)
+):
+    """
+    Uploads an image for a product by its ID and updates the 'thumbnail' field.
+    """
+    try:
+        # Ensure file is an image
+        if not file.filename.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
+            raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
 
-# Run with Uvicorn if this script is executed directly
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=80)  # Run on port 80 for production
+        # Create product folder
+        product_folder = os.path.join(UPLOAD_DIR, str(product_id))
+        Path(product_folder).mkdir(parents=True, exist_ok=True)
+
+        # Save file
+        file_path = os.path.join(product_folder, file.filename)
+        with open(file_path, "wb") as buffer:
+            buffer.write(await file.read())
+
+        # Update database (assuming `Product` model has `thumbnail` field)
+        product = db.query(Products).filter(Products.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        product.thumbnail = file_path  # Store the file path in DB
+        db.commit()
+        db.refresh(product)
+
+        return {"message": "File uploaded successfully", "thumbnail": product.thumbnail}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
