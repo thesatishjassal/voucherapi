@@ -15,8 +15,6 @@ def read_root():
     return {"Hello": "World"}
 
 
-
-
 router = APIRouter()
 
 UPLOAD_DIR = "uploads/"
