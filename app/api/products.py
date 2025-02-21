@@ -68,14 +68,19 @@ def update_product_api(
     product_data: ProductsUpdate, 
     db: Session = Depends(get_db_connection)
 ):
-    print("Update Product:", product_id)  # Fixed print statement
+    print(f"Update Product: {product_id}")  # Improved logging
 
-    updated_product = update_product(product_data, product_id, db)
-
-    return {
-        "message": "Product updated successfully", 
-        "product": updated_product.model_dump()  # Ensure proper JSON response
-    }
+    try:
+        updated_product = update_product(product_data, product_id, db)
+        
+        return {
+            "message": "Product updated successfully", 
+            "product": updated_product.__dict__  # Convert SQLAlchemy object to dict
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
     
 @router.delete("/products/{product_id}")
