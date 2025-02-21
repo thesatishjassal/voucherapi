@@ -80,7 +80,7 @@ def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)
         raise e
 
 # ✅ **New Thumbnail Upload Endpoint**
-@router.post("/products/{product_id}/upload-thumbnail/")
+@router.post("/products/{product_id}/upload/")
 async def upload_product_thumbnail(
     product_id: int,
     file: UploadFile = File(...),
