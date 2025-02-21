@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.schema.products import ProductsCreate, ProductsUpdate
 
-# from fastapi import HTTPException
+from fastapi import HTTPException
 from fastapi import UploadFile, File
 # from sqlalchemy.orm import Session
 # from app.models.products import Products
