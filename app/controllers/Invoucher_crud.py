@@ -1,8 +1,8 @@
 # crud.py (partial update, keep the rest unchanged)
-from schema.Invoucher.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
-from schema.Invoucher.invoucher_item import InvoucherItem, InvoucherItemCreate
-from schema.clients_schema import ClientCreate, ClientResponse
-from schema.products import ProductsCreate, ProductsResponse
+from app.schema.Invoucher.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
+from app.schema.Invoucher.invoucher_item import InvoucherItem, InvoucherItemCreate
+from app.schema.clients_schema import ClientCreate, ClientResponse
+from app.schema.products import ProductsCreate, ProductsResponse
 from sqlalchemy.orm import Session
 
 # Invoucher CRUD Operations
