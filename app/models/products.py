@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from base import Base  # Import the shared Base from base.py
+from sqlalchemy.orm import relationship
 
 class Products(Base):
     __tablename__ = "products"
@@ -20,6 +21,8 @@ class Products(Base):
     color = Column(String, name="color")
     model = Column(String, name="model")
     brand = Column(String, name="brand")
+
+    items = relationship("InvoucherItem", back_populates="product")
 
     def __repr__(self):
         return f"<Products (id={self.id}, hsncode={self.hsncode},itemCode={self.itemCode},itemName={self.itemName},description={self.description},category={self.category}, subCategory={self.subCategory},price={self.price}, quantity={self.quantity},rackCode={self.rackCode}, thumbnail={self.thumbnail}, size={self.size},color={self.color},model={self.model},brand={self.brand})>"
