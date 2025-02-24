@@ -1,7 +1,7 @@
 # main.py
 """Main FastAPI application for the IN Voucher API."""
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, APIRouter
 from sqlalchemy.orm import Session
 from database import get_db_connection
 from controllers.Invoucher_crud import (
@@ -11,35 +11,39 @@ from schema.Invoucher.invoucher import Invoucher, InvoucherCreate, InvoucherUpda
 from schema.Invoucher.invoucher_item import InvoucherItem, InvoucherItemBase, InvoucherItemCreate
 from typing import List
 
-app = FastAPI(title="IN Voucher API", description="A CRUD API for managing invouchers, clients, and products.")
+app = FastAPI()
+
+router = APIRouter()
 
 # Invoucher Endpoints
-@app.post("/invouchers/", response_model=Invoucher)
+@router.post("/invouchers/", response_model=Invoucher)
 def create_invoucher_endpoint(invoucher: InvoucherCreate, db: Session = Depends(get_db_connection)):
     """Create a new invoucher."""
     return create_invoucher(db, invoucher)
 
-@app.post("/invouchers/{voucher_id}/items/", response_model=InvoucherItem)
+@router.post("/invouchers/{voucher_id}/items/", response_model=InvoucherItem)
 def create_invoucher_item_endpoint(voucher_id: int, item: InvoucherItemCreate, db: Session = Depends(get_db_connection)):
     """Add an item to an existing invoucher."""
     return create_invoucher_item(db, voucher_id, item)
 
-@app.get("/invouchers/", response_model=List[Invoucher])
+@router.get("/invouchers/", response_model=List[Invoucher])
 def read_invouchers_endpoint(skip: int = 0, limit: int = 10, db: Session = Depends(get_db_connection)):
     """List all invouchers with pagination."""
     return get_invouchers(db, skip, limit)
 
-@app.get("/invouchers/{voucher_id}", response_model=Invoucher)
+@router.get("/invouchers/{voucher_id}", response_model=Invoucher)
 def read_invoucher_endpoint(voucher_id: int, db: Session = Depends(get_db_connection)):
     """Retrieve a specific invoucher by ID."""
     return get_invoucher(db, voucher_id)
 
-@app.put("/invouchers/{voucher_id}", response_model=Invoucher)
+@router.put("/invouchers/{voucher_id}", response_model=Invoucher)
 def update_invoucher_endpoint(voucher_id: int, invoucher: InvoucherCreate, db: Session = Depends(get_db_connection)):
     """Update an existing invoucher."""
     return update_invoucher(db, voucher_id, invoucher)
 
-@app.delete("/invouchers/{voucher_id}")
+@router.delete("/invouchers/{voucher_id}")
 def delete_invoucher_endpoint(voucher_id: int, db: Session = Depends(get_db_connection)):
     """Delete an invoucher."""
     return delete_invoucher(db, voucher_id)
+
+app.include_router(router)

@@ -3,6 +3,7 @@ from app.api.user import router as user_router  # import the router with user ro
 from app.api.clients import router as clients_router  # import the router with client routes
 from app.api.category import router as category_router  # import the router with category routes
 from app.api.subcategory import router as subcategory_router  # import the router with subcategory routes
+from app.api.invouchers import router as invouchers_router  # import the router with subcategory routes
 from app.api.products import router as products_router  # import the router with product routes
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -37,6 +38,8 @@ app.include_router(clients_router)
 app.include_router(subcategory_router)
 app.include_router(products_router)
 app.include_router(category_router)
+app.include_router(invouchers_router)
+
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Increase max request size
 from starlette.middleware.base import BaseHTTPMiddleware
