@@ -22,7 +22,7 @@ class Products(Base):
     model = Column(String, name="model")
     brand = Column(String, name="brand")
 
-    items = relationship("InvoucherItem", back_populates="product")
+    items = relationship("InvoucherItem", back_populates="products")
 
     def __repr__(self):
         return f"<Products (id={self.id}, hsncode={self.hsncode},itemCode={self.itemCode},itemName={self.itemName},description={self.description},category={self.category}, subCategory={self.subCategory},price={self.price}, quantity={self.quantity},rackCode={self.rackCode}, thumbnail={self.thumbnail}, size={self.size},color={self.color},model={self.model},brand={self.brand})>"
