@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base
 # Create a single Base instance for the entire project.
 Base = declarative_base()
 
-class Client(Base):
+class Clients(Base):
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, index=True)
