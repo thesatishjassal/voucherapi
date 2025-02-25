@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base
 # Create a single Base instance for the entire project.
 Base = declarative_base()
 
-class Product(Base):
+class Products(Base):
     __tablename__ = "products"
     __table_args__ = {'extend_existing': True}
     
@@ -26,4 +26,4 @@ class Product(Base):
     model = Column(String)
     brand = Column(String)
 
-    items = relationship("InvoucherItem", back_populates="product")
+    items = relationship("InvoucherItem", back_populates="products")
