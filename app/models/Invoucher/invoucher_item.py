@@ -1,11 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
 from base import Base
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ..products import Products
-    from .invoucher import Invoucher
 
 class InvoucherItem(Base):
     __tablename__ = "invoucher_items"
@@ -22,8 +17,6 @@ class InvoucherItem(Base):
     amount = Column(DECIMAL(12, 2), nullable=False)
     comments = Column(Text)
 
-    # Forward declaration of the relationship
-    product = relationship("Products", back_populates="items")
+    # Use string references for relationships
     invoucher = relationship("Invoucher", back_populates="items")
-
-
+    product = relationship("Products", back_populates="invoucher_items")
