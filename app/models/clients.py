@@ -1,9 +1,10 @@
+# client.py
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from base import Base  # Import the shared Base from base.py
+from base import Base
 
-class Clients(Base):
+class Client(Base):
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, index=True)

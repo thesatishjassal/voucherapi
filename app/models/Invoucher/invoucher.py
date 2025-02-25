@@ -1,6 +1,7 @@
+# invoucher.py
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, DECIMAL, Text, CheckConstraint
 from sqlalchemy.orm import relationship
-from base import Base  # Adjust the import based on your project structure
+from base import Base
 
 class Invoucher(Base):
     __tablename__ = "invouchers"

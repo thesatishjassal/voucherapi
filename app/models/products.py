@@ -1,8 +1,9 @@
+# product.py
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from base import Base  # Adjust the import based on your project structure
+from base import Base
 
-class Products(Base):
+class Product(Base):
     __tablename__ = "products"
     
     id = Column(Integer, primary_key=True, index=True)
