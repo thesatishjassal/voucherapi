@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, DECIMAL, Text, CheckConstraint
 from sqlalchemy.orm import relationship
-from .base import Base
+from base import Base
 
 class Invoucher(Base):
     __tablename__ = "invouchers"
