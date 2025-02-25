@@ -1,26 +1,27 @@
-from sqlalchemy import Column, Integer, String
+# invoucher_item.py
+from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
-from base import Base  # Adjust the import based on your project structure
+from base import Base
+from typing import TYPE_CHECKING
 
-class Product(Base):  # Renamed to singular form for consistency
-    __tablename__ = "products"
+if TYPE_CHECKING:
+    from .invoucher import Invoucher
+    from ..products import Product
+
+class InvoucherItem(Base):
+    __tablename__ = "invoucher_items"
     
-    id = Column(Integer, primary_key=True, index=True)
-    hsncode = Column(String, unique=True)
-    item_code = Column(String, unique=True)
-    item_name = Column(String)
-    description = Column(String)
-    category = Column(String)
-    sub_category = Column(String)
-    price = Column(String)
-    quantity = Column(String)
-    rack_code = Column(String)
-    thumbnail = Column(String, nullable=True)
-    size = Column(String)
-    color = Column(String)
-    model = Column(String)
-    brand = Column(String)
+    item_id = Column(Integer, primary_key=True, index=True)
+    voucher_id = Column(Integer, ForeignKey("invouchers.voucher_id"))
+    product_id = Column(Integer, ForeignKey("products.id"))
+    item_name = Column(String(100))
+    unit = Column(String(20))
+    rack_code = Column(String(50))
+    quantity = Column(Integer, nullable=False)
+    rate = Column(DECIMAL(10, 2), nullable=False)
+    discount_percentage = Column(DECIMAL(5, 2), default=0.00)
+    amount = Column(DECIMAL(12, 2), nullable=False)
+    comments = Column(Text)
 
-    # Use a string reference for the related class
     invoucher = relationship("Invoucher", back_populates="items")
     product = relationship("Product", back_populates="items")
