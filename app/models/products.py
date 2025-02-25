@@ -1,6 +1,6 @@
 # product.py
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship, declared_attr
 from sqlalchemy.orm import declarative_base
 
 # Create a single Base instance for the entire project.
@@ -26,4 +26,10 @@ class Products(Base):
     model = Column(String)
     brand = Column(String)
 
-    items = relationship("InvoucherItem", back_populates="products")
+    # items = relationship("InvoucherItem", back_populates="products")    
+    invoucher_item_id = Column(Integer, ForeignKey("invoucher_item.id"))
+    invoucher_item = relationship("InvoucherItem", back_populates="products")
+
+    @declared_attr
+    def invoucher_item(cls):
+        return relationship("InvoucherItem", back_populates="products")
