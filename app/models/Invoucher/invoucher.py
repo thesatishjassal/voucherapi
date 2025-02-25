@@ -5,7 +5,7 @@ from base import Base
 
 class Invoucher(Base):
     __tablename__ = "invouchers"
-    
+    id = Column(Integer, primary_key=True)
     voucher_id = Column(Integer, primary_key=True, index=True)
     voucher_number = Column(String(20), unique=True, nullable=False)
     transaction_type = Column(String(50), nullable=False, default="Transfer")
