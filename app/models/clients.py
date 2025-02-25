@@ -18,7 +18,7 @@ class Clients(Base):
     client_email = Column(String(255), nullable=True)  # Made optional
     client_type = Column(String(50))
 
-    invouchers = relationship("Invoucher", back_populates="clients")
+    invouchers = relationship("Invoucher", back_populates="client")
     
     def __repr__(self):
         return f"<Clients (id={self.id}, businessname={self.businessname}, address={self.address}, gst_number={self.gst_number}, pincode={self.pincode}, city={self.city}, state={self.state}, client_name={self.client_name}, client_phone={self.client_phone}, client_email={self.client_email}, client_type={self.client_type})>"

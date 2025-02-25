@@ -24,5 +24,5 @@ class Invoucher(Base):
     total_amount = Column(DECIMAL(12,2), default=0.00)
     remarks = Column(Text)
     
-    client = relationship("Clients", back_populates="invouchers")
+    # client = relationship("Clients", back_populates="invouchers")
     items = relationship("InvoucherItem", back_populates="invoucher")
