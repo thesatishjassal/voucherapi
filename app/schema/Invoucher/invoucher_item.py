@@ -1,19 +1,18 @@
-# schemas/invoucher_item.py
 """Pydantic schemas for InvoucherItem data validation in the IN Voucher API."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class InvoucherItemBase(BaseModel):
     """Base schema for invoucher items."""
-    voucher_id: int
+    invoucher_id: int  # Fixed to match SQLAlchemy model
     product_id: Optional[int] = None
     item_name: Optional[str] = None
     unit: Optional[str] = None
     rack_code: Optional[str] = None
     quantity: int
     rate: float
-    discount_percentage: Optional[float] = 0.00
+    discount_percentage: float = 0.00  # Removed Optional to avoid conflict
     amount: float
     comments: Optional[str] = None
 
@@ -26,4 +25,4 @@ class InvoucherItem(InvoucherItemBase):
     item_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # For Pydantic v2 (use orm_mode=True in v1)
