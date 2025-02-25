@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from app.models.clients import Clients
 from base import Base  # Ensure base.py has Base = declarative_base()
+from app.models.Invoucher.invoucher import Invoucher
 
 SQL_DB_URL = "postgresql://postgres:123@localhost/vocherdb"
 
@@ -21,6 +23,8 @@ def get_db_connection():
     try:
         yield db
         print("✅ Transaction Completed Successfully!")
+        client = db.query(Clients).first()
+        print(client.invouchers.all())  # Should work without errors
     except Exception as e:
         print(f"❌ Error: {e}")
         db.rollback()  # Rollback transaction in case of error
