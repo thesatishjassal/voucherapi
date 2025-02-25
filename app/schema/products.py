@@ -1,9 +1,7 @@
-from typing import Optional
-from sqlalchemy.orm import relationship
-from pydantic.config import ConfigDict
-from base import Base
+from typing import Optional, List
+from pydantic import BaseModel
 
-class ProductsCreate(Base):
+class ProductsCreate(BaseModel):
     hsncode: str
     itemCode: str
     itemName: str
@@ -19,7 +17,7 @@ class ProductsCreate(Base):
     model: str
     brand: str
 
-class ProductsUpdate(Base):
+class ProductsUpdate(BaseModel):
     hsncode: Optional[str] = None
     itemCode: Optional[str] = None
     itemName: Optional[str] = None
@@ -35,7 +33,7 @@ class ProductsUpdate(Base):
     model: Optional[str] = None
     brand: Optional[str] = None
 
-class ProductsResponse(Base):
+class ProductsResponse(BaseModel):
     id: int
     hsncode: str
     itemCode: str
@@ -52,7 +50,7 @@ class ProductsResponse(Base):
     model: str
     brand: str
     message: Optional[str] = None
-    invoucher_items: Optional[list] = None
-    
-model_config = ConfigDict(from_attributes=True)
+    invoucher_items: Optional[List[dict]] = None  # Change this to List[InvoucherItemResponse] if you have a response schema
 
+    class Config:
+        orm_mode = True
