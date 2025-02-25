@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from base import Base
 
 class Invoucher(Base):
-    """Model for invouchers (vouchers or transfers)."""
     __tablename__ = "invouchers"
     
     voucher_id = Column(Integer, primary_key=True, index=True)
