@@ -1,8 +1,9 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, constr
 from sqlalchemy.orm import relationship
+from pydantic.config import ConfigDict
+from base import Base
 
-class ProductsCreate(BaseModel):
+class ProductsCreate(Base):
     hsncode: str
     itemCode: str
     itemName: str
@@ -18,7 +19,7 @@ class ProductsCreate(BaseModel):
     model: str
     brand: str
 
-class ProductsUpdate(BaseModel):
+class ProductsUpdate(Base):
     hsncode: Optional[str] = None
     itemCode: Optional[str] = None
     itemName: Optional[str] = None
@@ -34,7 +35,7 @@ class ProductsUpdate(BaseModel):
     model: Optional[str] = None
     brand: Optional[str] = None
 
-class ProductsResponse(BaseModel):
+class ProductsResponse(Base):
     id: int
     hsncode: str
     itemCode: str
@@ -51,7 +52,7 @@ class ProductsResponse(BaseModel):
     model: str
     brand: str
     message: Optional[str] = None
-    invoucher_items = relationship("InvoucherItem", back_populates="product")  
+    invoucher_items: Optional[list] = None
     
 model_config = ConfigDict(from_attributes=True)
 
