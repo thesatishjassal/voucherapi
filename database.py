@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models.clients import Client
-from base import Base  # Ensure base.py has Base = declarative_base()
+from .base import Base  # Ensure base.py has Base = declarative_base()
 from app.models.Invoucher.invoucher import Invoucher
 
 SQL_DB_URL = "postgresql://postgres:123@localhost/vocherdb"

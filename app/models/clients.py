@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from app.models import Base  # Adjust import based on your Base location
+from ...base import Base  # Adjust import based on your Base location
 
 class Client(Base):
     __tablename__ = "clients"
