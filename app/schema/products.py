@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, constr
+from sqlalchemy.orm import relationship
 
 class ProductsCreate(BaseModel):
     hsncode: str
@@ -50,5 +51,7 @@ class ProductsResponse(BaseModel):
     model: str
     brand: str
     message: Optional[str] = None
+    invoucher_items = relationship("InvoucherItem", back_populates="product")  
     
 model_config = ConfigDict(from_attributes=True)
+

@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field
 from typing import Optional
+from sqlalchemy.orm import relationship
 
 class InvoucherItemBase(BaseModel):
     """Base schema for invoucher items."""
@@ -15,6 +16,8 @@ class InvoucherItemBase(BaseModel):
     discount_percentage: float = 0.00  # Removed Optional to avoid conflict
     amount: float
     comments: Optional[str] = None
+    
+    product = relationship("Products", back_populates="invoucher_items")
 
 class InvoucherItemCreate(InvoucherItemBase):
     """Schema for creating a new invoucher item."""
