@@ -3,7 +3,7 @@
 
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
-from database import Base
+from base import Base
 
 class InvoucherItem(Base):
     """Model for items in an invoucher."""
