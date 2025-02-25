@@ -1,5 +1,3 @@
-"""SQLAlchemy model for InvoucherItems in the IN Voucher system."""
-
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
 from base import Base

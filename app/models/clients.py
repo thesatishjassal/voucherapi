@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
-from base import Base  # Import the shared Base from base.py
 from sqlalchemy.orm import relationship
+from base import Base  # Import the shared Base from base.py
 
 class Clients(Base):
     __tablename__ = "clients"
