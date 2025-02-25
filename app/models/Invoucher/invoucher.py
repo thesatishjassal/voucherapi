@@ -1,9 +1,8 @@
-# models/invoucher.py
 """SQLAlchemy model for Invouchers in the IN Voucher system."""
 
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, DECIMAL, Text, CheckConstraint
 from sqlalchemy.orm import relationship
-from database import Base
+from base import Base
 
 class Invoucher(Base):
     """Model for invouchers (vouchers or transfers)."""
@@ -21,6 +20,6 @@ class Invoucher(Base):
     freight_status = Column(String(20), CheckConstraint("freight_status IN ('Paid', 'Unpaid')"))
     total_amount = Column(DECIMAL(12,2), default=0.00)
     remarks = Column(Text)
-    # 
+    
     client = relationship("Clients", back_populates="invouchers")
     items = relationship("InvoucherItem", back_populates="invoucher")
