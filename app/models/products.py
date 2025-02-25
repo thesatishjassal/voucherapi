@@ -1,14 +1,14 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from base import Base
+from base import Base  # Adjust the import based on your project structure
 
-class Products(Base):
+class Product(Base):
     __tablename__ = "products"
-
+    
     id = Column(Integer, primary_key=True, index=True)
-    hsncode = Column(String, unique=True, nullable=False)
-    item_code = Column(String, unique=True, nullable=False)
-    item_name = Column(String, unique=True, nullable=False)
+    hsncode = Column(String, unique=True)
+    item_code = Column(String, unique=True)
+    item_name = Column(String)
     description = Column(String)
     category = Column(String)
     sub_category = Column(String)
@@ -21,5 +21,4 @@ class Products(Base):
     model = Column(String)
     brand = Column(String)
 
-    # Define the relationship without referencing the class directly
-    invoucher_items = relationship("InvoucherItem", back_populates="product")
+    items = relationship("InvoucherItem", back_populates="product")

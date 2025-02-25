@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
-from base import Base
+from base import Base  # Adjust the import based on your project structure
 
 class InvoucherItem(Base):
     __tablename__ = "invoucher_items"
-
+    
     item_id = Column(Integer, primary_key=True, index=True)
     voucher_id = Column(Integer, ForeignKey("invouchers.voucher_id"))
     product_id = Column(Integer, ForeignKey("products.id"))
@@ -17,6 +17,5 @@ class InvoucherItem(Base):
     amount = Column(DECIMAL(12, 2), nullable=False)
     comments = Column(Text)
 
-    # Use string references for relationships
     invoucher = relationship("Invoucher", back_populates="items")
-    product = relationship("Products", back_populates="invoucher_items")
+    product = relationship("Product", back_populates="items")
