@@ -7,7 +7,7 @@ class Clients(Base):
     __table_args__ = {"extend_existing": True}  # Optional, only if needed
 
     id = Column(Integer, primary_key=True, index=True)
-    buisnessname = Column(String(255))  # Fixed typo
+    businessname = Column(String(255))  # Fixed typo
     address = Column(String(255))
     gst_number = Column(String(100))
     pincode = Column(String(20))

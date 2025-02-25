@@ -4,6 +4,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
 from base import Base
+from .invoucher import Invoucher
+# from .product import Products
 
 class InvoucherItem(Base):
     """Model for items in an invoucher."""

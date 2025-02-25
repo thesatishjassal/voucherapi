@@ -4,8 +4,6 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, DECIMAL, Text, CheckConstraint
 from sqlalchemy.orm import relationship
 from database import Base
-from app.models.clients import Clients
-from app.models.Invoucher.invoucher_item import InvoucherItem
 
 class Invoucher(Base):
     """Model for invouchers (vouchers or transfers)."""
