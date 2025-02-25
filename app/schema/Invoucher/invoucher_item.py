@@ -15,7 +15,7 @@ class InvoucherItemBase(BaseModel):
     comments: Optional[str] = None
 
     class Config:
-        orm_mode = True  # Enables compatibility with ORM objects
+        from_attributes = True  # Enables compatibility with ORM objects
 
 class InvoucherItemCreate(InvoucherItemBase):
     """Schema for creating a new invoucher item."""
@@ -26,4 +26,4 @@ class InvoucherItem(InvoucherItemBase):
     item_id: int
 
     class Config:
-        orm_mode = True  # Enables compatibility with ORM objects
+        from_attributes = True  # Enables compatibility with ORM objects

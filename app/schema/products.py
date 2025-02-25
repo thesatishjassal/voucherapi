@@ -53,4 +53,4 @@ class ProductsResponse(BaseModel):
     invoucher_items: Optional[List[dict]] = None  # Change this to List[InvoucherItemResponse] if you have a response schema
 
     class Config:
-        orm_mode = True
+        from_attributes = True
