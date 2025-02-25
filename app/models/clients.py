@@ -2,7 +2,10 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from ...base import Base  # Adjust import based on your Base location
+from sqlalchemy.orm import declarative_base
+
+# Create a single Base instance for the entire project.
+Base = declarative_base()
 
 class Client(Base):
     __tablename__ = "clients"

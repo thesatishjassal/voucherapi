@@ -1,7 +1,10 @@
 # invoucher_item.py
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
-from ....base import Base  # Adjust import based on your Base location
+from sqlalchemy.orm import declarative_base
+
+# Create a single Base instance for the entire project.
+Base = declarative_base()
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

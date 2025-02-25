@@ -1,7 +1,10 @@
 # product.py
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from ...base import Base
+from sqlalchemy.orm import declarative_base
+
+# Create a single Base instance for the entire project.
+Base = declarative_base()
 
 class Product(Base):
     __tablename__ = "products"
