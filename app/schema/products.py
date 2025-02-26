@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class ProductsCreate(BaseModel):
     hsncode: str
-    itemCode: str
+    itemcode: str
     itemName: str
     description: str
     category: str
@@ -19,7 +19,7 @@ class ProductsCreate(BaseModel):
 
 class ProductsUpdate(BaseModel):
     hsncode: Optional[str] = None
-    itemCode: Optional[str] = None
+    itemcode: Optional[str] = None
     itemName: Optional[str] = None
     description: Optional[str] = None
     category: Optional[str] = None
@@ -36,7 +36,7 @@ class ProductsUpdate(BaseModel):
 class ProductsResponse(BaseModel):
     id: int
     hsncode: str
-    itemCode: str
+    itemcode: str
     itemName: str
     description: str
     category: str

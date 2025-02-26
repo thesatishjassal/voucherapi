@@ -43,17 +43,17 @@ def create_products(products_data: ProductsCreate, db: Session):
     # Check for existing product
     existing_product = db.query(Products).filter(
         (Products.hsncode == products_data.hsncode) |
-        (Products.itemCode == products_data.itemCode) |
-        (Products.itemName == products_data.itemName)
+        (Products.itemcode == products_data.itemcode) |
+        (Products.item_name == products_data.itemName)
     ).first()
 
     if existing_product:
         errors = []
         if existing_product.hsncode == products_data.hsncode:
             errors.append("HSN Code already exists.")
-        if existing_product.itemCode == products_data.itemCode:
+        if existing_product.itemcode == products_data.itemcode:
             errors.append("Item Code already exists.")
-        if existing_product.itemName == products_data.itemName:
+        if existing_product.item_name == products_data.itemName:
             errors.append("Product Name already exists.")
         raise HTTPException(
             status_code=400,
@@ -75,10 +75,10 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
     product = db.query(Products).filter(Products.id == product_id).first()
     if product:
         # Update the product details with the new data
-        if product_data.itemCode:
-            product.itemCode = product_data.itemCode
+        if product_data.itemcode:
+            product.itemcode = product_data.itemcode
         if product_data.itemName:
-            product.itemName = product_data.itemName
+            product.item_name = product_data.itemName
         if product_data.hsncode:
             product.hsncode = product_data.hsncode
         if product_data.price:
@@ -86,11 +86,11 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
         if product_data.quantity:
             product.quantity = product_data.quantity
         if product_data.rackCode:
-            product.rackCode = product_data.rackCode
+            product.rack_code = product_data.rackCode
         if product_data.category:
             product.category = product_data.category
         if product_data.subCategory:
-            product.subCategory = product_data.subCategory
+            product.item_name = product_data.subCategory
         if product_data.size:
             product.size = product_data.size
         if product_data.model:
@@ -118,4 +118,4 @@ def delete_product(product_id: int, db: Session):
         raise HTTPException(status_code=404, detail="product not found")
 
 def get_product_by_itemcode(itemcode: str, db: Session):
-    return db.query(Products).filter(Products.itemCode == itemcode).first()
+    return db.query(Products).filter(Products.itemcode == itemcode).first()
