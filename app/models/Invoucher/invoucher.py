@@ -6,7 +6,7 @@ class Invoucher(Base):
     __tablename__ = "invouchers"
 
     id = Column(Integer, primary_key=True)
-    # voucher_id = Column(Integer, unique=True, index=True)  # Remove duplicate primary key
+    voucher_id = Column(Integer, unique=True, index=True)  # Remove duplicate primary key
     voucher_number = Column(String(20), unique=True, nullable=False)
     transaction_type = Column(String(50), nullable=False, default="Transfer")
     voucher_date = Column(Date, nullable=False)
