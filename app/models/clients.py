@@ -6,7 +6,7 @@ class Clients(Base):
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, index=True)
-    businessname = Column(String(255))
+    buisnessname = Column(String(255))
     address = Column(String(255))
     gst_number = Column(String(100))
     pincode = Column(String(20))

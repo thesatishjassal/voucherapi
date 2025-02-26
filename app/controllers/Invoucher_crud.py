@@ -1,14 +1,20 @@
 # crud.py (partial update, keep the rest unchanged)
-from app.schema.Invoucher.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
+from app.schema.Invoucher.invoucher import Invoucher, InvoucherCreate
 from app.schema.Invoucher.invoucher_item import InvoucherItem, InvoucherItemCreate
-from app.schema.clients_schema import ClientCreate, ClientResponse
-from app.schema.products import ProductsCreate, ProductsResponse
 from sqlalchemy.orm import Session
 
 # Invoucher CRUD Operations
+# def create_invoucher(db: Session, invoucher: Invoucher):
+#     """Create a new invoucher."""
+#     db_invoucher = Invoucher(**invoucher.model_dump())
+#     db.add(db_invoucher)
+#     # db.commit()
+#     # db.refresh(db_invoucher)
+#     return db_invoucher
+
 def create_invoucher(db: Session, invoucher: InvoucherCreate):
-    """Create a new invoucher."""
-    db_invoucher = Invoucher(**invoucher.model_dump())
+    db_invoucher = Invoucher(**invoucher.model_dump())  # Use the SQLAlchemy model class
+    print(db_invoucher)
     db.add(db_invoucher)
     db.commit()
     db.refresh(db_invoucher)
