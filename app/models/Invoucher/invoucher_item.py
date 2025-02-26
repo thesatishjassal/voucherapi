@@ -1,19 +1,11 @@
-# invoucher_item.py
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import declarative_base
-
-# Create a single Base instance for the entire project.
-Base = declarative_base()
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .invoucher import Invoucher
-    from ..products import Product
+from base import Base  # Use centralized Base
+from app.models.products import Products  # Explicit import
 
 class InvoucherItem(Base):
     __tablename__ = "invoucher_items"
-    
+
     item_id = Column(Integer, primary_key=True, index=True)
     voucher_id = Column(Integer, ForeignKey("invouchers.voucher_id"))
     product_id = Column(Integer, ForeignKey("products.id"))
@@ -27,4 +19,4 @@ class InvoucherItem(Base):
     comments = Column(Text)
 
     invoucher = relationship("Invoucher", back_populates="items")
-    product = relationship("Product", back_populates="items")
+    product = relationship("Products", back_populates="items", foreign_keys=[product_id])  # ✅ Remove `and`

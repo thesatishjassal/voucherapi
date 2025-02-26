@@ -1,11 +1,6 @@
-# app/models/clients.py
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import declarative_base
-
-# Create a single Base instance for the entire project.
-Base = declarative_base()
+from base import Base  # Use centralized Base
 
 class Clients(Base):
     __tablename__ = "clients"
@@ -22,6 +17,4 @@ class Clients(Base):
     client_email = Column(String(255), nullable=True)
     client_type = Column(String(50))
 
-    @declared_attr
-    def invouchers(cls):
-        return relationship("Invoucher", back_populates="client", lazy="dynamic")
+    invouchers = relationship("Invoucher", back_populates="client")

@@ -26,7 +26,7 @@ def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreat
     return db_item
 
 def get_invouchers(db: Session, skip: int = 0, limit: int = 10):
-    """Retrieve a list of invouchers with pagination."""
+    from app.models.Invoucher.invoucher import Invoucher  # Import inside function to avoid circular import
     return db.query(Invoucher).offset(skip).limit(limit).all()
 
 def get_invoucher(db: Session, voucher_id: int):
