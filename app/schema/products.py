@@ -4,13 +4,13 @@ from pydantic import BaseModel
 class ProductsCreate(BaseModel):
     hsncode: str
     itemcode: str
-    itemName: str
+    itemname: str
     description: str
     category: str
-    subCategory: str
+    subcategory: str
     price: str
     quantity: str
-    rackCode: str
+    rackcode: str
     thumbnail: Optional[str] = None
     size: str
     color: str
@@ -20,13 +20,13 @@ class ProductsCreate(BaseModel):
 class ProductsUpdate(BaseModel):
     hsncode: Optional[str] = None
     itemcode: Optional[str] = None
-    itemName: Optional[str] = None
+    itemname: Optional[str] = None
     description: Optional[str] = None
     category: Optional[str] = None
-    subCategory: Optional[str] = None
+    subcategory: Optional[str] = None
     price: Optional[str] = None
     quantity: Optional[str] = None
-    rackCode: Optional[str] = None
+    rackcode: Optional[str] = None
     thumbnail: Optional[str] = None
     size: Optional[str] = None
     color: Optional[str] = None
@@ -37,13 +37,13 @@ class ProductsResponse(BaseModel):
     id: int
     hsncode: str
     itemcode: str
-    itemName: str
+    itemname: str
     description: str
     category: str
-    subCategory: str
+    subcategory: str
     price: str
     quantity: str
-    rackCode: str
+    rackcode: str
     thumbnail: Optional[str] = None
     size: str
     color: str
