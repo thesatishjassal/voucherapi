@@ -86,7 +86,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
         if product_data.quantity:
             product.quantity = product_data.quantity
         if product_data.rackCode:
-            product.rack_code = product_data.rackCode
+            product.rackcode = product_data.rackCode
         if product_data.category:
             product.category = product_data.category
         if product_data.subCategory:
