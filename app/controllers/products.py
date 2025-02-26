@@ -44,7 +44,7 @@ def create_products(products_data: ProductsCreate, db: Session):
     existing_product = db.query(Products).filter(
         (Products.hsncode == products_data.hsncode) |
         (Products.itemcode == products_data.itemcode) |
-        (Products.item_name == products_data.itemName)
+        (Products.itemname == products_data.itemName)
     ).first()
 
     if existing_product:
@@ -53,7 +53,7 @@ def create_products(products_data: ProductsCreate, db: Session):
             errors.append("HSN Code already exists.")
         if existing_product.itemcode == products_data.itemcode:
             errors.append("Item Code already exists.")
-        if existing_product.item_name == products_data.itemName:
+        if existing_product.itemname == products_data.itemName:
             errors.append("Product Name already exists.")
         raise HTTPException(
             status_code=400,
@@ -78,7 +78,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
         if product_data.itemcode:
             product.itemcode = product_data.itemcode
         if product_data.itemName:
-            product.item_name = product_data.itemName
+            product.itemname = product_data.itemName
         if product_data.hsncode:
             product.hsncode = product_data.hsncode
         if product_data.price:
@@ -90,7 +90,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
         if product_data.category:
             product.category = product_data.category
         if product_data.subCategory:
-            product.item_name = product_data.subCategory
+            product.itemname = product_data.subCategory
         if product_data.size:
             product.size = product_data.size
         if product_data.model:
