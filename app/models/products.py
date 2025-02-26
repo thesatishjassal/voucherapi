@@ -8,7 +8,7 @@ class Products(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     hsncode = Column(String, unique=True)
-    item_code = Column(String, unique=True)
+    itemcode = Column(String, unique=True)
     item_name = Column(String)
     description = Column(String)
     category = Column(String)
