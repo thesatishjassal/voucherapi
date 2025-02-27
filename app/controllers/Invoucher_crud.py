@@ -3,13 +3,13 @@ from app.models.invoucher import Invoucher
 from app.schema.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
 from app.schema.invoucher_item import InvoucherItem, InvoucherItemCreate
 from fastapi import HTTPException  # If using FastAPI
-from app.models.invoucher import Invoucher as InvoucherModel  # Import the SQLAlchemy model
+from app.models.invoucher import Invoucher  # ✅ Ensure this is the correct import
 
 # Invoucher CRUD Operations
 
 def create_invoucher(db: Session, invoucher: InvoucherCreate):
     """Create a new invoucher."""
-    db_invoucher = InvoucherModel(**invoucher.model_dump())  # Use SQLAlchemy model
+    db_invoucher = Invoucher(**invoucher.model_dump())  # Use SQLAlchemy model
     db.add(db_invoucher)
     db.commit()
     db.refresh(db_invoucher)
