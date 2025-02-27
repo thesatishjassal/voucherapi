@@ -15,15 +15,16 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
 
 def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
     """Create a new item for an invoucher."""
-    db_voucher = db.query(InvoucherModel).filter(InvoucherModel.voucher_id == voucher_id).first()  # ✅ Use the correct model
+    db_voucher = db.query(InvoucherModel).filter(InvoucherModel.voucher_id == voucher_id).first()
     if not db_voucher:
         raise HTTPException(status_code=404, detail="Invoucher not found")
-    
-    db_item = InvoucherItemSchema(voucher_id=voucher_id, **item.model_dump())  # This might also need a rename if it's an SQLAlchemy model
+
+    db_item = InvoucherItemSchema(voucher_id=voucher_id, **item.model_dump(exclude={"item_id"}))
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
     return db_item
+
 
 def get_invouchers(db: Session, skip: int = 0, limit: int = 10):
     """Retrieve a list of invouchers."""
