@@ -3,8 +3,7 @@ from app.models.invoucher import Invoucher
 from app.schema.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
 from app.schema.invoucher_item import InvoucherItem, InvoucherItemCreate
 from fastapi import HTTPException  # If using FastAPI
-from app.models.invoucher import Invoucher  # ✅ Ensure this is the correct import
-
+from app.models.invoucher import Invoucher
 # Invoucher CRUD Operations
 
 def create_invoucher(db: Session, invoucher: InvoucherCreate):
@@ -16,7 +15,12 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
     return db_invoucher
 
 def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
-    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())  # ✅ No 'item_id' here
+    """Create a new item for an invoucher."""
+    db_voucher = db.query(Invoucher).filter(Invoucher.voucher_id == voucher_id).first()  # ✅ Correct query
+    if not db_voucher:
+        raise HTTPException(status_code=404, detail="Invoucher not found")
+    
+    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
