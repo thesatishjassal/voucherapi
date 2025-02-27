@@ -20,7 +20,7 @@ def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreat
         raise HTTPException(status_code=404, detail="Invoucher not found")
 
     item_data = item.model_dump(exclude={"item_id", "voucher_id"})  # Ensure no duplicate 'voucher_id'
-    db_item = InvoucherItemCreate(voucher_id=voucher_id, **item_data)  # Use the correct SQLAlchemy model
+    db_item = InvoucherModel(voucher_id=voucher_id, **item_data)  # Use the correct SQLAlchemy model
 
     db.add(db_item)
     db.commit()
