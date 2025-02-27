@@ -10,6 +10,8 @@ from app.controllers.Invoucher_crud import (
 from app.schema.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
 from app.schema.invoucher_item import InvoucherItem, InvoucherItemCreate
 from typing import List
+from app.controllers.Invoucher_crud import get_items_by_voucher_id
+from app.schema.invoucher_item import InvoucherItem as InvoucherItemSchema
 
 app = FastAPI()
 
@@ -45,5 +47,10 @@ def update_invoucher_endpoint(voucher_id: int, invoucher: InvoucherCreate, db: S
 def delete_invoucher_endpoint(voucher_id: int, db: Session = Depends(get_db_connection)):
     """Delete an invoucher."""
     return delete_invoucher(db, voucher_id)
+
+@router.get("/invouchers/{voucher_id}/items/", response_model=List[InvoucherItemSchema])
+def read_invoucher_items_endpoint(voucher_id: int, db: Session = Depends(get_db_connection)):
+    """Retrieve all items for a specific invoucher by voucher ID."""
+    return get_items_by_voucher_id(db, voucher_id)
 
 app.include_router(router)
