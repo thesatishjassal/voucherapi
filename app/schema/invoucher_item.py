@@ -3,10 +3,11 @@ from typing import Optional
 
 class InvoucherItemBase(BaseModel):
     """Base schema for invoucher items."""
-    product_id: int
-    item_name: str
-    unit: str
-    rack_code: str
+    voucher_id: int
+    product_id: Optional[int] = None
+    item_name: Optional[str] = None
+    unit: Optional[str] = None
+    rack_code: Optional[str] = None
     quantity: int
     rate: float
     discount_percentage: float = 0.00
@@ -23,7 +24,9 @@ class InvoucherItemCreate(InvoucherItemBase):
 class InvoucherItem(InvoucherItemBase):
     """Schema for responding with invoucher item data."""
     item_id: int
-    voucher_id: int  # ✅ Added to response but NOT in Create schema
 
     class Config:
-        from_attributes = True
+        from_attributes = True  # Enables compatibility with ORM objects
+
+class InvoucherItemResponse(InvoucherItemCreate):
+    item_id: int  # ✅ Include item_id in response but not in create
