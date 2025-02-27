@@ -3,7 +3,7 @@ from app.models.invoucher import Invoucher
 from app.schema.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
 from app.schema.invoucher_item import InvoucherItem, InvoucherItemCreate
 from fastapi import HTTPException  # If using FastAPI
-from app.models.invoucher import Invoucher
+
 # Invoucher CRUD Operations
 
 def create_invoucher(db: Session, invoucher: InvoucherCreate):
