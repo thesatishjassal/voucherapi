@@ -21,7 +21,7 @@ def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreat
     if not db_voucher:
         raise HTTPException(status_code=404, detail="Invoucher not found")
     
-    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())
+    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())  # ✅ Unpack Pydantic data
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
