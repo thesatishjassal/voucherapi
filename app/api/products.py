@@ -28,7 +28,7 @@ async def create_new_products(products: ProductsCreate, db: Session = Depends(ge
         print(product_dict)
         return ProductsResponse(**product_dict)
     except HTTPException as e:
-        raise e
+        raise e 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

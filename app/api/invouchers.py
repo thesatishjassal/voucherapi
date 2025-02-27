@@ -7,8 +7,8 @@ from database import get_db_connection
 from app.controllers.Invoucher_crud import (
     create_invoucher, create_invoucher_item, get_invouchers, get_invoucher, update_invoucher, delete_invoucher,
 )
-from app.schema.Invoucher.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
-from app.schema.Invoucher.invoucher_item import InvoucherItem, InvoucherItemCreate
+from app.schema.invoucher import Invoucher, InvoucherCreate, InvoucherUpdate
+from app.schema.invoucher_item import InvoucherItem, InvoucherItemCreate
 from typing import List
 
 app = FastAPI()

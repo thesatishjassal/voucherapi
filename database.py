@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models.clients import Clients
+from app.models.clients import Client
 from base import Base  # Ensure base.py has Base = declarative_base()
 
 SQL_DB_URL = "postgresql://postgres:123@localhost/vocherdb"
@@ -9,7 +9,8 @@ print("🔄 Connecting to Database...")
 engine = create_engine(SQL_DB_URL)
 
 print("📦 Creating Tables (if not exist)...")
-Base.metadata.create_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)  # Delete all tables
+Base.metadata.create_all(bind=engine)  # Recreate tables
 print("✅ Tables Created Successfully!")
 
 # Create session factory

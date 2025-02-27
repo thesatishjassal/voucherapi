@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Text
 from sqlalchemy.orm import relationship
-from base import Base  # Use centralized Base
-from app.models.products import Products  # Explicit import
+from base import Base  # Ensure you're using the same Base
 
 class InvoucherItem(Base):
     __tablename__ = "invoucher_items"
@@ -18,5 +17,5 @@ class InvoucherItem(Base):
     amount = Column(DECIMAL(12, 2), nullable=False)
     comments = Column(Text)
 
-    invoucher = relationship("Invoucher", back_populates="items")
-    product = relationship("Products", back_populates="items", foreign_keys=[product_id])  # ✅ Remove `and`
+    invoucher = relationship("Invoucher", back_populates="items")  
+    product = relationship("Products", back_populates="items")  # ✅ Use string reference

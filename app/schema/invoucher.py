@@ -1,21 +1,20 @@
-# schemas/invoucher.py
 """Pydantic schemas for Invoucher data validation in the IN Voucher API."""
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ConfigDict
 from datetime import date
 from typing import Optional
 
 class InvoucherBase(BaseModel):
     """Base schema for invouchers."""
-    voucher_id: int | None = None  # Optional field with default None
+    voucher_id: Optional[int] = None
     voucher_number: str
     transaction_type: Optional[str] = "Transfer"
     voucher_date: date
     client_id: int
-    invoice_number: Optional[str] = None  # Receiver detail: Invoice Number
-    invoice_date: Optional[date] = None  # Receiver detail: Invoice Date
-    mode_of_transport: Optional[str] = None  # Receiver detail: Mode of Transport
-    number_of_packages: Optional[int] = None  # Receiver detail: Number of Packages
+    invoice_number: Optional[str] = None
+    invoice_date: Optional[date] = None
+    mode_of_transport: Optional[str] = None
+    number_of_packages: Optional[int] = None
     freight_status: Optional[str] = "Paid"
     total_amount: Optional[float] = 0.00
     remarks: Optional[str] = None
@@ -32,6 +31,4 @@ class Invoucher(InvoucherBase):
     """Schema for responding with invoucher data."""
     voucher_id: int
 
-    class Config:
-        from_attributes = True
-        
+    model_config = ConfigDict(from_attributes=True)  # For ORM support

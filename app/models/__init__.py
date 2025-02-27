@@ -1,6 +1,7 @@
 # app/models/__init__.py
-from app.models.clients import Clients
+from app.models.clients import Client
 from app.models.products import Products
-from app.models.Invoucher.invoucher import Invoucher
-from app.models.Invoucher.invoucher_item import InvoucherItem
-# from app.models.user import User  # Assuming this exists
+from app.models.invoucher import Invoucher
+from app.models.invoucher_item import InvoucherItem
+from base import Base
+# from app.models.user import User  # Assuming this existsfrom .base import Base  # Base should be imported

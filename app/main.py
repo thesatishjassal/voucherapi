@@ -6,7 +6,7 @@ from app.api.subcategory import router as subcategory_router  # import the route
 from app.api.invouchers import router as invouchers_router  # import the router with subcategory routes
 from app.api.products import router as products_router  # import the router with product routes
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles 
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
@@ -26,7 +26,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://www.panvik.in"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

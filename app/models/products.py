@@ -1,10 +1,9 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from base import Base  # Use centralized Base
+from base import Base  # Ensure consistency in Base usage
 
 class Products(Base):
     __tablename__ = "products"
-    __table_args__ = {'extend_existing': True}
     
     id = Column(Integer, primary_key=True, index=True)
     hsncode = Column(String, unique=True)
@@ -22,4 +21,4 @@ class Products(Base):
     model = Column(String)
     brand = Column(String)
 
-    items = relationship("InvoucherItem", back_populates="product")  # ✅ Remove `and`
+    items = relationship("InvoucherItem", back_populates="product")  # ✅ Use string reference
