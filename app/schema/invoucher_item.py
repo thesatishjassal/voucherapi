@@ -3,7 +3,7 @@ from typing import Optional
 
 class InvoucherItemBase(BaseModel):
     """Base schema for invoucher items."""
-    invoucher_id: int
+    voucher_id: int
     product_id: Optional[int] = None
     item_name: Optional[str] = None
     unit: Optional[str] = None
