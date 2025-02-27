@@ -15,13 +15,19 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
     db.refresh(db_invoucher)
     return db_invoucher
 
-def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
-    """Create a new item for an invoucher."""
-    db_voucher = db.query(Invoucher).filter(Invoucher.voucher_id == voucher_id).first()  # ✅ Correct query
-    if not db_voucher:
-        raise HTTPException(status_code=404, detail="Invoucher not found")
+# def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
+#     """Create a new item for an invoucher."""
+#     db_voucher = db.query(Invoucher).filter(Invoucher.voucher_id == voucher_id).first()  # ✅ Correct query
+#     if not db_voucher:
+#         raise HTTPException(status_code=404, detail="Invoucher not found")
     
-    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())
+#     db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())
+#     db.add(db_item)
+#     db.commit()
+#     db.refresh(db_item)
+#     return db_item
+def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
+    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())  # ✅ No 'item_id' here
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
