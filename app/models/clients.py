@@ -6,7 +6,7 @@ class Client(Base):  # Renamed from Clients → Client
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, index=True)
-    business_name = Column(String(255))  # Fixed typo (buisnessname → business_name)
+    buisnessname = Column(String(255))  # Fixed typo (buisnessname → buisnessname)
     address = Column(String(255))
     gst_number = Column(String(100))
     pincode = Column(String(20))
