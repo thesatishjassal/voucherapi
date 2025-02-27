@@ -7,6 +7,14 @@ from app.models.invoucher import Invoucher as InvoucherModel  # Import the SQLAl
 
 # Invoucher CRUD Operations
 
+def create_invoucher(db: Session, invoucher: InvoucherCreate):
+    """Create a new invoucher."""
+    db_invoucher = InvoucherModel(**invoucher.model_dump())  # Use SQLAlchemy model
+    db.add(db_invoucher)
+    db.commit()
+    db.refresh(db_invoucher)
+    return db_invoucher
+
 def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
     """Create a new item for an invoucher."""
     db_voucher = db.query(Invoucher).filter(Invoucher.voucher_id == voucher_id).first()  # ✅ Correct query
@@ -14,18 +22,6 @@ def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreat
         raise HTTPException(status_code=404, detail="Invoucher not found")
     
     db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
-
-def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
-    """Create a new item for an invoucher."""
-    db_voucher = db.query(Invoucher).filter_by(voucher_id=voucher_id).first()
-    if not db_voucher:
-        raise HTTPException(status_code=404, detail="Invoucher not found")
-    
-    db_item = InvoucherItem(voucher_id=voucher_id, **item.model_dump())  # ✅ Unpack Pydantic data
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
