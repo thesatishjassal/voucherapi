@@ -19,7 +19,15 @@ class InvoucherItemBase(BaseModel):
 
 class InvoucherItemCreate(InvoucherItemBase):
     """Schema for creating a new invoucher item."""
-    pass
+    product_id: Optional[int] = None
+    item_name: Optional[str] = None
+    unit: Optional[str] = None
+    rack_code: Optional[str] = None
+    quantity: int
+    rate: float
+    discount_percentage: float = 0.00
+    amount: float
+    comments: Optional[str] = None
 
 class InvoucherItem(InvoucherItemBase):
     """Schema for responding with invoucher item data."""
