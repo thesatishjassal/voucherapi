@@ -4,7 +4,7 @@ from typing import Optional
 class InvoucherItemBase(BaseModel):
     """Base schema for invoucher items."""
     voucher_id: Optional[int] = None
-    product_id: Optional[int] = None
+    product_id: Optional[str] = None
     item_name: Optional[str] = None
     unit: Optional[str] = None
     rack_code: Optional[str] = None
@@ -20,7 +20,7 @@ class InvoucherItemBase(BaseModel):
 class InvoucherItemCreate(InvoucherItemBase):
     """Schema for creating a new invoucher item."""
     item_id: Optional[int] = Field(None, description="Auto-generated ID")
-    product_id: Optional[int] = None
+    product_id: Optional[str] = None
     item_name: Optional[str] = None
     unit: Optional[str] = None
     rack_code: Optional[str] = None

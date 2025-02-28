@@ -7,7 +7,7 @@ class InvoucherItem(Base):
 
     item_id = Column(Integer, primary_key=True, index=True)
     voucher_id = Column(Integer, ForeignKey("invouchers.voucher_id"))
-    product_id = Column(Integer, ForeignKey("products.id"))
+    product_id = Column(String, ForeignKey("products.id"))
     item_name = Column(String(100))
     unit = Column(String(20))
     rack_code = Column(String(50))

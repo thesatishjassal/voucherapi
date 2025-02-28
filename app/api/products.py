@@ -40,7 +40,7 @@ async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)
 
 @router.put("/products/{product_id}")
-def update_product_api(product_id: int, product_data: ProductsUpdate, db: Session= Depends(get_db_connection)):
+def update_product_api(product_id: str, product_data: ProductsUpdate, db: Session= Depends(get_db_connection)):
     print("Update Product", {product_id})
     try:
         updated_product=update_product(product_data, product_id, db)
@@ -49,17 +49,17 @@ def update_product_api(product_id: int, product_data: ProductsUpdate, db: Sessio
         raise e
     
 @router.delete("/products/{product_id}")
-def delete_product_api(product_id: int, db: Session = Depends(get_db_connection)):
+def delete_product_api(product_id: str, db: Session = Depends(get_db_connection)):
     try:
         result = delete_product(product_id, db)
         return result
     except HTTPException as e:
         raise e
 
-# ✅ **New Thumbnail Upload Endpoint**
+# ✅ **New Thumbnail Upload Endpostr**
 @router.post("/products/{product_id}/upload/")
 async def upload_product_thumbnail(
-    product_id: int,
+    product_id: str,
     file: UploadFile = File(...),  # ✅ Ensure `File(...)` is present
     db: Session = Depends(get_db_connection)
 ):
