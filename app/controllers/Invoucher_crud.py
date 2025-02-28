@@ -16,9 +16,9 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
 
 from app.models.invoucher_item import InvoucherItem  # ✅ Import the correct model
 
-def create_invoucher_item(db: Session, voucher_id: int, item: InvoucherItemCreate):
+def create_invoucher_item(db: Session, voucher_id: str, item: InvoucherItemCreate):
     """Create a new item for an invoucher."""
-    db_voucher = db.query(InvoucherModel).filter(InvoucherModel.id == voucher_id).first()
+    db_voucher = db.query(InvoucherModel).filter(InvoucherModel.voucher_id == voucher_id).first()
     if not db_voucher:
         raise HTTPException(status_code=404, detail="Invoucher not found")
 
@@ -36,14 +36,14 @@ def get_invouchers(db: Session, skip: int = 0, limit: int = 10):
     """Retrieve a list of invouchers."""
     return db.query(InvoucherModel).offset(skip).limit(limit).all()
 
-def get_invoucher(db: Session, voucher_id: int):
+def get_invoucher(db: Session, voucher_id: str):
     """Retrieve a specific invoucher by ID."""
     db_invoucher = db.query(InvoucherModel).filter_by(voucher_id=voucher_id).first()
     if not db_invoucher:
         raise HTTPException(status_code=404, detail="Invoucher not found")
     return db_invoucher
 
-def update_invoucher(db: Session, voucher_id: int, invoucher: InvoucherUpdate):
+def update_invoucher(db: Session, voucher_id: str, invoucher: InvoucherUpdate):
     """Update an existing invoucher."""
     db_invoucher = db.query(InvoucherModel).filter_by(voucher_id=voucher_id).first()
     if not db_invoucher:
@@ -56,7 +56,7 @@ def update_invoucher(db: Session, voucher_id: int, invoucher: InvoucherUpdate):
     db.refresh(db_invoucher)
     return db_invoucher
 
-def delete_invoucher(db: Session, voucher_id: int):
+def delete_invoucher(db: Session, voucher_id: str):
     """Delete an invoucher."""
     db_invoucher = db.query(InvoucherModel).filter_by(voucher_id=voucher_id).first()
     if not db_invoucher:
@@ -68,7 +68,7 @@ def delete_invoucher(db: Session, voucher_id: int):
 
 
 
-def get_items_by_voucher_id(db: Session, voucher_id: int) -> List[InvoucherItem]:
+def get_items_by_voucher_id(db: Session, voucher_id: str) -> List[InvoucherItem]:
     """Retrieve all items for a specific invoucher by voucher_id."""
     items = db.query(InvoucherItem).filter(InvoucherItem.voucher_id == voucher_id).all()
     if not items:
