@@ -74,7 +74,7 @@ def delete_invoucher(db: Session, voucher_id: str):
     return {"message": "Invoucher deleted successfully"}
 
 def get_items_by_voucher_id(db: Session, voucher_id: str) -> List[InvoucherItem]:
-    items = db.query(InvoucherItem).filter(InvoucherItem.voucher_id == voucher_id).all()
+    items = db.query(InvoucherItem).filter(InvoucherItem.voucher_id == int(voucher_id)).all()
     if not items:
         raise HTTPException(status_code=404, detail="No items found for this voucher ID")
     return items
