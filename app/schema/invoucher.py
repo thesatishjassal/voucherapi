@@ -5,7 +5,7 @@ from datetime import date
 from typing import Optional
 
 class InvoucherBase(BaseModel):
-    """Base schema for invouchers."""
+    id: Optional[int] = None
     voucher_id: Optional[int] = None
     voucher_number: str
     transaction_type: Optional[str] = "Transfer"
