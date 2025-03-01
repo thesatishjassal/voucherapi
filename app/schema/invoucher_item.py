@@ -11,6 +11,7 @@ class InvoucherItemBase(BaseModel):
     quantity: int
     rate: float
     discount_percentage: float = 0.00
+    additional_discount_percentage: float = 0.00  # Added new field
     amount: float
     comments: Optional[str] = None
 
@@ -27,6 +28,7 @@ class InvoucherItemCreate(InvoucherItemBase):
     quantity: int
     rate: float
     discount_percentage: float = 0.00
+    additional_discount_percentage: float = 0.00  # Added new field
     amount: float
     comments: Optional[str] = None
 

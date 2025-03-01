@@ -14,6 +14,7 @@ class InvoucherItem(Base):
     quantity = Column(Integer, nullable=False)
     rate = Column(DECIMAL(10, 2), nullable=False)
     discount_percentage = Column(DECIMAL(5, 2), default=0.00)
+    additional_discount_percentage = Column(DECIMAL(5, 2), default=0.00)  # Added new column
     amount = Column(DECIMAL(12, 2), nullable=False)
     comments = Column(Text)
 
