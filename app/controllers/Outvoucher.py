@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.outvocher import Outvoucher
-from schema import outvoucher, outvoucher_item
+from app.schema import outvoucher, outvoucher_item
 
 def create_outvoucher(db: Session, outvoucher_data: outvoucher.OutvoucherCreate):
     new_outvoucher = Outvoucher(**outvoucher_data.dict())
