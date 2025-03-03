@@ -15,17 +15,17 @@ class OutvoucherItemBase(BaseModel):
     class Config:
         from_attributes = True  # Enables compatibility with ORM objects
 
-class OutvoucherItemCreate(OutvoucherItemBase):
-    """Schema for creating a new Outvoucher item."""
-    item_id: Optional[int] = Field(None, description="Auto-generated ID, not required for creation")
+# class OutvoucherItemCreate(OutvoucherItemBase):
+#     """Schema for creating a new Outvoucher item."""
+#     item_id: Optional[int] = Field(None, description="Auto-generated ID, not required for creation")
 
-class OutvoucherItem(OutvoucherItemBase):
-    """Schema for representing an existing Outvoucher item."""
-    item_id: int = Field(..., description="Unique identifier for the item")
+# class OutvoucherItem(OutvoucherItemBase):
+#     """Schema for representing an existing Outvoucher item."""
+#     item_id: int = Field(..., description="Unique identifier for the item")
 
-    class Config:
-        from_attributes = True  # Enables compatibility with ORM objects
+    # class Config:
+    #     from_attributes = True  # Enables compatibility with ORM objects
 
-class OutvoucherItemResponse(OutvoucherItem):
-    """Schema for responding with Outvoucher item data."""
-    pass  # Inherits all fields from OutvoucherItem, including item_id
+# class OutvoucherItemResponse(OutvoucherItem):
+#     """Schema for responding with Outvoucher item data."""
+#     pass  # Inherits all fields from OutvoucherItem, including item_id
