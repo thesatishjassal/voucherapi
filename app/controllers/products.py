@@ -97,6 +97,8 @@ def update_product(product_data: ProductsUpdate, product_id: str, db: Session):
             product.model = product_data.model
         if product_data.description:
             product.description = product_data.model
+        if product_data.unit:
+            product.unit = product_data.model
         # Commit the transaction and refresh the product object to get the updated state
         db.commit()
         db.refresh(product)

@@ -20,5 +20,6 @@ class Products(Base):
     color = Column(String)
     model = Column(String)
     brand = Column(String)
+    unit = Column(String)
 
     items = relationship("InvoucherItem", back_populates="product")  # ✅ Use string reference

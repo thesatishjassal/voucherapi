@@ -8,6 +8,7 @@ class ProductsCreate(BaseModel):
     description: str
     category: str
     subcategory: str
+    unit: str
     price: str
     quantity: str
     rackcode: str
@@ -32,6 +33,7 @@ class ProductsUpdate(BaseModel):
     color: Optional[str] = None
     model: Optional[str] = None
     brand: Optional[str] = None
+    unit: Optional[str] = None
 
 class ProductsResponse(BaseModel):
     id: str
@@ -39,6 +41,7 @@ class ProductsResponse(BaseModel):
     itemcode: str
     itemname: str
     description: str
+    unit: str
     category: str
     subcategory: str
     price: str
