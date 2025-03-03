@@ -3,12 +3,10 @@ from sqlalchemy.orm import Session
 
 from database import get_db_connection
 from app.controllers.Outvoucher import create_outvoucher, update_outvoucher, get_all_outvouchers, get_outvoucher_by_id, delete_outvoucher
-from app.schema.outvoucher import OutvoucherCreate, Outvoucher, OutvoucherBase, OutvoucherUpdate
+from app.schema.outvoucher import Outvoucher, OutvoucherCreate
+
 app = FastAPI()
-
 router = APIRouter()
-
-router = APIRouter(prefix="/outvouchers", tags=["Outvouchers"])
 
 @router.post("/", response_model=Outvoucher)
 def create_voucher(outvoucher: OutvoucherCreate, db: Session = Depends(get_db_connection)):
