@@ -8,22 +8,22 @@ from app.schema.outvoucher import Outvoucher, OutvoucherCreate
 app = FastAPI()
 router = APIRouter()
 
-@router.post("/", response_model=Outvoucher)
+@router.post("/outvouchers/", response_model=Outvoucher)
 def create_voucher(outvoucher: OutvoucherCreate, db: Session = Depends(get_db_connection)):
     return create_outvoucher(db, outvoucher)
 
-@router.get("/{voucher_id}", response_model=Outvoucher)
+@router.get("/outvouchers/{voucher_id}", response_model=Outvoucher)
 def read_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
     outvoucher = get_outvoucher_by_id(db, voucher_id)
     if not outvoucher:
         raise HTTPException(status_code=404, detail="Voucher not found")
     return outvoucher
 
-@router.get("/", response_model=list[Outvoucher])
+@router.get("/outvouchers/", response_model=list[Outvoucher])
 def read_all_vouchers(skip: int = 0, limit: int = 10, db: Session = Depends(get_db_connection)):
     return get_all_outvouchers(db, skip, limit)
 
-@router.put("/{voucher_id}", response_model=Outvoucher)
+@router.put("/outvouchers/{voucher_id}", response_model=Outvoucher)
 def update_voucher(voucher_id: int, update_data: dict, db: Session = Depends(get_db_connection)):
     updated_voucher = update_outvoucher(db, voucher_id, update_data)
     if not updated_voucher:
