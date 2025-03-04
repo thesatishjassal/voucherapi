@@ -16,5 +16,5 @@ class OutvoucherItem(Base):
     comments = Column(Text, nullable=True)  # Comments
 
     # Relationships
-    outvoucher = relationship("Outvoucher", back_populates="items")  # Assuming Outvoucher exists
-    product = relationship("Products", back_populates="items")  # Assuming Products exists
+    outvoucher = relationship("Outvoucher", back_populates="items")
+    product = relationship("Products", back_populates="outvoucher_items")
