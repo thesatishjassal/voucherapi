@@ -21,4 +21,4 @@ class Outvoucher(Base):
     mobile_number = Column(String(20), nullable=True)  # Mobile Number
 
     # Relationship to OutvoucherItem (assuming items link to this table via voucher_id)
-    # items = relationship("OutvoucherItem", back_populates="outvoucher")
+    items = relationship("OutvoucherItem", back_populates="outvoucher")
