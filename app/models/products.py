@@ -22,4 +22,4 @@ class Products(Base):
     brand = Column(String)
     unit = Column(String)
 
-    outvoucher_items = relationship("OutvoucherItem", back_populates="product", cascade="all, delete-orphan")
+    items = relationship("InvoucherItem", back_populates="product")  # ✅ Use string reference
