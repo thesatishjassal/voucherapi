@@ -6,7 +6,7 @@ from typing import Optional
 class OutvoucherBase(BaseModel):
     """Base schema for Outvoucher data."""
     id: Optional[int] = None
-    voucher_id: Optional[int] = None
+    voucher_id: Optional[int] = None  # Already optional here
     voucher_no: str = Field(..., description="Voucher No (e.g., #LL9378)")
     issue_slip_no: Optional[str] = Field(None, description="Issue Slip No (e.g., SLIP98765)")
     sale_order_no: Optional[str] = Field(None, description="Sale Order No (e.g., SO123456)")
@@ -30,6 +30,6 @@ class OutvoucherUpdate(OutvoucherBase):
 
 class Outvoucher(OutvoucherBase):
     """Schema for responding with Outvoucher data."""
-    voucher_id: int
+    voucher_id: Optional[int] = None  # Changed to Optional to allow None
 
     model_config = ConfigDict(from_attributes=True)  # For ORM support
