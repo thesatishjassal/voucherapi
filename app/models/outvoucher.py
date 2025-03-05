@@ -21,6 +21,6 @@ class Outvoucher(Base):
     mobile_number = Column(String(20), nullable=True)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     
-    # Relationships
+    # ✅ Fix Relationships
     client = relationship("Client", back_populates="outvouchers")
-    items = relationship("OutvoucherItem", back_populates="outvoucher")
+    items = relationship("OutvoucherItem", back_populates="outvoucher") 
