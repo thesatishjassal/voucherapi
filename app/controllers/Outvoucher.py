@@ -1,34 +1,13 @@
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.models.outvoucher import Outvoucher
-from app.models.outvoucher_item import OutvoucherItem
-from app.schema.outvoucher import Outvoucher, OutvoucherCreate
-from app.schema.outvoucher_item import OutvoucherItem, OutvoucherItemCreate
+from app.schema import outvoucher, outvoucher_item
 
-def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
+def create_outvoucher(db: Session, outvoucher_data: outvoucher.OutvoucherCreate):
     new_outvoucher = Outvoucher(**outvoucher_data.dict())
     db.add(new_outvoucher)
     db.commit()
     db.refresh(new_outvoucher)
     return new_outvoucher
-
-def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
-    """Create a new item for an outvoucher using outvouchers.id."""
-    
-    # Ensure you are querying the correct model (Outvoucher, not OutvoucherItem)
-    db_voucher = db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
-    if not db_voucher:
-        raise HTTPException(status_code=404, detail="Outvoucher not found")
-
-    item_data = item.model_dump(exclude={"item_id", "voucher_id"})    
-    # Ensure the new item is associated with the correct voucher
-    db_item = OutvoucherItem(voucher_id=db_voucher.id, **item_data)
-    
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    
-    return db_item
 
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
