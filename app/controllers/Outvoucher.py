@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
-from app.schema.outvoucher import Outvoucher, OutvoucherCreate, OutvoucherUpdate
+from app.schema.outvoucher import OutvoucherCreate, OutvoucherUpdate
+from app.models.outvoucher import Outvoucher
+from app.models.outvoucher_item import OutvoucherItem
 from app.schema.outvoucher_item import OutvoucherItemCreate, OutvoucherItem
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
