@@ -16,12 +16,11 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
     """Create a new item for an outvoucher using outvouchers.id."""
     
     # Ensure you are querying the correct model (Outvoucher, not OutvoucherItem)
-    db_voucher = db.query(Outvoucher).filter(Outvoucher.id == int(voucher_id)).first()
+    db_voucher = db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
     if not db_voucher:
         raise HTTPException(status_code=404, detail="Outvoucher not found")
-    
-    item_data = item.model_dump(exclude={"item_id", "voucher_id"})
-    
+
+    item_data = item.model_dump(exclude={"item_id", "voucher_id"})    
     # Ensure the new item is associated with the correct voucher
     db_item = OutvoucherItem(voucher_id=db_voucher.id, **item_data)
     
@@ -30,7 +29,6 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
     db.refresh(db_item)
     
     return db_item
-
 
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
