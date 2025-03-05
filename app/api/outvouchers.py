@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
-from app.controllers.Outvoucher import create_outvoucher, get_all_outvouchers, get_outvoucher_by_id, update_outvoucher, delete_outvoucher
+from app.controllers.Outvoucher import create_outvoucher, read_all_vouchers, get_outvoucher_by_id, update_outvoucher, delete_outvoucher
 from app.schema.outvoucher import Outvoucher, OutvoucherCreate
 
 app = FastAPI()
@@ -21,7 +21,7 @@ def read_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
 
 @router.get("/outvouchers/", response_model=list[Outvoucher])
 def read_all_vouchers(skip: int = 0, limit: int = 10, db: Session = Depends(get_db_connection)):
-    return get_all_outvouchers(db, skip, limit)
+    return read_all_vouchers(db, skip, limit)
 
 @router.put("/outvouchers/{voucher_id}", response_model=Outvoucher)
 def update_voucher(voucher_id: int, update_data: dict, db: Session = Depends(get_db_connection)):
