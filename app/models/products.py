@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from base import Base  # Ensure consistency in Base usage
+from base import Base
 
 class Products(Base):
     __tablename__ = "products"
@@ -22,4 +22,6 @@ class Products(Base):
     brand = Column(String)
     unit = Column(String)
 
-    items = relationship("InvoucherItem", back_populates="product")  # ✅ Use string reference
+    # ✅ Define relationships using string names to avoid circular imports
+    outvoucher_items = relationship("OutvoucherItem", back_populates="product", lazy="joined")
+    invoucher_items = relationship("InvoucherItem", back_populates="product", lazy="joined")

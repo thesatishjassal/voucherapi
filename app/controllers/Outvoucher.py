@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.outvocher import Outvoucher
+from app.models.outvoucher import Outvoucher
 from app.schema import outvoucher, outvoucher_item
 
 def create_outvoucher(db: Session, outvoucher_data: outvoucher.OutvoucherCreate):
