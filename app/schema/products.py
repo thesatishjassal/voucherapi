@@ -36,7 +36,7 @@ class ProductsUpdate(BaseModel):
     unit: Optional[str] = None
 
 class ProductsResponse(BaseModel):
-    id: str
+    id: int
     hsncode: str
     itemcode: str
     itemname: str

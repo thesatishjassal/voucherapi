@@ -2,7 +2,6 @@ from http.client import HTTPException
 from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.schema.products import ProductsCreate, ProductsUpdate
-
 from fastapi import HTTPException
 from fastapi import UploadFile, File
 # from sqlalchemy.orm import Session
@@ -12,7 +11,7 @@ import os
 import uuid  # For unique file names
 from config import UPLOAD_DIR  # Import the correct upload directory
 
-def upload_thumbnail(product_id: str, db: Session, file: UploadFile):
+def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
     product = db.query(Products).filter(Products.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -71,7 +70,7 @@ def create_products(products_data: ProductsCreate, db: Session):
 def get_products(db: Session):
     return db.query(Products).all()
 
-def update_product(product_data: ProductsUpdate, product_id: str, db: Session):
+def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
     product = db.query(Products).filter(Products.id == product_id).first()
     if product:
         # Update the product details with the new data
@@ -109,7 +108,7 @@ def update_product(product_data: ProductsUpdate, product_id: str, db: Session):
         raise HTTPException(status_code=404, detail="Product not found")
 
 
-def delete_product(product_id: str, db: Session):
+def delete_product(product_id: int, db: Session):
     # Find the existing product by ID
     product =  db.query(Products).filter(product_id == product_id).first()
     if product:
