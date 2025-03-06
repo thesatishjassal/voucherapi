@@ -26,7 +26,7 @@ def create_invoucher_item_endpoint(voucher_id: int, item: InvoucherItemCreate, d
     return create_invoucher_item(db, voucher_id, item)
 
 @router.get("/invouchers/", response_model=List[Invoucher])
-def read_invouchers_endpoint(skip: int = 0, limit: int = 10, db: Session = Depends(get_db_connection)):
+def read_invouchers_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_connection)):
     """List all invouchers with pagination."""
     return get_invouchers(db, skip, limit)
 

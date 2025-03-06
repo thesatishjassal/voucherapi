@@ -26,7 +26,7 @@ def read_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
     return outvoucher
 
 @router.get("/outvouchers/", response_model=list[Outvoucher])
-def read_all_vouchers(skip: int = 0, limit: int = 10, db: Session = Depends(get_db_connection)):
+def read_all_vouchers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_connection)):
     return get_all_outvouchers(db, skip, limit)
 
 @router.put("/outvouchers/{voucher_id}", response_model=Outvoucher)
