@@ -17,7 +17,7 @@ def create_outvoucher_item(db: Session, voucher_id: str, item: OutvoucherItemCre
     if not db_voucher:
         raise HTTPException (status_code=404, detail="Invoucher not found")
     item_data = item.model_dump(exclude={"item_id", "voucher_id"})
-    db_item = OutvoucherItemCreate(voucher_id=db_voucher.voucher_id, **item_data)
+    db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
     
     db.add(db_item)
     db.commit()
