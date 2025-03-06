@@ -4,7 +4,6 @@ from typing import Optional
 class OutvoucherItemBase(BaseModel):
     """Base schema for Outvoucher items aligned with product info table."""
     voucher_id: Optional[int] = Field(None, description="Voucher identifier")
-    sr_no: Optional[int] = Field(None, description="SR NO from product info")
     product_id: Optional[str] = Field(None, description="Item Code from product info")
     item_name: Optional[str] = Field(None, description="Item Name from product info")
     unit: Optional[str] = Field(None, description="Unit from product info")
