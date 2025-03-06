@@ -8,7 +8,7 @@ class OutvoucherItemBase(BaseModel):
     item_name: Optional[str] = Field(None, description="Item Name from product info")
     unit: Optional[str] = Field(None, description="Unit from product info")
     rack_code: Optional[str] = Field(None, description="Rackcode from product info")
-    quantity: int = Field(..., ge=0, description="Qty from product info")
+    quantity: int = Field(None, description="quantity product info")
     comments: Optional[str] = Field(None, description="Comments from product info")
 
     class Config:
