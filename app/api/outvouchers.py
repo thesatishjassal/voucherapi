@@ -4,8 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db_connection
 from app.controllers.Outvoucher import create_outvoucher_item, create_outvoucher, get_all_outvouchers, get_outvoucher_by_id, update_outvoucher, delete_outvoucher
 from app.schema.outvoucher import Outvoucher, OutvoucherCreate
-from app.models.outvoucher_item import OutvoucherItem
-from app.schema.outvoucher_item import OutvoucherItemCreate
+from app.schema.outvoucher_item import OutvoucherItemCreate, OutvoucherItem
 
 app = FastAPI()
 router = APIRouter()
