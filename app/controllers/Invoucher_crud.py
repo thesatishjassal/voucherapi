@@ -46,7 +46,7 @@ def create_invoucher_item(db: Session, voucher_id: str, item: InvoucherItemCreat
     return db_item
 
 # Other functions remain unchanged
-def get_invouchers(db: Session, skip: int = 0, limit: int = 10):
+def get_invouchers(db: Session, skip: int = 0, limit: int = 100):
     return db.query(InvoucherModel).offset(skip).limit(limit).all()
 
 def get_invoucher(db: Session, voucher_id: str):

@@ -27,7 +27,7 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
 
-def get_all_outvouchers(db: Session, skip: int = 0, limit: int = 10):
+def get_all_outvouchers(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Outvoucher).offset(skip).limit(limit).all()  # ✅ Ensure Using Model
 
 def update_outvoucher(db: Session, voucher_id: int, update_data: dict):
