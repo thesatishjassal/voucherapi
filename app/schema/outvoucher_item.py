@@ -18,7 +18,6 @@ class OutvoucherItemBase(BaseModel):
 class OutvoucherItemCreate(OutvoucherItemBase):
     """Schema for creating a new Outvoucher item."""
     item_id: Optional[int] = Field(None, description="Auto-generated ID, not required for creation")
-    sr_no: Optional[int] = Field(None, description="SR NO from product info")
     product_id: Optional[str] = Field(None, description="Item Code from product info")
     item_name: Optional[str] = Field(None, description="Item Name from product info")
     unit: Optional[str] = Field(None, description="Unit from product info")

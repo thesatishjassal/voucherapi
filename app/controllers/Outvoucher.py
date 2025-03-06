@@ -12,7 +12,7 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
     db.refresh(new_outvoucher)
     return new_outvoucher
 
-def create_outvoucher_item(db: Session, voucher_id: str, item: OutvoucherItemCreate):
+def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
     if not db_voucher:
         raise HTTPException (status_code=404, detail="Invoucher not found")
