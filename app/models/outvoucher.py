@@ -19,6 +19,7 @@ class Outvoucher(Base):
     remarks = Column(Text, nullable=True)
     receiver_name = Column(String(100), nullable=True)
     mobile_number = Column(String(20), nullable=True)
+    transaction_types = Column(String(20), nullable=True)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     
     # ✅ Fix Relationships
