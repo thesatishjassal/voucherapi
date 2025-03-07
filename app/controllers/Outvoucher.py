@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.outvoucher import Outvoucher  # ✅ SQLAlchemy Model
 from app.models.outvoucher_item import OutvoucherItem  # ✅ SQLAlchemy Model
 from app.schema.outvoucher import OutvoucherCreate  # ✅ Pydantic Schema
+from app.models.products import Products  # ✅ Pydantic Schema
 from app.schema.outvoucher_item import OutvoucherItemCreate  # ✅ Pydantic Schema
 from fastapi import HTTPException
 
@@ -12,10 +13,31 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
     db.refresh(new_outvoucher)
     return new_outvoucher
 
+# def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
+#     db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
+#     if not db_voucher:
+#         raise HTTPException(status_code=404, detail="Voucher not found")
+#     item_data = item.model_dump(exclude={"item_id", "voucher_id"})
+#     db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
+    
+#     db.add(db_item)
+#     db.commit()
+#     db.refresh(db_item)
+#     return db_item
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
     if not db_voucher:
         raise HTTPException(status_code=404, detail="Voucher not found")
+    
+    product_id = item.product_id
+    if not product_id:
+        raise HTTPException(status_code=400, detail="Product ID is required")
+    
+    # Check if product exists
+    product = db.query(Products).filter(Products.itemcode == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
+    
     item_data = item.model_dump(exclude={"item_id", "voucher_id"})
     db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
     
