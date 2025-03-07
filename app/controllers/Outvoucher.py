@@ -67,6 +67,7 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
 
