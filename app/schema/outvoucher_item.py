@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
 class OutvoucherItemBase(BaseModel):
@@ -11,9 +11,10 @@ class OutvoucherItemBase(BaseModel):
     quantity: int = Field(..., ge=0, description="Quantity of the product")  # ✅ Required and non-negative
     comments: Optional[str] = Field(None, description="Comments from product info")
 
-    class Config:
-        from_attributes = True  # Enables compatibility with ORM objects
-
+    model_config = ConfigDict(
+        from_attributes = True 
+    )
+    
 class OutvoucherItemCreate(OutvoucherItemBase):
     """Schema for creating a new Outvoucher item."""
     item_id: Optional[int] = Field(None, description="Auto-generated ID, not required for creation")
@@ -22,9 +23,9 @@ class OutvoucherItem(OutvoucherItemBase):
     """Schema for representing an existing Outvoucher item."""
     item_id: int = Field(..., description="Unique identifier for the item")
 
-    class Config:
-        from_attributes = True  # Enables compatibility with ORM objects
-
+    model_config = ConfigDict(
+        from_attributes = True 
+    )
 class OutvoucherItemResponse(OutvoucherItem):
     """Schema for responding with Outvoucher item data."""
     item_id: int  # ✅ Include item_id in response but not in creation

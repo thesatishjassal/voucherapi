@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class ProductsCreate(BaseModel):
     hsncode: str
@@ -55,5 +55,6 @@ class ProductsResponse(BaseModel):
     message: Optional[str] = None
     invoucher_items: Optional[List[dict]] = None  # Change this to List[InvoucherItemResponse] if you have a response schema
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes = True 
+    )

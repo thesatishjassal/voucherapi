@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
 class InvoucherItemBase(BaseModel):
@@ -15,9 +15,10 @@ class InvoucherItemBase(BaseModel):
     amount: float
     comments: Optional[str] = None
 
-    class Config:
-        from_attributes = True  # Enables compatibility with ORM objects
-
+    model_config = ConfigDict(
+        from_attributes = True 
+    )
+    
 class InvoucherItemCreate(InvoucherItemBase):
     """Schema for creating a new invoucher item."""
     item_id: Optional[int] = Field(None, description="Auto-generated ID")
@@ -36,8 +37,8 @@ class InvoucherItem(InvoucherItemBase):
     """Schema for responding with invoucher item data."""
     item_id: int
 
-    class Config:
-        from_attributes = True  # Enables compatibility with ORM objects
-
+    model_config = ConfigDict(
+        from_attributes = True 
+    )
 class InvoucherItemResponse(InvoucherItemCreate):
     item_id: int  # ✅ Include item_id in response but not in create
