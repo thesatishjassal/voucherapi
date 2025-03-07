@@ -14,6 +14,5 @@ class OutvoucherItem(Base):
     quantity = Column(Integer, nullable=False)
     comments = Column(Text, nullable=True)
 
-    # ✅ Use 'outvoucher_items' instead of 'items' in `Products`
-    product = relationship("Products", back_populates="outvoucher_items", lazy="joined")
-    outvoucher = relationship("Outvoucher", back_populates="items", lazy="joined")
+    outvoucher = relationship("Outvoucher", back_populates="items")
+    product = relationship("Products", back_populates="outvoucher_items")
