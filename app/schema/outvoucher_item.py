@@ -8,7 +8,7 @@ class OutvoucherItemBase(BaseModel):
     item_name: Optional[str] = Field(None, description="Item Name from product info")
     unit: Optional[str] = Field(None, description="Unit from product info")
     rack_code: Optional[str] = Field(None, description="Rackcode from product info")
-    quantity: int = Field(None, description="quantity product info")
+    quantity: int = Field(..., ge=0, description="Quantity of the product")  # ✅ Required and non-negative
     comments: Optional[str] = Field(None, description="Comments from product info")
 
     class Config:
@@ -17,12 +17,6 @@ class OutvoucherItemBase(BaseModel):
 class OutvoucherItemCreate(OutvoucherItemBase):
     """Schema for creating a new Outvoucher item."""
     item_id: Optional[int] = Field(None, description="Auto-generated ID, not required for creation")
-    product_id: Optional[str] = Field(None, description="Item Code from product info")
-    item_name: Optional[str] = Field(None, description="Item Name from product info")
-    unit: Optional[str] = Field(None, description="Unit from product info")
-    rack_code: Optional[str] = Field(None, description="Rackcode from product info")
-    quantity: int = Field(..., ge=0, description="Qty from product info")
-    comments: Optional[str] = Field(None, description="Comments from product info")
 
 class OutvoucherItem(OutvoucherItemBase):
     """Schema for representing an existing Outvoucher item."""
@@ -33,4 +27,4 @@ class OutvoucherItem(OutvoucherItemBase):
 
 class OutvoucherItemResponse(OutvoucherItem):
     """Schema for responding with Outvoucher item data."""
-    item_id: int  # ✅ Include item_id in response but not in create
+    item_id: int  # ✅ Include item_id in response but not in creation
