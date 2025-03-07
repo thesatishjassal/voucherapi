@@ -27,7 +27,6 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
 #     return db_item
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     try:
-        # Start a transaction
         with db.begin():
             # Check if the voucher exists
             db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
@@ -44,7 +43,7 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
             if not product:
                 raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
             
-            # Prepare item data, excluding fields that are auto-generated or set separately
+            # Prepare item data
             item_data = item.model_dump(exclude={"item_id", "voucher_id"})
             
             # Create a new OutvoucherItem instance
@@ -58,13 +57,14 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
         return db_item
 
     except IntegrityError as e:
-        # Rollback the transaction in case of an integrity error
         db.rollback()
-        raise HTTPException(status_code=400, detail="Database integrity error") from e
+        if 'foreign key constraint' in str(e.orig):
+            raise HTTPException(status_code=400, detail=f"Foreign key constraint violated: {e.orig}")
+        else:
+            raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
     except Exception as e:
-        # Rollback the transaction in case of any other exceptions
         db.rollback()
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 def get_outvoucher_by_id(db: Session, voucher_id: int):
