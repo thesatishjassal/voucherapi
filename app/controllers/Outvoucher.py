@@ -1,4 +1,5 @@
 from sqlite3 import IntegrityError
+from typing import List
 from sqlalchemy.orm import Session
 from app.models.outvoucher import Outvoucher  # ✅ SQLAlchemy Model
 from app.models.outvoucher_item import OutvoucherItem  # ✅ SQLAlchemy Model
@@ -14,17 +15,6 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
     db.refresh(new_outvoucher)
     return new_outvoucher
 
-# def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
-#     db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
-#     if not db_voucher:
-#         raise HTTPException(status_code=404, detail="Voucher not found")
-#     item_data = item.model_dump(exclude={"item_id", "voucher_id"})
-#     db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
-    
-#     db.add(db_item)
-#     db.commit()
-#     db.refresh(db_item)
-#     return db_item
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     try:
         # Start a transaction context
@@ -64,7 +54,12 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
     except Exception as e:
         # Handle other exceptions
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
+    
+def get_items_by_voucher_id(db: Session, voucher_id: str) -> List[OutvoucherItem]:
+    items = db.query(OutvoucherItem).filter(OutvoucherItem.voucher_id == int(voucher_id)).all()
+    if not items:
+        raise HTTPException(status_code=404, detail="No items found for this voucher ID")
+    return items
 
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()

@@ -1,8 +1,9 @@
+from typing import List
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
-from app.controllers.Outvoucher import create_outvoucher_item, create_outvoucher, get_all_outvouchers, get_outvoucher_by_id, update_outvoucher, delete_outvoucher
+from app.controllers.Outvoucher import get_items_by_voucher_id, create_outvoucher_item, create_outvoucher, get_all_outvouchers, get_outvoucher_by_id, update_outvoucher, delete_outvoucher
 from app.schema.outvoucher import Outvoucher, OutvoucherCreate
 from app.schema.outvoucher_item import OutvoucherItemCreate, OutvoucherItem
 
@@ -42,6 +43,12 @@ def delete_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
     if not success:
         raise HTTPException(status_code=404, detail="Voucher not found")
     return {"message": "Voucher deleted successfully"}
+
+@router.get("/outvouchers/{voucher_id}/items/", response_model=List[OutvoucherItem])
+def read_invoucher_items_endpoint(voucher_id: int, db: Session = Depends(get_db_connection)):
+    """Retrieve all items for a specific outvouchers by voucher ID."""
+    return get_items_by_voucher_id(db, voucher_id)
+
 
 # Include the router in the main app
 app.include_router(router)
