@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from sqlalchemy.orm import Session
 from app.models.outvoucher import Outvoucher  # ✅ SQLAlchemy Model
 from app.models.outvoucher_item import OutvoucherItem  # ✅ SQLAlchemy Model
@@ -25,26 +26,46 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
 #     db.refresh(db_item)
 #     return db_item
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
-    db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
-    if not db_voucher:
-        raise HTTPException(status_code=404, detail="Voucher not found")
-    
-    product_id = item.product_id
-    if not product_id:
-        raise HTTPException(status_code=400, detail="Product ID is required")
-    
-    # Check if product exists
-    product = db.query(Products).filter(Products.itemcode == product_id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
-    
-    item_data = item.model_dump(exclude={"item_id", "voucher_id"})
-    db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
-    
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+    try:
+        # Start a transaction
+        with db.begin():
+            # Check if the voucher exists
+            db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
+            if not db_voucher:
+                raise HTTPException(status_code=404, detail="Voucher not found")
+            
+            # Validate product_id
+            product_id = item.product_id
+            if not product_id:
+                raise HTTPException(status_code=400, detail="Product ID is required")
+            
+            # Check if the product exists
+            product = db.query(Products).filter(Products.itemcode == product_id).first()
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
+            
+            # Prepare item data, excluding fields that are auto-generated or set separately
+            item_data = item.model_dump(exclude={"item_id", "voucher_id"})
+            
+            # Create a new OutvoucherItem instance
+            db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
+            
+            # Add and commit the new item to the database
+            db.add(db_item)
+            db.commit()
+            db.refresh(db_item)
+        
+        return db_item
+
+    except IntegrityError as e:
+        # Rollback the transaction in case of an integrity error
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Database integrity error") from e
+    except Exception as e:
+        # Rollback the transaction in case of any other exceptions
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Internal server error") from e
+
 
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
