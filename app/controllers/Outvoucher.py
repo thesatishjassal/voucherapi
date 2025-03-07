@@ -27,6 +27,7 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
 #     return db_item
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     try:
+        # Start a transaction context
         with db.begin():
             # Check if the voucher exists
             db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
@@ -49,23 +50,20 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
             # Create a new OutvoucherItem instance
             db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
             
-            # Add and commit the new item to the database
+            # Add the new item to the session
             db.add(db_item)
-            db.commit()
-            db.refresh(db_item)
+            # The context manager will commit the transaction automatically
         
+        # Refresh the instance outside the transaction context if needed
+        db.refresh(db_item)
         return db_item
 
     except IntegrityError as e:
-        db.rollback()
-        if 'foreign key constraint' in str(e.orig):
-            raise HTTPException(status_code=400, detail=f"Foreign key constraint violated: {e.orig}")
-        else:
-            raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
+        # Handle specific integrity errors
+        raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
     except Exception as e:
-        db.rollback()
+        # Handle other exceptions
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
 
 
 def get_outvoucher_by_id(db: Session, voucher_id: int):
