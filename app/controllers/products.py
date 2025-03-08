@@ -84,12 +84,12 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
             product.price = product_data.price
         if product_data.quantity:
             product.quantity = product_data.quantity
-        if product_data.rackCode:
-            product.rackcode = product_data.rackCode
+        if product_data.rackcode:
+            product.rackcode = product_data.rackcode
         if product_data.category:
             product.category = product_data.category
-        if product_data.subCategory:
-            product.itemname = product_data.subCategory
+        if product_data.subcategory:
+            product.itemname = product_data.subcategory
         if product_data.size:
             product.size = product_data.size
         if product_data.model:

@@ -17,42 +17,28 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
 
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     try:
-        # Start a transaction context
         with db.begin():
-            # Check if the voucher exists
             db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
             if not db_voucher:
                 raise HTTPException(status_code=404, detail="Voucher not found")
-            
-            # Validate product_id
             product_id = item.product_id
             if not product_id:
                 raise HTTPException(status_code=400, detail="Product ID is required")
             
-            # Check if the product exists
             product = db.query(Products).filter(Products.itemcode == product_id).first()
             if not product:
                 raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
             
-            # Prepare item data
             item_data = item.model_dump(exclude={"item_id", "voucher_id"})
-            
-            # Create a new OutvoucherItem instance
             db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
-            
-            # Add the new item to the session
             db.add(db_item)
-            # The context manager will commit the transaction automatically
-        
-        # Refresh the instance outside the transaction context if needed
+        #  the inxstance outside the transaction context if needed
         db.refresh(db_item)
         return db_item
 
     except IntegrityError as e:
-        # Handle specific integrity errors
         raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
     except Exception as e:
-        # Handle other exceptions
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
     
 def get_items_by_voucher_id(db: Session, voucher_id: str) -> List[OutvoucherItem]:
