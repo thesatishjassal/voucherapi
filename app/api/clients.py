@@ -29,7 +29,7 @@ async def create_new_client(client: ClientCreate, db:Session = Depends(get_db_co
             "message": "User added successfully",
             "user": {
                 "id": result.id,
-                "buisnessname": result.buisnessname,
+                "businessname": result.businessname,
                 "GST Number": result.gst_number,
                 "address": result.address,
                 "address": result.address,

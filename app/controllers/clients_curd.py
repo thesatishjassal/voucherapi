@@ -5,7 +5,7 @@ from app.schema.clients_schema import ClientCreate, ClientUpdate
 from database import get_db_connection as db
 
 def create_client(client_data: ClientCreate, db: Session):
-    client = Client(buisnessname=client_data.buisnessname, gst_number= client_data.gst_number, address= client_data.address, pincode=client_data.pincode, city=client_data.city, state=client_data.state, client_name=client_data.client_name, client_phone=client_data.client_phone, client_email=client_data.client_email, client_type=client_data.client_type)
+    client = Client(businessname=client_data.businessname, gst_number= client_data.gst_number, address= client_data.address, pincode=client_data.pincode, city=client_data.city, state=client_data.state, client_name=client_data.client_name, client_phone=client_data.client_phone, client_email=client_data.client_email, client_type=client_data.client_type)
     db.add(client)
     db.commit()
     db.refresh(client)
@@ -20,8 +20,8 @@ def update_client(client_data: ClientUpdate, client_id: int, db: Session):
     client = db.query(Client).filter(Client.id == client_id).first()
     if client:
         # Update the client details with the new data
-        if client_data.buisnessname:
-            client.buisnessname = client_data.buisnessname
+        if client_data.businessname:
+            client.businessname = client_data.businessname
         if client_data.gst_number:
             client.gst_number = client_data.gst_number
         if client_data.address:

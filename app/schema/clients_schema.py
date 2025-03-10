@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, constr
 
 class ClientCreate(BaseModel):
-    buisnessname: str
+    businessname: str
     gst_number: Optional[str] = None
     address: str
     city: str
@@ -15,7 +15,7 @@ class ClientCreate(BaseModel):
    
 class ClientResponse(BaseModel):
     id: int
-    buisnessname: str
+    businessname: str
     gst_number: str
     address: str
     city: str
@@ -27,7 +27,7 @@ class ClientResponse(BaseModel):
     client_type: str
 
 class ClientUpdate(BaseModel):
-    buisnessname: Optional[str] = None
+    businessname: Optional[str] = None
     gst_number: Optional[str] = None
     address: Optional[str] = None
     pincode: Optional[str] = None
