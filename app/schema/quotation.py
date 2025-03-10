@@ -1,17 +1,13 @@
-"""Pydantic schemas for Quotation data validation in the IN Voucher API."""
-
 from pydantic import BaseModel, ConfigDict
 from datetime import date
 from typing import Optional
-
-from sqlalchemy import Boolean
 
 class QuotationBase(BaseModel):
     id: Optional[int] = None
     quotation_id: int
     quotation_no: str
     salesperson: Optional[str] = None
-    subject:  Optional[date] = None
+    subject: Optional[str] = None
     amount_including_GST: Optional[int] = None
     without_GST: Optional[int] = None
     GST_ammount: Optional[int] = None
@@ -19,7 +15,7 @@ class QuotationBase(BaseModel):
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[bool] = None
-    date: Optional[date] = None # type: ignore
+    date: Optional[date] = None  # type: ignore
     client_id: int
 
 class QuotationCreate(QuotationBase):
@@ -32,6 +28,4 @@ class QuotationUpdate(QuotationBase):
 
 class Quotation(QuotationBase):
     """Schema for responding with Quotation data."""
-    quotation_id: int
-
     model_config = ConfigDict(from_attributes=True)  # For ORM support
