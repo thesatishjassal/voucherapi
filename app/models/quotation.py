@@ -7,6 +7,7 @@ class Quotation(Base):
     __tablename__ = "quotations"
  
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    quotation_id = Column(Integer, index=True, autoincrement=True)
     quotation_no = Column(String(50), nullable=False, unique=True)
     salesperson = Column(String(50), nullable=True)
     subject = Column(String(50), nullable=True)

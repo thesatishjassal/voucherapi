@@ -12,9 +12,9 @@ router = APIRouter()
 def create_quotation_api(quotation: QuotationCreate, db: Session = Depends(get_db_connection)):
     return create_quotation(db, quotation)
 
-@router.get("/quotation/{id}", response_model=Quotation)
-def read_quotation_api(id: int, db: Session = Depends(get_db_connection)):
-    quotation = get_quotation_by_id(db, id)
+@router.get("/quotation/{quotation_id}", response_model=Quotation)
+def read_quotation_api(quotation_id: int, db: Session = Depends(get_db_connection)):
+    quotation = get_quotation_by_id(db, quotation_id)
     if not quotation:
         raise HTTPException(status_code=404, detail="Quotation not found")
     return quotation
@@ -23,16 +23,16 @@ def read_quotation_api(id: int, db: Session = Depends(get_db_connection)):
 def read_all_quotation(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_connection)):
     return get_all_quotations(db, skip, limit)
 
-@router.put("/quotation/{id}", response_model=Quotation)
-def update_quotation_api(id: int, update_data: dict, db: Session = Depends(get_db_connection)):
-    updated_quotation = update_quotation(db, id, update_data)
+@router.put("/quotation/{quotation_id}", response_model=Quotation)
+def update_quotation_api(quotation_id: int, update_data: dict, db: Session = Depends(get_db_connection)):
+    updated_quotation = update_quotation(db, quotation_id, update_data)
     if not updated_quotation:
         raise HTTPException(status_code=404, detail="quotation not found")
     return updated_quotation
 
-@router.delete("/{id}")
-def delete_quotation_api(id: int, db: Session = Depends(get_db_connection)):
-    success = delete_quotation(db, id)
+@router.delete("/{quotation_id}")
+def delete_quotation_api(quotation_id: int, db: Session = Depends(get_db_connection)):
+    success = delete_quotation(db, quotation_id)
     if not success:
         raise HTTPException(status_code=404, detail="quotation not found")
     return {"message": "quotation deleted successfully"}
