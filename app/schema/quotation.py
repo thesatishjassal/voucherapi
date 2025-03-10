@@ -10,7 +10,7 @@ class QuotationBase(BaseModel):
     amount_including_GST: Optional[int] = None
     without_GST: Optional[int] = None
     GST_amount: Optional[int] = None
-    amount_withGST: Optional[int] = None
+    amount_with_GST: Optional[int] = None
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[bool] = None
@@ -24,7 +24,7 @@ class QuotationCreate(BaseModel):
     amount_including_GST: Optional[int] = None
     without_GST: Optional[int] = None
     GST_amount: Optional[int] = None
-    amount_withGST: Optional[int] = None
+    amount_with_GST: Optional[int] = None
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[bool] = None
