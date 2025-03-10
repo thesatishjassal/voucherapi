@@ -6,7 +6,7 @@ class QuotationItem(Base):
     __tablename__ = "quotationitems"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    quotation_id = Column(Integer, ForeignKey("quotations.id"), nullable=True)
+    quotation_id = Column(Integer, ForeignKey("quotations.quotation_id"), nullable=True)  # ✅ Corrected foreign key
     product_id = Column(String(50), ForeignKey("products.itemcode"))
     customercode = Column(String(100), nullable=True)
     customerDescription = Column(String(100), nullable=True)
