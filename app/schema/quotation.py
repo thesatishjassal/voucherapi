@@ -19,7 +19,7 @@ class QuotationBase(BaseModel):
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[bool] = None
-    date: Optional[date] = None
+    date: Optional[date] = None # type: ignore
     client_id: int
 
 class QuotationCreate(QuotationBase):
