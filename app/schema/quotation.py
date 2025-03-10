@@ -4,7 +4,7 @@ from typing import Optional
 
 class QuotationBase(BaseModel):
     id: Optional[int] = None
-    quotation_id: int
+    quotation_id: Optional[int] = None  # Made optional
     quotation_no: str
     salesperson: Optional[str] = None
     subject: Optional[str] = None
@@ -15,17 +15,14 @@ class QuotationBase(BaseModel):
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[bool] = None
-    date: Optional[date] = None  # type: ignore
+    date: Optional[date] = None  # Keep date for compatibility
     client_id: int
 
 class QuotationCreate(QuotationBase):
-    """Schema for creating a new Quotation."""
     pass
 
 class QuotationUpdate(QuotationBase):
-    """Schema for updating an existing Quotation."""
     pass
 
 class Quotation(QuotationBase):
-    """Schema for responding with Quotation data."""
-    model_config = ConfigDict(from_attributes=True)  # For ORM support
+    model_config = ConfigDict(from_attributes=True)  # ORM compatibility
