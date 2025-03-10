@@ -21,6 +21,3 @@ class Client(Base):
     quotations = relationship("Quotation", back_populates="client")  
     invouchers = relationship("Invoucher", back_populates="client")
     outvouchers = relationship("Outvoucher", back_populates="client")
-
-    def __repr__(self):
-        return f"<Client (id={self.id}, businessname={self.businessname}, client_phone={self.client_phone})>"
