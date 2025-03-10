@@ -11,7 +11,7 @@ class Quotation(Base):
     subject = Column(String(50), nullable=True)
     amount_including_GST = Column(Integer, nullable=True)
     without_GST = Column(Integer, nullable=True)
-    GST_amount = Column(Integer, nullable=True)  # ✅ Fixed spelling
+    GST_amount = Column(Integer, nullable=True)  # ✅ Correct spelling
     amount_with_GST = Column(Integer, nullable=True)  
     warranty_guarantee = Column(String(100), nullable=True)
     remarks = Column(String(100), nullable=True)
