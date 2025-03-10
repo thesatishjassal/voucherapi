@@ -9,7 +9,7 @@ from sqlalchemy import Boolean
 class QuotationBase(BaseModel):
     id: Optional[int] = None
     quotation_id: int
-    quotation_number: str
+    quotation_no: str
     salesperson: Optional[str] = None
     subject:  Optional[date] = None
     amount_including_GST: Optional[int] = None
