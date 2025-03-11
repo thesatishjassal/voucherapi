@@ -7,7 +7,7 @@ class QuotationItemBase(BaseModel):
     quotation_id: Optional[int] = None
     product_id: Optional[str] = None
     customercode: Optional[str] = None
-    customerDescription: Optional[str] = None
+    customerdescription: Optional[str] = None
     image: Optional[str] = None
     itemCode: Optional[str] = None
     brand: Optional[str] = None
