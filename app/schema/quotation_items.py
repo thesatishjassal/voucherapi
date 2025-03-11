@@ -26,6 +26,6 @@ class QuotationItemCreate(QuotationItemBase):
 
 class QuotationItemResponse(QuotationItemBase):
     """Schema for responding with Quotation item data including item_id mapped from 'id'."""
-    item_id: int = Field(..., description="Auto-generated unique identifier for the item")  # ✅ Expose `id` as `item_id`
-
+    # item_id: int = Field(..., description="Auto-generated unique identifier for the item")  # ✅ Expose `id` as `item_id`
+    pass
     model_config = ConfigDict(from_attributes=True)
