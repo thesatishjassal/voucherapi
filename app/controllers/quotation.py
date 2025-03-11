@@ -1,10 +1,11 @@
 from sqlite3 import IntegrityError
+from typing import List
 from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.models.quotation import Quotation  
 from app.models.quotationitems import QuotationItem  
 from app.schema.quotation import QuotationCreate
-from app.schema.quotation_items import QuotationItemCreate, QuotationItemResponse
+from app.schema.quotation_items import QuotationItemCreate, QuotationItemResponse, QuotationItemBase
 from fastapi import HTTPException
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
@@ -71,6 +72,11 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
+def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationItem]:
+    items = db.query(QuotationItem).filter(QuotationItem.quotation_id == int(quotation_id)).all()
+    if not items:
+        raise HTTPException(status_code=404, detail="No items found for this quotation id")
+    return items
     
 def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
