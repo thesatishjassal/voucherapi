@@ -3,7 +3,6 @@ from typing import Optional
 
 class QuotationItemBase(BaseModel):
     """Base schema for Quotation items aligned with the product info table."""
-    item_id: Optional[int] = None
     quotation_id: Optional[int] = None
     product_id: Optional[str] = None
     customercode: Optional[str] = None
@@ -22,14 +21,11 @@ class QuotationItemBase(BaseModel):
 
 class QuotationItemCreate(QuotationItemBase):
     """Schema for creating a new Quotation item."""
-    item_id: Optional[int] = Field(None, description="Auto-generated ID, not required for creation")
+    # No item_id or id here (handled by DB)
+    pass
 
-class QuotationItem(QuotationItemBase):
-    """Schema for representing an existing Quotation item."""
-    item_id: int = Field(..., description="Unique identifier for the item")
+class QuotationItemResponse(QuotationItemBase):
+    """Schema for responding with Quotation item data including item_id mapped from 'id'."""
+    item_id: int = Field(..., description="Auto-generated unique identifier for the item")  # ✅ Expose `id` as `item_id`
 
     model_config = ConfigDict(from_attributes=True)
-
-class QuotationItemResponse(QuotationItem):
-    """Schema for responding with Quotation item data."""
-    item_id: int  # ✅ Include item_id in response but not in creation
