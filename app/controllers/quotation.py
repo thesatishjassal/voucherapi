@@ -1,7 +1,10 @@
 from sqlite3 import IntegrityError
 from sqlalchemy.orm import Session
+from app.models.products import Products
 from app.models.quotation import Quotation  
+from app.models.quotationitems import QuotationItem  
 from app.schema.quotation import QuotationCreate
+from app.schema.quotation_items import QuotationItemCreate
 from fastapi import HTTPException
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
@@ -11,6 +14,33 @@ def create_quotation(db: Session, quotation_data: QuotationCreate):
     db.refresh(new_quotation)
     return new_quotation
 
+def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCreate):
+    try:
+        with db.begin():
+            db_quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
+            if not db_quotation:
+                raise HTTPException(status_code=404, detail="Quotation not found")
+            product_id = item.product_id
+            if not product_id:
+                raise HTTPException(status_code=400, detail="Product ID is required")
+            
+            product = db.query(Products).filter(Products.itemcode == product_id).first()
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
+            
+            item_data = item.model_dump(exclude={"item_id", "quotation_id"})
+            db_item = QuotationItem(quotation_id=db_quotation.quotation_id, **item_data)
+            db.add(db_item)
+        #  the inxstance outside the transaction context if needed
+        db.refresh(db_item)
+        return db_item
+
+    except IntegrityError as e:
+        raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    
+    
 def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
 
