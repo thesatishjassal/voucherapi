@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db_connection
 from app.controllers.quotation import create_quotation_item, create_quotation, get_quotation_by_id, get_all_quotations, update_quotation, delete_quotation
 from app.schema.quotation import Quotation, QuotationCreate
-from app.schema.quotation_items import QuotationItem, QuotationItemCreate
+from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate
 
 app = FastAPI()
 router = APIRouter()
@@ -13,7 +13,7 @@ router = APIRouter()
 def create_quotation_api(quotation: QuotationCreate, db: Session = Depends(get_db_connection)):
     return create_quotation(db, quotation)
 
-@router.post("/quotation/{quotation_id}/items/", response_model=QuotationItem)
+@router.post("/quotation/{quotation_id}/items/", response_model=QuotationItemBase)
 def create_outoucher_item_endpoint(quotation_id: int, item: QuotationItemCreate, db: Session = Depends(get_db_connection)):
     """Add an item to an existing invoucher."""
     return create_quotation_item(db, quotation_id, item)
