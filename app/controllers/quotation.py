@@ -20,20 +20,24 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             db_quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
             if not db_quotation:
                 raise HTTPException(status_code=404, detail="Quotation not found")
+
             product_id = item.product_id
             if not product_id:
                 raise HTTPException(status_code=400, detail="Product ID is required")
-            
+
             product = db.query(Products).filter(Products.itemcode == product_id).first()
             if not product:
                 raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
-            
+
             item_data = item.model_dump(exclude={"item_id", "quotation_id"})
             db_item = QuotationItem(quotation_id=db_quotation.quotation_id, **item_data)
             db.add(db_item)
-        #  the inxstance outside the transaction context if needed
-        db.refresh(db_item)
-        return db_item
+            db.flush()  # Optional: Forces SQL to assign item_id
+            db.refresh(db_item)  # ✅ Move inside transaction
+
+        return db_item  # Now item_id is available and response will work
+    except Exception as e:
+        raise e  # Optional: handle/log as needed
 
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
