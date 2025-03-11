@@ -9,7 +9,7 @@ class QuotationItemBase(BaseModel):
     customercode: Optional[str] = None
     customerdescription: Optional[str] = None
     image: Optional[str] = None
-    itemCode: Optional[str] = None
+    itemcode: Optional[str] = None
     brand: Optional[str] = None
     mrp: Optional[int] = None
     price: Optional[int] = None
