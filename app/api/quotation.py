@@ -19,7 +19,7 @@ def create_outoucher_item_endpoint(quotation_id: int, item: QuotationItemCreate,
     return create_quotation_item(db, quotation_id, item)
 
 
-@router.get("/outvouchers/{quotation_id}/items/", response_model=List[QuotationItemResponse])
+@router.get("/quotation/{quotation_id}/items/", response_model=List[QuotationItemResponse])
 def read_quotation_items_endpoint(quotation_id: int, db: Session = Depends(get_db_connection)):
     """Retrieve all items for a specific outvouchers by voucher ID."""
     return get_items_by_quotation_id(db, quotation_id)
