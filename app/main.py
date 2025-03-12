@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles 
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from app.products_import import router as product_import_router  # ✅ Import router here
 
 app = FastAPI()
 # Middleware to allow larger file uploads
@@ -43,6 +44,7 @@ app.include_router(category_router)
 app.include_router(invouchers_router)
 app.include_router(outvouchers_router)
 app.include_router(quotations_router)
+app.include_router(product_import_router)  # ✅ Correct
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Increase max request size

@@ -9,3 +9,4 @@ uuid
 httpx
 bcrypt
 python-multipart 
+openpyxl
