@@ -60,12 +60,12 @@ def create_products(products_data: ProductsCreate, db: Session):
         )
 
     # Create and save the product
-    products = Products(**products_data.model_dump())
-    db.add(products)
+    product = Products(**products_data.model_dump())
+    db.add(product)
     db.commit()
-    db.refresh(products)
-    
-    return products  # Returns a Products object
+    db.refresh(product)
+
+    return product
 
 def get_products(db: Session):
     return db.query(Products).all()
