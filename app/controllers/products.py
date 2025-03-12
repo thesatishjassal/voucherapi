@@ -10,6 +10,7 @@ import shutil
 import os
 import uuid  # For unique file names
 from config import UPLOAD_DIR  # Import the correct upload directory
+from typing import List, Union
 
 def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
     product = db.query(Products).filter(Products.id == product_id).first()
@@ -38,34 +39,56 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
 
     return {"message": "Thumbnail uploaded successfully!", "thumbnail": public_url}
 
-def create_products(products_data: ProductsCreate, db: Session):
-    # Check for existing product
-    existing_product = db.query(Products).filter(
-        (Products.hsncode == products_data.hsncode) |
-        (Products.itemcode == products_data.itemcode) |
-        (Products.itemname == products_data.itemname)
-    ).first()
+def create_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
 
-    if existing_product:
-        errors = []
-        if existing_product.hsncode == products_data.hsncode:
-            errors.append("HSN Code already exists.")
-        if existing_product.itemcode == products_data.itemcode:
-            errors.append("Item Code already exists.")
-        if existing_product.itemname == products_data.itemname:
-            errors.append("Product Name already exists.")
+    # Ensure products_data is a list for uniform processing
+    if not isinstance(products_data, list):
+        products_data = [products_data]
+
+    created_products = []
+    errors = []
+
+    for product_data in products_data:
+        # Check for existing product conflicts
+        existing_product = db.query(Products).filter(
+            (Products.hsncode == product_data.hsncode) |
+            (Products.itemcode == product_data.itemcode) |
+            (Products.itemname == product_data.itemname)
+        ).first()
+
+        if existing_product:
+            product_errors = {"itemcode": product_data.itemcode, "errors": []}
+            if existing_product.hsncode == product_data.hsncode:
+                product_errors["errors"].append("HSN Code already exists.")
+            if existing_product.itemcode == product_data.itemcode:
+                product_errors["errors"].append("Item Code already exists.")
+            if existing_product.itemname == product_data.itemname:
+                product_errors["errors"].append("Product Name already exists.")
+            errors.append(product_errors)
+            continue  # Skip adding this product and move to next
+
+        # Create and append product if no conflicts
+        product = Products(**product_data.model_dump())
+        db.add(product)
+        created_products.append(product)
+
+    if errors:
+        # If any errors occurred, raise exception without committing anything
         raise HTTPException(
             status_code=400,
             detail={"message": "Validation Error", "errors": errors}
         )
 
-    # Create and save the product
-    product = Products(**products_data.model_dump())
-    db.add(product)
+    # Commit only if all products are valid and added
     db.commit()
-    db.refresh(product)
 
-    return product
+    # Refresh all created products to get DB-generated fields like IDs
+    for product in created_products:
+        db.refresh(product)
+
+    # Return single product if only one was added, otherwise return the list
+    return created_products[0] if len(created_products) == 1 else created_products
+
 
 def get_products(db: Session):
     return db.query(Products).all()

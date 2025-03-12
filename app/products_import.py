@@ -5,8 +5,10 @@ from typing import List
 from database import SessionLocal
 from app.schema.products import ProductsResponse, ProductsCreate
 from app.controllers.products import create_products
+import os
 
 router = APIRouter()
+
 
 # Dependency to get DB session
 def get_db():
@@ -33,37 +35,50 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
         workbook = load_workbook(filename=temp_file_path)
         sheet = workbook.active
 
-        products = []
+        products_list = []
         for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip header row
-            if any(cell is None for cell in row[:14]):  # Validate essential columns
-                continue  # Skip rows with missing essential data
+            if all(cell is None for cell in row[:14]):  # Skip completely empty rows
+                continue
+
+            if any(cell is None for cell in row[:3]):  # Validate essential fields (hsncode, itemcode, itemname)
+                continue  # Skip rows missing essential data
 
             # Map row to dictionary and handle possible None values safely
             product_data_dict = {
-                "hsncode": str(row[0]).strip(),
-                "itemcode": str(row[1]).strip(),
-                "itemname": str(row[2]).strip(),
-                "description": str(row[3]).strip(),
-                "category": str(row[4]).strip(),
-                "subcategory": str(row[5]).strip(),
+                "hsncode": str(row[0]).strip() if row[0] is not None else "",
+                "itemcode": str(row[1]).strip() if row[1] is not None else "",
+                "itemname": str(row[2]).strip() if row[2] is not None else "",
+                "description": str(row[3]).strip() if row[3] is not None else "",
+                "category": str(row[4]).strip() if row[4] is not None else "",
+                "subcategory": str(row[5]).strip() if row[5] is not None else "",
                 "price": float(row[6]) if row[6] is not None else 0.0,
                 "quantity": int(row[7]) if row[7] is not None else 0,
-                "rackcode": str(row[8]).strip(),
-                "size": str(row[9]).strip(),
-                "color": str(row[10]).strip(),
-                "model": str(row[11]).strip(),
-                "brand": str(row[12]).strip(),
-                "unit": str(row[13]).strip(),
+                "rackcode": str(row[8]).strip() if row[8] is not None else "",
+                "size": str(row[9]).strip() if row[9] is not None else "",
+                "color": str(row[10]).strip() if row[10] is not None else "",
+                "model": str(row[11]).strip() if row[11] is not None else "",
+                "brand": str(row[12]).strip() if row[12] is not None else "",
+                "unit": str(row[13]).strip() if row[13] is not None else "",
             }
 
             # Convert dict to Pydantic model
             product_data = ProductsCreate(**product_data_dict)
 
-            # Call the product creation function
-            db_product = create_products(product_data, db)
-            products.append(db_product)
+            # Append product to list
+            products_list.append(product_data)
 
-        return products
+        # Remove temp file
+        os.remove(temp_file_path)
 
+        if not products_list:
+            raise HTTPException(status_code=400, detail="No valid product data found in the file.")
+
+        # Batch create products
+        created_products = create_products(products_list, db)
+
+        return created_products
+
+    except HTTPException as http_err:
+        raise http_err  # Re-raise known HTTP errors
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
