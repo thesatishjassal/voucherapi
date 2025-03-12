@@ -162,7 +162,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
 
 def delete_product(product_id: int, db: Session):
     # Find the existing product by ID
-    product =  db.query(Products).filter(product_id == product_id).first()
+    product =  db.query(Products).filter(Products.id == product_id).first()
     if product:
         db.delete(product)
         db.commit()
