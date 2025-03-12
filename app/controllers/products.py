@@ -1,4 +1,5 @@
 from http.client import HTTPException
+from typing import List, Union
 from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.schema.products import ProductsCreate, ProductsUpdate
@@ -10,7 +11,6 @@ import shutil
 import os
 import uuid  # For unique file names
 from config import UPLOAD_DIR  # Import the correct upload directory
-from typing import List, Union
 
 def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
     product = db.query(Products).filter(Products.id == product_id).first()
@@ -39,7 +39,36 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
 
     return {"message": "Thumbnail uploaded successfully!", "thumbnail": public_url}
 
-def create_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
+def create_products(products_data: ProductsCreate, db: Session):
+    # Check for existing product
+    existing_product = db.query(Products).filter(
+        (Products.hsncode == products_data.hsncode) |
+        (Products.itemcode == products_data.itemcode) |
+        (Products.itemname == products_data.itemname)
+    ).first()
+
+    if existing_product:
+        errors = []
+        if existing_product.hsncode == products_data.hsncode:
+            errors.append("HSN Code already exists.")
+        if existing_product.itemcode == products_data.itemcode:
+            errors.append("Item Code already exists.")
+        if existing_product.itemname == products_data.itemname:
+            errors.append("Product Name already exists.")
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Validation Error", "errors": errors}
+        )
+
+    # Create and save the product
+    products = Products(**products_data.model_dump())
+    db.add(products)
+    db.commit()
+    db.refresh(products)
+    
+    return products  # Returns a Products object
+
+def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
 
     # Ensure products_data is a list for uniform processing
     if not isinstance(products_data, list):

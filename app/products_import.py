@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 from typing import List
 from database import SessionLocal
 from app.schema.products import ProductsResponse, ProductsCreate
-from app.controllers.products import create_products
+from app.controllers.products import upload_products
 import os
 
 router = APIRouter()
@@ -74,7 +74,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
             raise HTTPException(status_code=400, detail="No valid product data found in the file.")
 
         # Batch create products
-        created_products = create_products(products_list, db)
+        created_products = upload_products(products_list, db)
 
         return created_products
 
