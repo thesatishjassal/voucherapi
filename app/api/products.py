@@ -39,7 +39,7 @@ async def create_new_products(products: ProductsCreate, db: Session = Depends(ge
 async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)
 
-@app.get("/products/{product_id}")
+@router.get("/products/{product_id}")
 def read_product(product_id: int, db: Session = Depends(get_db_connection)):
     product = get_product_by_id(product_id, db)
     if not product:
