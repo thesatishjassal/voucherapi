@@ -122,6 +122,9 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
 def get_products(db: Session):
     return db.query(Products).all()
 
+def get_product_by_id(product_id: int, db: Session):
+    return db.query(Products).filter(Products.id == product_id).first()
+
 def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
     product = db.query(Products).filter(Products.id == product_id).first()
     if product:

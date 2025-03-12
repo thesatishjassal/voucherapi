@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi import Depends, FastAPI, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from app.controllers.products import create_products, get_products, update_product, delete_product, upload_thumbnail
+from app.controllers.products import get_product_by_id, create_products, get_products, update_product, delete_product, upload_thumbnail
 from app.schema.products import ProductsCreate, ProductsResponse, ProductsUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
@@ -38,6 +38,13 @@ async def create_new_products(products: ProductsCreate, db: Session = Depends(ge
 @router.get("/products/", response_model=list[ProductsResponse])
 async def get_all_products(db:Session = Depends(get_db_connection)):
     return get_products(db=db)
+
+@app.get("/products/{product_id}")
+def read_product(product_id: int, db: Session = Depends(get_db_connection)):
+    product = get_product_by_id(product_id, db)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
 
 @router.put("/products/{product_id}")
 def update_product_api(product_id: str, product_data: ProductsUpdate, db: Session= Depends(get_db_connection)):
