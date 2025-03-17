@@ -1,0 +1,26 @@
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
+class QuotationItemHistorySchema(BaseModel):
+    id: Optional[int]
+    quotation_item_id: int
+    quotation_id: Optional[int]
+    product_id: Optional[str]
+    customercode: Optional[str]
+    customerdescription: Optional[str]
+    image: Optional[str]
+    itemcode: Optional[str]
+    brand: Optional[str]
+    mrp: Optional[int]
+    price: Optional[int]
+    quantity: Optional[int]
+    discount: Optional[int]
+    item_name: Optional[str]
+    unit: Optional[str]
+    edited_at: Optional[datetime]
+    edited_by: Optional[str]
+    action: Optional[str]
+
+    class Config:
+        orm_mode = True

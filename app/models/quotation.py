@@ -22,3 +22,4 @@ class Quotation(Base):
     # Relationships
     client = relationship("Client", back_populates="quotations")
     items = relationship("QuotationItem", back_populates="quotation")
+ 

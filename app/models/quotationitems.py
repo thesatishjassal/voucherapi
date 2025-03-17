@@ -20,5 +20,7 @@ class QuotationItem(Base):
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
 
+    # Relationships
     quotation = relationship("Quotation", back_populates="items")
     product = relationship("Products", back_populates="quotation_items")
+    itemshistory = relationship("QuotationItemHistory", back_populates="quotationitem", cascade="all, delete-orphan")

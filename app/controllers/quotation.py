@@ -1,12 +1,15 @@
+from datetime import datetime
 from sqlite3 import IntegrityError
 from typing import List
 from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.models.quotation import Quotation  
 from app.models.quotationitems import QuotationItem  
+from app.models.QuotationItemHistory import QuotationItemHistory  
 from app.schema.quotation import QuotationCreate
 from app.schema.quotation_items import QuotationItemCreate, QuotationItemResponse, QuotationItemBase
 from fastapi import HTTPException
+
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
     new_quotation = Quotation(**quotation_data.dict())  # ✅ Use SQLAlchemy Model
@@ -14,6 +17,7 @@ def create_quotation(db: Session, quotation_data: QuotationCreate):
     db.commit()
     db.refresh(new_quotation)
     return new_quotation
+
 
 def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCreate) -> QuotationItemResponse:
     try:
@@ -93,6 +97,82 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
     db.commit()
     db.refresh(quotation)
     return quotation
+
+def bulk_update_quotation_items(db: Session, quotation_id: int, items: list, edited_by: str):
+    try:
+        with db.begin():  # Transaction start
+            # Check if quotation exists
+            quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
+            if not quotation:
+                raise HTTPException(status_code=404, detail="Quotation not found")
+
+            # Existing items mapped by product_id
+            existing_items = db.query(QuotationItem).filter(QuotationItem.quotation_id == quotation_id).all()
+            existing_items_map = {item.product_id: item for item in existing_items}
+
+            # Track product_ids being processed
+            submitted_product_ids = set()
+
+            # Process each item in the input
+            for item_data in items:
+                product_id = item_data['product_id']
+                submitted_product_ids.add(product_id)
+
+                # If item exists, update and log history
+                if product_id in existing_items_map:
+                    existing_item = existing_items_map[product_id]
+
+                    # ✅ Add history before update
+                    history = QuotationItemHistory(
+                        quotation_item_id=existing_item.id,
+                        quotation_id=existing_item.quotation_id,
+                        product_id=existing_item.product_id,
+                        customercode=existing_item.customercode,
+                        customerdescription=existing_item.customerdescription,
+                        image=existing_item.image,
+                        itemcode=existing_item.itemcode,
+                        brand=existing_item.brand,
+                        mrp=existing_item.mrp,
+                        price=existing_item.price,
+                        quantity=existing_item.quantity,
+                        discount=existing_item.discount,
+                        item_name=existing_item.item_name,
+                        unit=existing_item.unit,
+                        edited_at=datetime.utcnow(),
+                        edited_by=edited_by,  # Pass from API or token
+                        action="update"
+                    )
+                    db.add(history)
+
+                    # Now update existing item
+                    for key, value in item_data.items():
+                        setattr(existing_item, key, value)
+                    db.add(existing_item)
+
+                else:
+                    # If new item, create it
+                    new_item = QuotationItem(quotation_id=quotation_id, **item_data)
+                    db.add(new_item)
+
+            # Optional: Delete items that were not included in this update
+            # for product_id, db_item in existing_items_map.items():
+            #     if product_id not in submitted_product_ids:
+            #         db.delete(db_item)
+
+        db.commit()  # Commit transaction
+        return {"status": "success", "message": "Quotation items updated and history recorded successfully."}
+
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 def delete_quotation(db: Session, quotation_id: int):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()

@@ -5,6 +5,7 @@ from app.models.outvoucher import Outvoucher
 from app.models.outvoucher_item import OutvoucherItem
 from app.models.quotation import Quotation
 from app.models.quotationitems import QuotationItem
+from app.models.QuotationItemHistory import QuotationItemHistory
 from app.models.products import Products
 from base import Base
 
