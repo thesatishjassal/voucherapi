@@ -133,7 +133,6 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list):
                         item_name=existing_item.item_name,
                         unit=existing_item.unit,
                         edited_at=datetime.utcnow(),
-                        edited_by=edited_by,
                         action="update"
                     )
                     db.add(history)

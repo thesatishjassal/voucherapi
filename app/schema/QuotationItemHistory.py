@@ -19,7 +19,6 @@ class QuotationItemHistorySchema(BaseModel):
     item_name: Optional[str]
     unit: Optional[str]
     edited_at: Optional[datetime]
-    edited_by: Optional[str]
     action: Optional[str]
 
     class Config:
