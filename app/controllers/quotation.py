@@ -150,12 +150,14 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> 
                     # ✅ Append updated item to response list
                     updated_items_list.append(
                         QuotationItemResponse(
+                            id=existing_item.id,
                             product_id=existing_item.product_id,
                             quantity=existing_item.quantity,
                             discount=existing_item.discount,
                             price=existing_item.price,
                             item_name=existing_item.item_name,
-                            unit=existing_item.unit
+                            unit=existing_item.unit,
+                            quotation_id=existing_item.quotation_id
                         )
                     )
 
@@ -168,12 +170,14 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> 
                     # ✅ Append new item to response list
                     updated_items_list.append(
                         QuotationItemResponse(
+                            id=new_item.id,
                             product_id=new_item.product_id,
                             quantity=new_item.quantity,
                             discount=new_item.discount,
                             price=new_item.price,
                             item_name=new_item.item_name,
-                            unit=new_item.unit
+                            unit=new_item.unit,
+                            quotation_id=new_item.quotation_id
                         )
                     )
 
