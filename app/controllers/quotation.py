@@ -98,7 +98,7 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
     db.refresh(quotation)
     return quotation
 
-def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> List[QuotationItemResponse]:
+def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[QuotationItemCreate]) -> List[QuotationItemResponse]:
     try:
         updated_items_list = []
 
@@ -115,7 +115,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> 
 
             # ✅ Process each item in the request
             for item_data in items:
-                product_id = item_data['product_id']
+                product_id = item_data.product_id
                 submitted_product_ids.add(product_id)
 
                 if product_id in existing_items_map:
@@ -143,7 +143,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> 
                     db.add(history)
 
                     # ✅ Update existing item
-                    for key, value in item_data.items():
+                    for key, value in item_data.dict().items():  # Convert to dict before iterating
                         setattr(existing_item, key, value)
                     db.add(existing_item)
 
@@ -163,7 +163,8 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> 
 
                 else:
                     # ✅ Add new item
-                    new_item = QuotationItem(quotation_id=quotation_id, **item_data)
+                    new_item_data = item_data.dict(exclude={"item_id", "quotation_id"})  # Exclude unnecessary fields if any
+                    new_item = QuotationItem(quotation_id=quotation_id, **new_item_data)
                     db.add(new_item)
                     db.flush()  # To generate ID immediately if needed for history or response
 
@@ -195,7 +196,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list) -> 
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-    
+
 def delete_quotation(db: Session, quotation_id: int):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
     if quotation:
