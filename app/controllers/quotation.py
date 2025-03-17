@@ -98,13 +98,6 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
     db.refresh(quotation)
     return quotation
 
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException
-from datetime import datetime
-from app.models.quotationitems import QuotationItem, QuotationItemHistory
-from app.models.quotation import Quotation
-
 def bulk_update_quotation_items(db: Session, quotation_id: int, items: list):
     try:
         with db.begin():  # Transaction start
