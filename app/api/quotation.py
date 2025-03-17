@@ -18,7 +18,7 @@ def create_outoucher_item_endpoint(quotation_id: int, item: QuotationItemCreate,
     """Add an item to an existing quotation."""
     return create_quotation_item(db, quotation_id, item)
 
-@router.put("/quotation/{quotation_id}/items/", response_model=QuotationItemResponse)
+@router.put("/quotation/{quotation_id}/items/", response_model=List[QuotationItemResponse])
 def bulk_update_items(quotation_id: int, items: List[dict], db: Session = Depends(get_db_connection)):
     return bulk_update_quotation_items(db, quotation_id, items)
 
