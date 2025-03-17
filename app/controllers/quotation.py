@@ -9,6 +9,7 @@ from app.models.QuotationItemHistory import QuotationItemHistory
 from app.schema.quotation import QuotationCreate
 from app.schema.quotation_items import QuotationItemCreate, QuotationItemResponse, QuotationItemBase
 from fastapi import HTTPException
+from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
@@ -75,6 +76,60 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryResponse]:
+    histories = db.query(QuotationItemHistory).all()
+    if not histories:
+        raise HTTPException(status_code=404, detail="No history records found")
+
+    return [
+        QuotationItemHistoryResponse(
+            id=history.id,
+            quotation_item_id=history.quotation_item_id,
+            quotation_id=history.quotation_id,
+            product_id=history.product_id,
+            customercode=history.customercode,
+            customerdescription=history.customerdescription,
+            image=history.image,
+            itemcode=history.itemcode,
+            brand=history.brand,
+            mrp=history.mrp,
+            price=history.price,
+            quantity=history.quantity,
+            discount=history.discount,
+            item_name=history.item_name,
+            unit=history.unit,
+            edited_at=history.edited_at,
+            action=history.action
+        ) for history in histories
+    ]
+
+def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> List[QuotationItemHistoryResponse]:
+    histories = db.query(QuotationItemHistory).filter(QuotationItemHistory.quotation_item_id == quotation_item_id).all()
+    if not histories:
+        raise HTTPException(status_code=404, detail=f"No history found for quotation item ID {quotation_item_id}")
+
+    return [
+        QuotationItemHistoryResponse(
+            id=history.id,
+            quotation_item_id=history.quotation_item_id,
+            quotation_id=history.quotation_id,
+            product_id=history.product_id,
+            customercode=history.customercode,
+            customerdescription=history.customerdescription,
+            image=history.image,
+            itemcode=history.itemcode,
+            brand=history.brand,
+            mrp=history.mrp,
+            price=history.price,
+            quantity=history.quantity,
+            discount=history.discount,
+            item_name=history.item_name,
+            unit=history.unit,
+            edited_at=history.edited_at,
+            action=history.action
+        ) for history in histories
+    ]
 
 def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationItem]:
     items = db.query(QuotationItem).filter(QuotationItem.quotation_id == int(quotation_id)).all()

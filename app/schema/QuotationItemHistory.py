@@ -21,5 +21,24 @@ class QuotationItemHistorySchema(BaseModel):
     edited_at: Optional[datetime]
     action: Optional[str]
 
+class QuotationItemHistoryResponse(BaseModel):
+    id: int
+    quotation_item_id: int
+    quotation_id: int
+    product_id: Optional[str]
+    customercode: Optional[str]
+    customerdescription: Optional[str]
+    image: Optional[str]
+    itemcode: Optional[str]
+    brand: Optional[str]
+    mrp: Optional[float]
+    price: Optional[float]
+    quantity: Optional[int]
+    discount: Optional[float]
+    item_name: Optional[str]
+    unit: Optional[str]
+    edited_at: datetime
+    action: str
+
     class Config:
         orm_mode = True

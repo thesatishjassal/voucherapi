@@ -2,9 +2,10 @@ from typing import List
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from database import get_db_connection
-from app.controllers.quotation import bulk_update_quotation_items, get_items_by_quotation_id, create_quotation_item, create_quotation, get_quotation_by_id, get_all_quotations, update_quotation, delete_quotation
+from app.controllers.quotation import get_all_quotation_item_histories, get_history_by_quotation_item_id, bulk_update_quotation_items, get_items_by_quotation_id, create_quotation_item, create_quotation, get_quotation_by_id, get_all_quotations, update_quotation, delete_quotation
 from app.schema.quotation import Quotation, QuotationCreate
 from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, QuotationItemResponse
+from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 
 app = FastAPI()
 router = APIRouter()
@@ -33,6 +34,15 @@ def read_quotation_api(quotation_id: int, db: Session = Depends(get_db_connectio
     if not quotation:
         raise HTTPException(status_code=404, detail="Quotation not found")
     return quotation
+
+@router.get("/quotation-history/", response_model=List[QuotationItemHistoryResponse])
+def fetch_all_histories(db: Session = Depends(get_db_connection)):
+    return get_all_quotation_item_histories(db)
+
+
+@router.get("/quotation-history/{quotation_item_id}", response_model=List[QuotationItemHistoryResponse])
+def fetch_history_by_item_id(quotation_item_id: int, db: Session = Depends(get_db_connection)):
+    return get_history_by_quotation_item_id(db, quotation_item_id)
 
 @router.get("/quotation/", response_model=list[Quotation])
 def read_all_quotation(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_connection)):
