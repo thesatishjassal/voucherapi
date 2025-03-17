@@ -101,28 +101,22 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
 def bulk_update_quotation_items(db: Session, quotation_id: int, items: list, edited_by: str):
     try:
         with db.begin():  # Transaction start
-            # Check if quotation exists
             quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
             if not quotation:
                 raise HTTPException(status_code=404, detail="Quotation not found")
 
-            # Existing items mapped by product_id
             existing_items = db.query(QuotationItem).filter(QuotationItem.quotation_id == quotation_id).all()
             existing_items_map = {item.product_id: item for item in existing_items}
-
-            # Track product_ids being processed
             submitted_product_ids = set()
 
-            # Process each item in the input
             for item_data in items:
                 product_id = item_data['product_id']
                 submitted_product_ids.add(product_id)
 
-                # If item exists, update and log history
                 if product_id in existing_items_map:
                     existing_item = existing_items_map[product_id]
 
-                    # ✅ Add history before update
+                    # Save history before update
                     history = QuotationItemHistory(
                         quotation_item_id=existing_item.id,
                         quotation_id=existing_item.quotation_id,
@@ -139,25 +133,20 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list, edi
                         item_name=existing_item.item_name,
                         unit=existing_item.unit,
                         edited_at=datetime.utcnow(),
-                        edited_by=edited_by,  # Pass from API or token
+                        edited_by=edited_by,
                         action="update"
                     )
                     db.add(history)
 
-                    # Now update existing item
+                    # Update item
                     for key, value in item_data.items():
                         setattr(existing_item, key, value)
                     db.add(existing_item)
 
                 else:
-                    # If new item, create it
+                    # New item insert
                     new_item = QuotationItem(quotation_id=quotation_id, **item_data)
                     db.add(new_item)
-
-            # Optional: Delete items that were not included in this update
-            # for product_id, db_item in existing_items_map.items():
-            #     if product_id not in submitted_product_ids:
-            #         db.delete(db_item)
 
         db.commit()  # Commit transaction
         return {"status": "success", "message": "Quotation items updated and history recorded successfully."}
@@ -173,7 +162,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list, edi
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
+    
 def delete_quotation(db: Session, quotation_id: int):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
     if quotation:

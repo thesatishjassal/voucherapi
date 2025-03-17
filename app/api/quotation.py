@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, APIRouter, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from database import get_db_connection
 from app.controllers.quotation import bulk_update_quotation_items, get_items_by_quotation_id, create_quotation_item, create_quotation, get_quotation_by_id, get_all_quotations, update_quotation, delete_quotation
@@ -19,8 +19,18 @@ def create_outoucher_item_endpoint(quotation_id: int, item: QuotationItemCreate,
     return create_quotation_item(db, quotation_id, item)
 
 @router.put("/quotation/{quotation_id}/items/", response_model=QuotationItemBase)
-def update_quotation_items(quotation_id: int, items: List[QuotationItemCreate], db: Session = Depends(get_db_connection)):
-    return bulk_update_quotation_items(db, quotation_id, [item.dict() for item in items])
+async def update_quotation_items(
+    quotation_id: int,
+    items: List[QuotationItemBase],  # Expecting list of items as body
+    edited_by: str = Query(..., description="User who edited the items"),  # Required query param
+    db: Session = Depends(get_db_connection)
+):
+    return bulk_update_quotation_items(
+        db=db,
+        quotation_id=quotation_id,
+        items=[item.dict() for item in items],  # Convert schema to dict
+        edited_by=edited_by
+    )
 
 @router.get("/quotation/{quotation_id}/items/", response_model=List[QuotationItemResponse])
 def read_quotation_items_endpoint(quotation_id: int, db: Session = Depends(get_db_connection)):
