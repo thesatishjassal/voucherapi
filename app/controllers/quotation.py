@@ -151,13 +151,19 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                     updated_items_list.append(
                         QuotationItemResponse(
                             id=existing_item.id,
+                            quotation_id=existing_item.quotation_id,
                             product_id=existing_item.product_id,
+                            customercode=existing_item.customercode,
+                            customerdescription=existing_item.customerdescription,
+                            image=existing_item.image,
+                            itemcode=existing_item.itemcode,
+                            brand=existing_item.brand,
+                            mrp=existing_item.mrp,
+                            price=existing_item.price,
                             quantity=existing_item.quantity,
                             discount=existing_item.discount,
-                            price=existing_item.price,
                             item_name=existing_item.item_name,
                             unit=existing_item.unit,
-                            quotation_id=existing_item.quotation_id
                         )
                     )
 
