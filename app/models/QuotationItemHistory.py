@@ -23,7 +23,7 @@ class QuotationItemHistory(Base):
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
     edited_at = Column(DateTime, default=datetime.utcnow)
-    edited_by = Column(String(100), nullable=True)
+    # edited_by = Column(String(100), nullable=True)
     action = Column(String(50), nullable=True)
 
     quotationitem = relationship("QuotationItem", back_populates="itemshistory")

@@ -22,14 +22,13 @@ def create_outoucher_item_endpoint(quotation_id: int, item: QuotationItemCreate,
 async def update_quotation_items(
     quotation_id: int,
     items: List[QuotationItemBase],  # Expecting list of items as body
-    edited_by: str = Query(..., description="User who edited the items"),  # Required query param
+    # edited_ by: str = Query(..., description="User who edited the items"),  # Required query param
     db: Session = Depends(get_db_connection)
 ):
     return bulk_update_quotation_items(
         db=db,
         quotation_id=quotation_id,
         items=[item.dict() for item in items],  # Convert schema to dict
-        edited_by=edited_by
     )
 
 @router.get("/quotation/{quotation_id}/items/", response_model=List[QuotationItemResponse])

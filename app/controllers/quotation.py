@@ -98,7 +98,7 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
     db.refresh(quotation)
     return quotation
 
-def bulk_update_quotation_items(db: Session, quotation_id: int, items: list, edited_by: str):
+def bulk_update_quotation_items(db: Session, quotation_id: int, items: list):
     try:
         with db.begin():  # Transaction start
             quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
