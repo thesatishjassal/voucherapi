@@ -98,25 +98,38 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
     db.refresh(quotation)
     return quotation
 
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
+from datetime import datetime
+from app.models.quotationitems import QuotationItem, QuotationItemHistory
+from app.models.quotation import Quotation
+
 def bulk_update_quotation_items(db: Session, quotation_id: int, items: list):
     try:
         with db.begin():  # Transaction start
+            # ✅ Check if quotation exists
             quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
             if not quotation:
                 raise HTTPException(status_code=404, detail="Quotation not found")
 
+            # ✅ Fetch existing items for the quotation
             existing_items = db.query(QuotationItem).filter(QuotationItem.quotation_id == quotation_id).all()
             existing_items_map = {item.product_id: item for item in existing_items}
+
+            # ✅ Track product_ids being processed
             submitted_product_ids = set()
 
+            # ✅ Process each incoming item
             for item_data in items:
                 product_id = item_data['product_id']
                 submitted_product_ids.add(product_id)
 
+                # ✅ If item exists, update it and log history
                 if product_id in existing_items_map:
                     existing_item = existing_items_map[product_id]
 
-                    # Save history before update
+                    # ✅ Save history before updating
                     history = QuotationItemHistory(
                         quotation_item_id=existing_item.id,
                         quotation_id=existing_item.quotation_id,
@@ -137,17 +150,22 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list):
                     )
                     db.add(history)
 
-                    # Update item
+                    # ✅ Update existing item fields
                     for key, value in item_data.items():
                         setattr(existing_item, key, value)
                     db.add(existing_item)
 
                 else:
-                    # New item insert
+                    # ✅ Ensure 'quotation_id' is not passed twice
+                    item_data.pop('quotation_id', None)
+
+                    # ✅ Add new item with quotation_id
                     new_item = QuotationItem(quotation_id=quotation_id, **item_data)
                     db.add(new_item)
 
-        db.commit()  # Commit transaction
+        # ✅ Commit transaction
+        db.commit()
+
         return {"status": "success", "message": "Quotation items updated and history recorded successfully."}
 
     except IntegrityError as e:
@@ -161,7 +179,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: list):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-    
+ 
 def delete_quotation(db: Session, quotation_id: int):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
     if quotation:
