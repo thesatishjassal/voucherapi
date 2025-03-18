@@ -241,7 +241,6 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
-            versionname=history.versionname,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -269,7 +268,6 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
-            versionname=history.versionname,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories

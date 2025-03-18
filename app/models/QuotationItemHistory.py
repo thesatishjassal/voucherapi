@@ -22,7 +22,6 @@ class QuotationItemHistory(Base):
     discount = Column(Integer, nullable=True)
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
-    versionname: Column(String(20), nullable=True)
     edited_at = Column(DateTime, default=datetime.utcnow)
     action = Column(String(50), nullable=True)
 
