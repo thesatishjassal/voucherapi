@@ -9,6 +9,7 @@ class User(Base):
     name = Column(String)
     phone = Column(String(15), unique=True, index=True)  # E.164 format max length 15
     password = Column(String)
+    role = Column(String)  # Added role field
 
     def __repr__(self):
-        return f"<User(id={self.id}, name={self.name}, phone={self.phone}, password={self.password})>"
+        return f"<User(id={self.id}, name={self.name}, phone={self.phone}, password={self.password}, role={self.role})>"

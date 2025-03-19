@@ -19,7 +19,6 @@ def read_root():
 async def create_new_user(user: UserCreate, db: Session = Depends(get_db_connection)):
     db_user = get_user_by_phone(user.phone, db)
     if db_user:
-        # raise HTTPException(status_code=400, detail="Phone Number already exists!")
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
@@ -37,7 +36,8 @@ async def create_new_user(user: UserCreate, db: Session = Depends(get_db_connect
                 "id": result.id,
                 "name": result.name,
                 "phone": result.phone,
-                "password": result.password  # Ensure this is properly hashed
+                "password": result.password,  # Ensure this is properly hashed in production
+                "role": result.role  # Added role field
             },
             "session_id": session_id
         }
@@ -70,7 +70,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db_connection)):
             content={
                 "message": result["message"],
                 "session_id": session_id,
-                "user_details": result["user_details"]
+                "user_details": result["user_details"]  # Already includes role from create_login
             }
         )
 

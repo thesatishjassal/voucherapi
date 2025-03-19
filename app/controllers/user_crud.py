@@ -4,7 +4,12 @@ from app.schema.user_schema import UserCreate, UserLogin
 
 def create_user(user_data: UserCreate, db: Session):
     # Directly store the plain password without hashing
-    user = User(name=user_data.name, phone=user_data.phone, password=user_data.password)  # Store plain password
+    user = User(
+        name=user_data.name,
+        phone=user_data.phone,
+        password=user_data.password,  # Store plain password
+        role=user_data.role  # Added role field
+    )
     db.add(user)  # Add the user to the session
     db.commit()  # Commit the session to save the user
     db.refresh(user)  # Refresh to load the user with the latest data from the database
@@ -21,14 +26,15 @@ def create_login(login_data: UserLogin, db: Session):
     user = get_user_by_phone(login_data.phone, db)
 
     if user:
-        # Check if the provided password matches the stored hashed password
+        # Check if the provided password matches the stored plain password
         if check_password(login_data.password, user.password):
             return {
                 "message": "Login successful",
                 "user_details": {
                     "user_id": user.id,
                     "phone": user.phone,
-                    "name": user.name
+                    "name": user.name,
+                    "role": user.role  # Added role to user_details
                 }
             }
         else:
