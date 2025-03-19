@@ -52,7 +52,7 @@ def update_client(client_data: ClientUpdate, client_id: int, db: Session):
 
 def delete_client(client_id: int, db: Session):
     # Find the existing client by ID
-    client =  db.query(Client).filter(client_id ==client_id).first()
+    client =  db.query(Client).filter(Client.id ==client_id).first()
     if client:
         db.delete(client)
         db.commit()
