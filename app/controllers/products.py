@@ -55,11 +55,6 @@ def create_products(products_data: ProductsCreate, db: Session):
             errors.append("Item Code already exists.")
         if existing_product.itemname == products_data.itemname:
             errors.append("Product Name already exists.")
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Validation Error", "errors": errors}
-        )
-
     # Create and save the product
     products = Products(**products_data.model_dump())
     db.add(products)
