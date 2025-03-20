@@ -7,6 +7,7 @@ from database import get_db_connection
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Response, HTTPException
 import secrets
+from app.models.products import Products
 
 app = FastAPI()
 
@@ -19,24 +20,54 @@ def read_root():
 from fastapi import HTTPException
 
 @router.post("/products/", response_model=ProductsResponse)
-async def create_new_products(products: ProductsCreate, db: Session = Depends(get_db_connection)):
-    """API endpoint to add a new product"""
-    try:
-        result = create_products(products, db)
+async def create_new_product(product: ProductsCreate, db: Session = Depends(get_db_connection)):
+    # Check for existing product
+    existing_product = db.query(Products).filter(
+        (Products.hsncode == product.hsncode) |
+        (Products.itemcode == product.itemcode) |
+        (Products.itemname == product.itemname)
+    ).first()
 
-        # Convert SQLAlchemy object to dictionary safely
-        product_dict = {key: getattr(result, key) for key in ProductsResponse.__annotations__ if hasattr(result, key)}
-        
-        # Add success message
-        return {**product_dict, "message": "Product added successfully"}
-    
-    except HTTPException as e:
-        raise e  # Pass validation or known errors
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"message": "Something went wrong", "error": str(e)}
-        )
+    if existing_product:
+        errors = []
+        if existing_product.hsncode == product.hsncode:
+            errors.append("HSN Code already exists.")
+        if existing_product.itemcode == product.itemcode:
+            errors.append("Item Code already exists.")
+        if existing_product.itemname == product.itemname:
+            errors.append("Product Name already exists.")
+
+        raise HTTPException(status_code=400, detail={"message": "Validation Error", "errors": errors})
+
+    # Create new product
+    result = create_products(product, db)
+    session_id = secrets.token_hex(16)
+
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={
+            "message": "Product added successfully",
+            "product": {
+                "id": result.id,
+                "hsncode": result.hsncode,
+                "itemcode": result.itemcode,
+                "itemname": result.itemname,
+                "description": result.description,
+                "category": result.category,
+                "subcategory": result.subcategory,
+                "price": result.price,
+                "quantity": result.quantity,
+                "rackcode": result.rackcode,
+                "thumbnail": result.thumbnail,
+                "size": result.size,
+                "color": result.color,
+                "model": result.model,
+                "brand": result.brand,
+                "unit": result.unit
+            },
+            "session_id": session_id
+        }
+    )
     
 @router.get("/products/", response_model=list[ProductsResponse])
 async def get_all_products(db:Session = Depends(get_db_connection)):

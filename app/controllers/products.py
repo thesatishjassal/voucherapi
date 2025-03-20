@@ -40,48 +40,12 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
 
     return {"message": "Thumbnail uploaded successfully!", "thumbnail": public_url}
 
-def create_products(products_data: ProductsCreate, db: Session):
-    """Creates a new product if it does not exist already."""
-    
-    # Check for existing product
-    existing_product = db.query(Products).filter(
-        (Products.hsncode == products_data.hsncode) |
-        (Products.itemcode == products_data.itemcode) |
-        (Products.itemname == products_data.itemname)
-    ).first()
-
-    if existing_product:
-        errors = []
-        if existing_product.hsncode == products_data.hsncode:
-            errors.append("HSN Code already exists.")
-        if existing_product.itemcode == products_data.itemcode:
-            errors.append("Item Code already exists.")
-        if existing_product.itemname == products_data.itemname:
-            errors.append("Product Name already exists.")
-
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Validation Error", "errors": errors}
-        )
-
-    # Create a new product
-    products = Products(**products_data.model_dump())
-    db.add(products)
-
-    try:
-        db.flush()  # Ensure the ID is generated before refresh
-        
-        if not products.id:  # Ensure the primary key is set
-            raise HTTPException(status_code=500, detail="Database error: Product ID not generated")
-        
-        db.refresh(products)  # Refresh safely
-        db.commit()
-    
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail={"message": "Duplicate entry: Product already exists."})
-
-    return products
+def create_products(product_data: ProductsCreate, db: Session):
+    product = Products(**product_data.model_dump())
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    return product
 
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
