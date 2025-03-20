@@ -22,11 +22,13 @@ from fastapi import HTTPException
 async def create_new_products(products: ProductsCreate, db: Session = Depends(get_db_connection)):
     try:
         result = create_products(products, db)
-        print(result.__dict__)
-        product_dict = result.__dict__.copy()
-        product_dict["message"] = "Product added successfully"
-        print(product_dict)
-        return ProductsResponse(**product_dict)
+
+        # Convert result to a dictionary, only including serializable fields
+        product_dict = {key: getattr(result, key) for key in ProductsResponse.__annotations__ if hasattr(result, key)}
+        
+        # Add success message separately
+        return {**product_dict, "message": "Product added successfully"}
+    
     except HTTPException as e:
         raise e 
     except Exception as e:
