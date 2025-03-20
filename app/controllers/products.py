@@ -1,4 +1,5 @@
 from http.client import HTTPException
+from sqlite3 import IntegrityError
 from typing import List, Union
 from sqlalchemy.orm import Session
 from app.models.products import Products
@@ -40,6 +41,9 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
     return {"message": "Thumbnail uploaded successfully!", "thumbnail": public_url}
 
 def create_products(products_data: ProductsCreate, db: Session):
+    """Creates a new product if it does not exist already."""
+    
+    # Check for existing product
     existing_product = db.query(Products).filter(
         (Products.hsncode == products_data.hsncode) |
         (Products.itemcode == products_data.itemcode) |
@@ -54,18 +58,30 @@ def create_products(products_data: ProductsCreate, db: Session):
             errors.append("Item Code already exists.")
         if existing_product.itemname == products_data.itemname:
             errors.append("Product Name already exists.")
+
         raise HTTPException(
             status_code=400,
             detail={"message": "Validation Error", "errors": errors}
         )
 
-    # Create and save the product
+    # Create a new product
     products = Products(**products_data.model_dump())
     db.add(products)
-    db.commit()
-    db.refresh(products)
+
+    try:
+        db.flush()  # Ensure the ID is generated before refresh
+        
+        if not products.id:  # Ensure the primary key is set
+            raise HTTPException(status_code=500, detail="Database error: Product ID not generated")
+        
+        db.refresh(products)  # Refresh safely
+        db.commit()
     
-    return {"message": "Product added successfully", "product": products_data.model_dump()}  # Return a dictionary
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail={"message": "Duplicate entry: Product already exists."})
+
+    return products
 
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):

@@ -20,17 +20,18 @@ from fastapi import HTTPException
 
 @router.post("/products/", response_model=ProductsResponse)
 async def create_new_products(products: ProductsCreate, db: Session = Depends(get_db_connection)):
+    """API endpoint to add a new product"""
     try:
         result = create_products(products, db)
 
-        # Convert result to a dictionary, only including serializable fields
+        # Convert SQLAlchemy object to dictionary safely
         product_dict = {key: getattr(result, key) for key in ProductsResponse.__annotations__ if hasattr(result, key)}
         
-        # Add success message separately
+        # Add success message
         return {**product_dict, "message": "Product added successfully"}
     
     except HTTPException as e:
-        raise e 
+        raise e  # Pass validation or known errors
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
