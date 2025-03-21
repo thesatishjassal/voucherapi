@@ -15,7 +15,7 @@ class Quotation(Base):
     amount_with_gst = Column(Integer, nullable=True)
     warranty_guarantee = Column(String(100), nullable=True)
     remarks = Column(String(100), nullable=True)
-    status = Column(Boolean, nullable=True)
+    status = Column(String, nullable=True)
     date = Column(Date, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
