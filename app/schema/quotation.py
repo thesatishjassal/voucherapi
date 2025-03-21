@@ -27,7 +27,7 @@ class QuotationCreate(BaseModel):
     amount_with_gst: Optional[int] = None
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
-    status: Optional[bool] = None
+    status: Optional[str] = None
     date: Optional[date] = None
     client_id: int
 
