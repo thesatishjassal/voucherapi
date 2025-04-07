@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from base import Base
 
@@ -7,7 +7,7 @@ class Products(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     hsncode = Column(String, unique=True)
-    itemcode = Column(String(50), primary_key=True, unique=True, nullable=False)  # Add unique constraint
+    itemcode = Column(String(50), primary_key=True, unique=True, nullable=False)
     itemname = Column(String)
     description = Column(String)
     category = Column(String)
@@ -22,7 +22,11 @@ class Products(Base):
     brand = Column(String)
     unit = Column(String)
 
-    # ✅ Fixed Relationships
+    # ✅ New Fields
+    reorderqty = Column(String, nullable=True)
+    reorderEnabled = Column(Boolean, default=False)
+
+    # ✅ Relationships
     items = relationship("InvoucherItem", back_populates="product")  
     outvoucher_items = relationship("OutvoucherItem", back_populates="product")
     quotation_items = relationship("QuotationItem", back_populates="product")

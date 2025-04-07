@@ -1,7 +1,6 @@
 from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
 
-
 # -----------------------------------------------
 # ✅ Create Product Schema
 # -----------------------------------------------
@@ -12,15 +11,16 @@ class ProductsCreate(BaseModel):
     description: str
     category: str
     subcategory: str
-    price: float  # Keeping price as float for arithmetic operations
-    quantity: int  # Quantity as integer for stock management
+    price: float
+    quantity: int
     rackcode: str
     size: str
     color: str
     model: str
     brand: str
     unit: str
-
+    reorderqty: Optional[int] = None
+    reorderEnabled: Optional[bool] = False
 
 # -----------------------------------------------
 # ✅ Update Product Schema (Optional fields)
@@ -32,8 +32,8 @@ class ProductsUpdate(BaseModel):
     description: Optional[str] = None
     category: Optional[str] = None
     subcategory: Optional[str] = None
-    price: Optional[float] = None  # Float for consistency
-    quantity: Optional[int] = None  # Int for stock update
+    price: Optional[float] = None
+    quantity: Optional[int] = None
     rackcode: Optional[str] = None
     thumbnail: Optional[str] = None
     size: Optional[str] = None
@@ -41,7 +41,8 @@ class ProductsUpdate(BaseModel):
     model: Optional[str] = None
     brand: Optional[str] = None
     unit: Optional[str] = None
-
+    reorderqty: Optional[int] = None
+    reorderEnabled: Optional[bool] = None
 
 # -----------------------------------------------
 # ✅ Response Schema
@@ -55,15 +56,17 @@ class ProductsResponse(BaseModel):
     unit: str
     category: str
     subcategory: str
-    price: float  # Return as float for frontend calculations
-    quantity: int  # Return as int
+    price: float
+    quantity: int
     rackcode: str
     thumbnail: Optional[str] = None
     size: str
     color: str
     model: str
     brand: str
+    reorderqty: Optional[int] = None
+    reorderEnabled: Optional[bool] = None
     message: Optional[str] = None
-    invoucher_items: Optional[List[dict]] = None  # If relational, replace dict with specific schema later
+    invoucher_items: Optional[List[dict]] = None
 
     model_config = ConfigDict(from_attributes=True)
