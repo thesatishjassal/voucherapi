@@ -7,6 +7,7 @@ from app.api.invouchers import router as invouchers_router  # import the router 
 from app.api.products import router as products_router  # import the router with product routes
 from app.api.outvouchers import router as outvouchers_router  # import the router with outvoucher routes
 from app.api.quotation import router as quotations_router  # import the router with outvoucher routes
+from app.api.SalesOrder import router as sales_router  # import the router with outvoucher routes
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles 
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -45,6 +46,7 @@ app.include_router(invouchers_router)
 app.include_router(outvouchers_router)
 app.include_router(quotations_router)
 app.include_router(product_import_router)  # ✅ Correct
+app.include_router(sales_router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Increase max request size

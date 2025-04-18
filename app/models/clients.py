@@ -21,3 +21,4 @@ class Client(Base):
     quotations = relationship("Quotation", back_populates="client")  
     invouchers = relationship("Invoucher", back_populates="client")
     outvouchers = relationship("Outvoucher", back_populates="client")
+    salesorder = relationship("SalesOrder", back_populates="client")  
