@@ -28,6 +28,6 @@ class Products(Base):
 
     # ✅ Relationships
     items = relationship("InvoucherItem", back_populates="product")  
-    items = relationship("SalesorderItems", back_populates="product")  
+    salesitems = relationship("SalesorderItems", back_populates="product")  
     outvoucher_items = relationship("OutvoucherItem", back_populates="product")
     quotation_items = relationship("QuotationItem", back_populates="product")

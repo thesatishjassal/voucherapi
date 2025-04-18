@@ -21,5 +21,5 @@ class SalesorderItems(Base):
     unit = Column(String(20), nullable=True)
 
     # Relationships
-    salesorders = relationship("SalesOrder", back_populates="items")
+    salesorders = relationship("SalesOrder", back_populates="salesitems")
     product = relationship("Products", back_populates="salesorderitems")
