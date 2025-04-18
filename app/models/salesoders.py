@@ -19,6 +19,5 @@ class SalesOrder(Base):
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
     # Relationships
-    client = relationship("Client", back_populates="salesorders")
+    client = relationship("Client", back_populates="salesorder")
     items = relationship("SalesorderItems", back_populates="salesorders")
- 

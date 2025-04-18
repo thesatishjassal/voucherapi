@@ -41,4 +41,4 @@ class QuotationItemHistoryResponse(BaseModel):
     action: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
