@@ -6,7 +6,7 @@ class SalesorderItems(Base):
     __tablename__ = "salesorderitems"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    quotation_id = Column(Integer, ForeignKey("quotations.quotation_id"), nullable=True)
+    salesorder_id = Column(Integer, ForeignKey("salesorders.salesorder_id"), nullable=True)
     product_id = Column(String(50), ForeignKey("products.itemcode"))
     customercode = Column(String(100), nullable=True)
     customerdescription = Column(String(100), nullable=True)  # ✅ Lowercase
