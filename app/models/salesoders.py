@@ -18,6 +18,6 @@ class SalesOrder(Base):
     date = Column(Date, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
-    # Relationships
+    # ✅ Relationship
     client = relationship("Client", back_populates="salesorder")
-    items = relationship("SalesorderItems", back_populates="salesorders")
+    salesitems = relationship("SalesorderItems", back_populates="salesorder", cascade="all, delete-orphan")
