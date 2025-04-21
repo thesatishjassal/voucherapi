@@ -14,8 +14,8 @@ from app.controllers.Salesorder import (
     get_items_by_salesorder_id,
 )
 from app.schema.SalesOrder import SalesOrder, SalesOrderCreate, SalesOrderUpdate
-from app.schema.Salesorderitems import SalesorderItemCreate, SalesorderItemResponse
-from app.models.salesorderitems import SalesorderItems
+from app.schema.Salesoderitems import SalesorderItemCreate, SalesorderItemResponse
+from app.models.salesoderitems import SalesorderItems
 
 router = APIRouter(tags=["Sales Orders API"])
 
