@@ -2,9 +2,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
 
-class SalesoderItemBase(BaseModel):
-    """Base schema for Salesoderitems items aligned with the product info table."""
-    salesoderitems_id: Optional[int] = Field(None, description="Associated Salesoderitems ID")
+class SalesorderItemBase(BaseModel):
+    """Base schema for SalesorderItems aligned with the product info table."""
+    salesorderitems_id: Optional[int] = Field(None, description="Associated SalesorderItems ID")
     product_id: Optional[str] = Field(None, description="Product unique identifier")
     customercode: Optional[str] = Field(None, description="Customer code")
     customerdescription: Optional[str] = Field(None, description="Customer product description")
@@ -12,7 +12,7 @@ class SalesoderItemBase(BaseModel):
     itemcode: Optional[str] = Field(None, description="Item code")
     brand: Optional[str] = Field(None, description="Brand name")
     mrp: Optional[int] = Field(None, description="Maximum Retail Price")
-    price: Optional[int] = Field(None, description="Price for Salesoderitems")
+    price: Optional[int] = Field(None, description="Price for SalesorderItem")
     quantity: int = Field(..., description="Quantity of product", ge=0)
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item")
@@ -21,13 +21,13 @@ class SalesoderItemBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SalesoderItemCreate(SalesoderItemBase):
-    """Schema for creating a new Salesoderitems item (without ID)."""
-    pass  # No ID required as it's auto-generated
+class SalesorderItemCreate(SalesorderItemBase):
+    """Schema for creating a new SalesorderItem (without ID)."""
+    pass
 
 
-class SalesoderItemResponse(SalesoderItemBase):
-    """Schema for responding with Salesoderitems item data including item_id mapped from 'id'."""
+class SalesorderItemResponse(SalesorderItemBase):
+    """Schema for responding with SalesorderItem data including item_id mapped from 'id'."""
     item_id: int = Field(..., alias="id", description="Auto-generated unique identifier for the item")
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)  # ✅ Support aliasing 'id' to 'item_id'
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)

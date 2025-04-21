@@ -6,12 +6,12 @@ from app.models.products import Products
 from app.models.salesoders import SalesOrder
 from app.models.salesoderitems import SalesorderItems
 from app.schema.SalesOrder import SalesOrderCreate, SalesOrder, SalesOrderUpdate
-from app.schema.Salesoderitems import SalesoderItemCreate, SalesoderItemResponse
+from app.schema.Salesoderitems import SalesorderItemCreate, SalesorderItemResponse
 from fastapi import HTTPException
 
 # --- Sales Order Item Functions ---
 
-def create_salesorder_item(db: Session, salesorder_id: int, item: SalesoderItemCreate) -> SalesoderItemResponse:
+def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItemCreate) -> SalesorderItemResponse:
     """
     Create a new sales order item for a given sales order.
     """
@@ -45,7 +45,7 @@ def create_salesorder_item(db: Session, salesorder_id: int, item: SalesoderItemC
             db.refresh(db_item)  # Refresh to get the latest DB state
 
         # Return the response schema (maps 'id' to 'item_id')
-        return SalesoderItemResponse(
+        return SalesorderItemResponse(
             item_id=db_item.id,
             salesoderitems_id=db_item.id,
             product_id=db_item.product_id,
@@ -71,7 +71,7 @@ def create_salesorder_item(db: Session, salesorder_id: int, item: SalesoderItemC
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[SalesoderItemCreate]) -> List[SalesoderItemResponse]:
+def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[SalesorderItemCreate]) -> List[SalesorderItemResponse]:
     """
     Bulk update or create sales order items for a given sales order, deleting items not in the submitted list.
     """
@@ -115,7 +115,7 @@ def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[Sa
 
                     # Append updated item to response list
                     updated_items_list.append(
-                        SalesoderItemResponse(
+                        SalesorderItemResponse(
                             item_id=existing_item.id,
                             salesoderitems_id=existing_item.id,
                             product_id=existing_item.product_id,
@@ -141,7 +141,7 @@ def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[Sa
 
                     # Append new item to response list
                     updated_items_list.append(
-                        SalesoderItemResponse(
+                        SalesorderItemResponse(
                             item_id=new_item.id,
                             salesoderitems_id=new_item.id,
                             product_id=new_item.product_id,
@@ -179,7 +179,7 @@ def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[Sa
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-def get_items_by_salesorder_id(db: Session, salesorder_id: int) -> List[SalesoderItemResponse]:
+def get_items_by_salesorder_id(db: Session, salesorder_id: int) -> List[SalesorderItemResponse]:
     """
     Retrieve all items for a given sales order.
     """
@@ -188,7 +188,7 @@ def get_items_by_salesorder_id(db: Session, salesorder_id: int) -> List[Salesode
         raise HTTPException(status_code=404, detail="No items found for this sales order ID")
     
     return [
-        SalesoderItemResponse(
+        SalesorderItemResponse(
             item_id=item.id,
             salesoderitems_id=item.id,
             product_id=item.product_id,

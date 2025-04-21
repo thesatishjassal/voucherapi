@@ -14,7 +14,7 @@ from app.controllers.Salesorder import (
     get_items_by_salesorder_id,
 )
 from app.schema.SalesOrder import SalesOrder, SalesOrderCreate, SalesOrderUpdate
-from app.schema.Salesoderitems import SalesoderItemCreate, SalesoderItemResponse
+from app.schema.Salesoderitems import SalesorderItemCreate, SalesorderItemResponse
 from app.models.salesoderitems import SalesorderItems
 
 app = FastAPI()
@@ -68,27 +68,27 @@ def delete_salesorder_api(salesorder_id: int, db: Session = Depends(get_db_conne
 
 # --- Sales Order Item Endpoints ---
 
-@router.post("/salesorder/{salesorder_id}/items/", response_model=SalesoderItemResponse)
-def create_salesorder_item_api(salesorder_id: int, item: SalesoderItemCreate, db: Session = Depends(get_db_connection)):
+@router.post("/salesorder/{salesorder_id}/items/", response_model=SalesorderItemResponse)
+def create_salesorder_item_api(salesorder_id: int, item: SalesorderItemCreate, db: Session = Depends(get_db_connection)):
     """
     Add an item to a sales order.
     """
     return create_salesorder_item(db, salesorder_id, item)
 
-@router.put("/salesorder/{salesorder_id}/items/", response_model=List[SalesoderItemResponse])
-def bulk_update_salesorder_items_api(salesorder_id: int, items: List[SalesoderItemCreate], db: Session = Depends(get_db_connection)):
+@router.put("/salesorder/{salesorder_id}/items/", response_model=List[SalesorderItemResponse])
+def bulk_update_salesorder_items_api(salesorder_id: int, items: List[SalesorderItemCreate], db: Session = Depends(get_db_connection)):
     """
     Bulk update or create sales order items for a given sales order.
     """
     return bulk_update_salesorder_items(db, salesorder_id, items)
 
-@router.get("/salesorder/{salesorder_id}/items/", response_model=List[SalesoderItemResponse])
+@router.get("/salesorder/{salesorder_id}/items/", response_model=List[SalesorderItemResponse])
 def read_salesorder_items_api(salesorder_id: int, db: Session = Depends(get_db_connection)):
     """
     Get all items for a given sales order.
     """
     items = get_items_by_salesorder_id(db, salesorder_id)
-    return items  # Controller already returns List[SalesoderItemResponse]
+    return items  # Controller already returns List[SalesorderItemResponse]
 
 @router.delete("/salesorder/{salesorder_id}/items/{item_id}")
 def delete_salesorder_item_api(salesorder_id: int, item_id: int, db: Session = Depends(get_db_connection)):
