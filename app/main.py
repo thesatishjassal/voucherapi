@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from app.products_import import router as product_import_router  # ✅ Import router here
-from app.api.wooproducts import products
+from app.api.wooproducts import router as woo_router
 
 app = FastAPI()
 # Middleware to allow larger file uploads
@@ -48,7 +48,7 @@ app.include_router(outvouchers_router)
 app.include_router(quotations_router)
 app.include_router(product_import_router)  # ✅ Correct
 app.include_router(sales_router)
-app.include_router(products.router)
+app.include_router(woo_router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Increase max request size
