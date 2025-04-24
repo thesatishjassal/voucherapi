@@ -59,6 +59,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "model": str(row[11]).strip() if row[11] is not None else "",
                 "brand": str(row[12]).strip() if row[12] is not None else "",
                 "unit": str(row[13]).strip() if row[13] is not None else "",
+                "reorderqty": int(row[14]) if row[14] is not None else 10,
             }
 
             # Convert dict to Pydantic model
