@@ -69,7 +69,6 @@ def create_products(products_data: ProductsCreate, db: Session):
     return products  # Returns a Products object
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
-
     # Ensure products_data is a list for uniform processing
     if not isinstance(products_data, list):
         products_data = [products_data]
@@ -96,8 +95,23 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
             errors.append(product_errors)
             continue  # Skip adding this product and move to next
 
+        # Ensure proper type conversion if needed
+        product_dict = product_data.model_dump()
+
+        if "reorderqty" in product_dict:
+            try:
+                product_dict["reorderqty"] = int(product_dict["reorderqty"])
+            except (ValueError, TypeError):
+                product_dict["reorderqty"] = 0  # Or raise error if needed
+
+        if "quantity" in product_dict:
+            try:
+                product_dict["quantity"] = int(product_dict["quantity"])
+            except (ValueError, TypeError):
+                product_dict["quantity"] = 0
+
         # Create and append product if no conflicts
-        product = Products(**product_data.model_dump())
+        product = Products(**product_dict)
         db.add(product)
         created_products.append(product)
 
@@ -115,9 +129,7 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
     for product in created_products:
         db.refresh(product)
 
-    # Return single product if only one was added, otherwise return the list
     return created_products[0] if len(created_products) == 1 else created_products
-
 
 def get_products(db: Session):
     return db.query(Products).all()
