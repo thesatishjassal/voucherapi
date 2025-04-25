@@ -10,6 +10,7 @@ import os
 import uuid  # For unique file names
 from config import UPLOAD_DIR  # Import the correct upload directory
 from sqlalchemy import select
+import logging
 
 def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
     product = db.query(Products).filter(Products.id == product_id).first()
@@ -67,6 +68,10 @@ def create_products(products_data: ProductsCreate, db: Session):
     
     return products  # Returns a Products object
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
     # Ensure products_data is a list for uniform processing
     if not isinstance(products_data, list):
@@ -76,8 +81,11 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
     updated_products = []
     errors = []
 
-    for product_data in products_data:
-        # Explicitly select only the columns needed for the duplicate check
+    for idx, product_data in enumerate(products_data):
+        # Log the data types of key fields
+        logger.info(f"Processing product {idx + 1}: reorderqty={product_data.reorderqty} (type: {type(product_data.reorderqty)}), quantity={product_data.quantity} (type: {type(product_data.quantity)}), price={product_data.price} (type: {type(product_data.price)})")
+
+        # Check for existing product
         stmt = select(Products).where(
             (Products.hsncode == product_data.hsncode) |
             (Products.itemcode == product_data.itemcode) |
@@ -88,14 +96,25 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
         if existing_product:
             # Update the existing product
             for key, value in product_data.model_dump().items():
-                if hasattr(existing_product, key):  # Only update existing attributes
+                if hasattr(existing_product, key):
                     setattr(existing_product, key, value)
             updated_products.append(existing_product)
+            db.commit()  # Commit the update
+            db.refresh(existing_product)
             continue
 
-        product = Products(**product_data.model_dump())
+        # Create a new product
+        product_dict = product_data.model_dump()
+        product = Products(**product_dict)
         db.add(product)
-        created_products.append(product)
+        try:
+            db.commit()  # Commit each insert individually
+            db.refresh(product)
+            created_products.append(product)
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Failed to insert product {idx + 1}: {str(e)}")
+            errors.append({"product": product_dict, "error": str(e)})
 
     if errors:
         raise HTTPException(
@@ -103,13 +122,7 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
             detail={"message": "Validation Error", "errors": errors}
         )
 
-    db.commit()
-
-    for product in created_products + updated_products:
-        db.refresh(product)
-
     return created_products + updated_products
-
 def get_products(db: Session):
     return db.query(Products).all()
 

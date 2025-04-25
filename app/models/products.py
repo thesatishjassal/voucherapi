@@ -12,8 +12,8 @@ class Products(Base):
     description = Column(String)
     category = Column(String)
     subcategory = Column(String)
-    price = Column(String)
-    quantity = Column(String)
+    price = Column(Float)  # Changed from String to Float
+    quantity = Column(Integer)  # Changed from String to Integer
     rackcode = Column(String)
     thumbnail = Column(String, nullable=True)
     size = Column(String)
@@ -21,8 +21,7 @@ class Products(Base):
     model = Column(String)
     brand = Column(String)
     unit = Column(String)
-
-    reorderqty = Column(String, nullable=True)
+    reorderqty = Column(Integer, nullable=True)  # Changed from String to Integer
     # reorderEnabled = Column(Boolean, default=False)
 
     # Relationships

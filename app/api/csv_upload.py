@@ -1,13 +1,12 @@
-from fastapi import UploadFile, HTTPException
+from fastapi import UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-# Removed unused import: Products
+from app.models.products import Products
 from app.schema.products import ProductsCreate
 import csv
 import io
 from typing import List
 import logging
-
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -38,10 +37,18 @@ def upload_csv(file: UploadFile, db: Session):
                     if field not in row or not row[field].strip():
                         raise ValueError(f"Missing or empty field: {field}")
 
-                # Explicit type conversion with logging
+                # Explicit type conversion with validation
                 price = float(row['price'])
                 quantity = int(row['quantity'])
                 reorderqty = int(row['reorderqty']) if row['reorderqty'].strip() else 0
+
+                # Validate types
+                if not isinstance(price, float):
+                    raise ValueError(f"Invalid price value for row {row_num}: {row['price']}")
+                if not isinstance(quantity, int):
+                    raise ValueError(f"Invalid quantity value for row {row_num}: {row['quantity']}")
+                if not isinstance(reorderqty, int):
+                    raise ValueError(f"Invalid reorderqty value for row {row_num}: {row['reorderqty']}")
 
                 logger.info(f"Row {row_num} - price: {price} (type: {type(price)}), quantity: {quantity} (type: {type(quantity)}), reorderqty: {reorderqty} (type: {type(reorderqty)})")
 
@@ -77,20 +84,18 @@ def upload_csv(file: UploadFile, db: Session):
                 detail=f"No valid rows found in CSV. Failed rows: {failed_rows}"
             )
 
-        # Process in batches of 10 to isolate issues
-        BATCH_SIZE = 10
+        # Process one row at a time to ensure correct type mapping
         uploaded_count = 0
         batch_failed_rows = []
 
         from app.controllers.products import upload_products
-        for i in range(0, len(products_data), BATCH_SIZE):
-            batch = products_data[i:i + BATCH_SIZE]
+        for idx, product_data in enumerate(products_data):
             try:
-                result = upload_products(batch, db)
-                uploaded_count += len(batch) if isinstance(result, list) else 1
+                result = upload_products(product_data, db)
+                uploaded_count += 1
             except HTTPException as e:
-                logger.error(f"Batch {i//BATCH_SIZE + 1} failed: {str(e.detail)}")
-                batch_failed_rows.append({"batch": i//BATCH_SIZE + 1, "error": str(e.detail)})
+                logger.error(f"Product {idx + 1} failed: {str(e.detail)}")
+                batch_failed_rows.append({"product": idx + 1, "error": str(e.detail)})
 
         response = {
             "message": "CSV data processed",
