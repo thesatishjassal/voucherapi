@@ -67,17 +67,43 @@ def create_products(products_data: ProductsCreate, db: Session):
     return products  # Returns a Products object
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
-    if isinstance(products_data, ProductsCreate):
-        # Handle single product creation
-        return create_products(products_data, db)
-    elif isinstance(products_data, list):
-        # Handle batch product creation
-        created_products = []
-        for product_data in products_data:
-            created_products.append(create_products(product_data, db))
-        return created_products
-    else:
-        raise HTTPException(status_code=400, detail="Invalid data format")
+    if not isinstance(products_data, list):
+        products_data = [products_data]
+
+    created_products = []
+    updated_products = []
+    errors = []
+
+    for product_data in products_data:
+        existing_product = db.query(Products).filter(
+            (Products.hsncode == product_data.hsncode) |
+            (Products.itemcode == product_data.itemcode) |
+            (Products.itemname == product_data.itemname)
+        ).first()
+
+        if existing_product:
+            # Update the existing product
+            for key, value in product_data.model_dump().items():
+                setattr(existing_product, key, value)
+            updated_products.append(existing_product)
+            continue
+
+        product = Products(**product_data.model_dump())
+        db.add(product)
+        created_products.append(product)
+
+    if errors:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Validation Error", "errors": errors}
+        )
+
+    db.commit()
+
+    for product in created_products + updated_products:
+        db.refresh(product)
+
+    return created_products + updated_products
 
 def get_products(db: Session):
     return db.query(Products).all()
