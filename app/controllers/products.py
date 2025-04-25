@@ -4,9 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.products import Products
 from app.schema.products import ProductsCreate, ProductsUpdate
 from fastapi import HTTPException
-from fastapi import UploadFile, File
-# from sqlalchemy.orm import Session
-# from app.models.products import Products
+from fastapi import UploadFile
 import shutil
 import os
 import uuid  # For unique file names
@@ -69,67 +67,17 @@ def create_products(products_data: ProductsCreate, db: Session):
     return products  # Returns a Products object
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
-    # Ensure products_data is a list for uniform processing
-    if not isinstance(products_data, list):
-        products_data = [products_data]
-
-    created_products = []
-    errors = []
-
-    for product_data in products_data:
-        # Check for existing product conflicts
-        existing_product = db.query(Products).filter(
-            (Products.hsncode == product_data.hsncode) |
-            (Products.itemcode == product_data.itemcode) |
-            (Products.itemname == product_data.itemname)
-        ).first()
-
-        if existing_product:
-            product_errors = {"itemcode": product_data.itemcode, "errors": []}
-            if existing_product.hsncode == product_data.hsncode:
-                product_errors["errors"].append("HSN Code already exists.")
-            if existing_product.itemcode == product_data.itemcode:
-                product_errors["errors"].append("Item Code already exists.")
-            if existing_product.itemname == product_data.itemname:
-                product_errors["errors"].append("Product Name already exists.")
-            errors.append(product_errors)
-            continue  # Skip adding this product and move to next
-
-        # Ensure proper type conversion if needed
-        product_dict = product_data.model_dump()
-
-        if "reorderqty" in product_dict:
-            try:
-                product_dict["reorderqty"] = int(product_dict["reorderqty"])
-            except (ValueError, TypeError):
-                product_dict["reorderqty"] = 0  # Or raise error if needed
-
-        if "quantity" in product_dict:
-            try:
-                product_dict["quantity"] = int(product_dict["quantity"])
-            except (ValueError, TypeError):
-                product_dict["quantity"] = 0
-
-        # Create and append product if no conflicts
-        product = Products(**product_dict)
-        db.add(product)
-        created_products.append(product)
-
-    if errors:
-        # If any errors occurred, raise exception without committing anything
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Validation Error", "errors": errors}
-        )
-
-    # Commit only if all products are valid and added
-    db.commit()
-
-    # Refresh all created products to get DB-generated fields like IDs
-    for product in created_products:
-        db.refresh(product)
-
-    return created_products[0] if len(created_products) == 1 else created_products
+    if isinstance(products_data, ProductsCreate):
+        # Handle single product creation
+        return create_products(products_data, db)
+    elif isinstance(products_data, list):
+        # Handle batch product creation
+        created_products = []
+        for product_data in products_data:
+            created_products.append(create_products(product_data, db))
+        return created_products
+    else:
+        raise HTTPException(status_code=400, detail="Invalid data format")
 
 def get_products(db: Session):
     return db.query(Products).all()
