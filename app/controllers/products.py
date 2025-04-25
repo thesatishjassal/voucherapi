@@ -73,44 +73,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
-    # Ensure products_data is a list for uniform processing
     if not isinstance(products_data, list):
         products_data = [products_data]
 
-    created_products = []
-    updated_products = []
+    inserted_count = 0
     errors = []
 
     for idx, product_data in enumerate(products_data):
-        # Log the data types of key fields
-        logger.info(f"Processing product {idx + 1}: reorderqty={product_data.reorderqty} (type: {type(product_data.reorderqty)}), quantity={product_data.quantity} (type: {type(product_data.quantity)}), price={product_data.price} (type: {type(product_data.price)})")
+        logger.info(f"Processing product {idx + 1}: hsncode={product_data.hsncode}, itemcode={product_data.itemcode}")
 
-        # Check for existing product
-        stmt = select(Products).where(
-            (Products.hsncode == product_data.hsncode) |
-            (Products.itemcode == product_data.itemcode) |
-            (Products.itemname == product_data.itemname)
-        ).limit(1)
-        existing_product = db.execute(stmt).scalars().first()
-
-        if existing_product:
-            # Update the existing product
-            for key, value in product_data.model_dump().items():
-                if hasattr(existing_product, key):
-                    setattr(existing_product, key, value)
-            updated_products.append(existing_product)
-            db.commit()  # Commit the update
-            db.refresh(existing_product)
-            continue
-
-        # Create a new product
+        # Insert as a new product (no unique constraints to worry about)
         product_dict = product_data.model_dump()
         product = Products(**product_dict)
         db.add(product)
         try:
-            db.commit()  # Commit each insert individually
+            db.commit()
             db.refresh(product)
-            created_products.append(product)
+            inserted_count += 1
+            logger.info(f"Inserted product {idx + 1}: hsncode={product_data.hsncode}, itemcode={product_data.itemcode}")
         except Exception as e:
             db.rollback()
             logger.error(f"Failed to insert product {idx + 1}: {str(e)}")
@@ -122,7 +102,8 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
             detail={"message": "Validation Error", "errors": errors}
         )
 
-    return created_products + updated_products
+    return {"inserted": inserted_count}
+
 def get_products(db: Session):
     return db.query(Products).all()
 

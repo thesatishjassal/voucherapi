@@ -85,27 +85,27 @@ def upload_csv(file: UploadFile, db: Session):
             )
 
         # Process one row at a time to ensure correct type mapping
-        uploaded_count = 0
+        total_inserted = 0
         batch_failed_rows = []
 
         from app.controllers.products import upload_products
         for idx, product_data in enumerate(products_data):
             try:
                 result = upload_products(product_data, db)
-                uploaded_count += 1
+                total_inserted += result["inserted"]
             except HTTPException as e:
                 logger.error(f"Product {idx + 1} failed: {str(e.detail)}")
                 batch_failed_rows.append({"product": idx + 1, "error": str(e.detail)})
 
         response = {
-            "message": "CSV data processed",
+            "message": f"CSV data processed: {total_inserted} products inserted",
             "total_rows": row_count,
-            "successful_uploads": uploaded_count,
+            "successful_inserts": total_inserted,
             "failed_rows": failed_rows,
             "batch_errors": batch_failed_rows
         }
 
-        if uploaded_count == 0:
+        if total_inserted == 0:
             raise HTTPException(status_code=400, detail=response)
 
         return JSONResponse(status_code=200, content=response)
