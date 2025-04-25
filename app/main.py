@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, UploadFile, File
 from app.api.user import router as user_router 
 from app.api.clients import router as clients_router  # import the router with client routes
 from app.api.category import router as category_router  # import the router with category routes
@@ -14,6 +14,10 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from app.products_import import router as product_import_router  # ✅ Import router here
 from app.api.wooproducts import router as woo_router
+from app.api.csv_upload import upload_csv
+from sqlalchemy.orm import Session
+
+from database import get_db_connection
 
 app = FastAPI()
 # Middleware to allow larger file uploads
@@ -68,6 +72,10 @@ app.add_middleware(MaxUploadSizeMiddleware)
 @app.get("/")
 def read_root():
     return {"message": "Welcome to user API"}
+
+@app.post("/upload-csv/")
+async def upload_csv_endpoint(file: UploadFile = File(...), db: Session = Depends(get_db_connection)):
+    return upload_csv(file, db)
 
 # Run with Uvicorn if this script is executed directly
 if __name__ == "__main__":
