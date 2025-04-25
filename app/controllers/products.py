@@ -67,6 +67,7 @@ def create_products(products_data: ProductsCreate, db: Session):
     return products  # Returns a Products object
 
 def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], db: Session):
+    # Ensure products_data is a list for uniform processing
     if not isinstance(products_data, list):
         products_data = [products_data]
 
@@ -84,7 +85,8 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
         if existing_product:
             # Update the existing product
             for key, value in product_data.model_dump().items():
-                setattr(existing_product, key, value)
+                if hasattr(existing_product, key):  # Only update existing attributes
+                    setattr(existing_product, key, value)
             updated_products.append(existing_product)
             continue
 
@@ -104,7 +106,6 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
         db.refresh(product)
 
     return created_products + updated_products
-
 def get_products(db: Session):
     return db.query(Products).all()
 

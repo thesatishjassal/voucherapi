@@ -20,7 +20,6 @@ class ProductsCreate(BaseModel):
     brand: str
     unit: str
     reorderqty: Optional[int] = None
-    reorderEnabled: Optional[bool] = False
 
 # -----------------------------------------------
 # ✅ Update Product Schema (Optional fields)
@@ -42,7 +41,6 @@ class ProductsUpdate(BaseModel):
     brand: Optional[str] = None
     unit: Optional[str] = None
     reorderqty: Optional[int] = None
-    reorderEnabled: Optional[bool] = None
 
 # -----------------------------------------------
 # ✅ Response Schema
@@ -65,7 +63,6 @@ class ProductsResponse(BaseModel):
     model: str
     brand: str
     reorderqty: Optional[int] = None
-    reorderEnabled: Optional[bool] = None
     message: Optional[str] = None
     invoucher_items: Optional[List[dict]] = None
 
