@@ -9,6 +9,7 @@ import shutil
 import os
 import uuid  # For unique file names
 from config import UPLOAD_DIR  # Import the correct upload directory
+from sqlalchemy import select
 
 def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
     product = db.query(Products).filter(Products.id == product_id).first()
@@ -76,11 +77,13 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
     errors = []
 
     for product_data in products_data:
-        existing_product = db.query(Products).filter(
+        # Explicitly select only the columns needed for the duplicate check
+        stmt = select(Products).where(
             (Products.hsncode == product_data.hsncode) |
             (Products.itemcode == product_data.itemcode) |
             (Products.itemname == product_data.itemname)
-        ).first()
+        ).limit(1)
+        existing_product = db.execute(stmt).scalars().first()
 
         if existing_product:
             # Update the existing product
@@ -106,6 +109,7 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
         db.refresh(product)
 
     return created_products + updated_products
+
 def get_products(db: Session):
     return db.query(Products).all()
 

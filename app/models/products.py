@@ -23,7 +23,7 @@ class Products(Base):
     unit = Column(String)
 
     reorderqty = Column(String, nullable=True)
-    reorderEnabled = Column(Boolean, default=False)
+    # reorderEnabled = Column(Boolean, default=False)
 
     # Relationships
     items = relationship("InvoucherItem", back_populates="product")  
