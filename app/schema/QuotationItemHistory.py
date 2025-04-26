@@ -20,6 +20,11 @@ class QuotationItemHistorySchema(BaseModel):
     unit: Optional[str]
     edited_at: Optional[datetime]
     action: Optional[str]
+    amount_including_gst: Optional[int] = None
+    without_gst: Optional[int] = None
+    gst_amount: Optional[int] = None
+    amount_with_gst: Optional[int] = None
+
 
 class QuotationItemHistoryResponse(BaseModel):
     id: int
@@ -39,6 +44,11 @@ class QuotationItemHistoryResponse(BaseModel):
     unit: Optional[str]
     edited_at: datetime
     action: str
+    amount_including_gst: Optional[int] = None
+    without_gst: Optional[int] = None
+    gst_amount: Optional[int] = None
+    amount_with_gst: Optional[int] = None
+
 
     class Config:
         from_attributes = True

@@ -32,6 +32,10 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         discount=item.discount,
         item_name=item.item_name,
         unit=item.unit,
+        amount_including_gst=item.amount_including_gst,
+        without_gst=item.without_gst,
+        gst_amount=item.gst_amount,
+        amount_with_gst=item.amount_with_gst,
         edited_at=datetime.utcnow(),
         action="delete"
     )
@@ -77,6 +81,10 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                         discount=existing_item.discount,
                         item_name=existing_item.item_name,
                         unit=existing_item.unit,
+                        amount_including_gst=existing_item.amount_including_gst,
+                        without_gst=existing_item.without_gst,
+                        gst_amount=existing_item.gst_amount,
+                        amount_with_gst=existing_item.amount_with_gst,
                         edited_at=datetime.utcnow(),
                         action="update"
                     )
@@ -104,6 +112,10 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             discount=existing_item.discount,
                             item_name=existing_item.item_name,
                             unit=existing_item.unit,
+                            amount_including_gst=existing_item.amount_including_gst,
+                            without_gst=existing_item.without_gst,
+                            gst_amount=existing_item.gst_amount,
+                            amount_with_gst=existing_item.amount_with_gst
                         )
                     )
 
@@ -131,6 +143,10 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             discount=new_item.discount,
                             item_name=new_item.item_name,
                             unit=new_item.unit,
+                            amount_including_gst=new_item.amount_including_gst,
+                            without_gst=new_item.without_gst,
+                            gst_amount=new_item.gst_amount,
+                            amount_with_gst=new_item.amount_with_gst
                         )
                     )
 
@@ -153,14 +169,6 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-# Existing functions remain unchanged; included for completeness
-def create_quotation(db: Session, quotation_data: QuotationCreate):
-    new_quotation = Quotation(**quotation_data.dict())  # ✅ Use SQLAlchemy Model
-    db.add(new_quotation)
-    db.commit()
-    db.refresh(new_quotation)
-    return new_quotation
 
 def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCreate) -> QuotationItemResponse:
     try:
@@ -207,7 +215,11 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             quantity=db_item.quantity,
             discount=db_item.discount,
             item_name=db_item.item_name,
-            unit=db_item.unit
+            unit=db_item.unit,
+            amount_including_gst=db_item.amount_including_gst,
+            without_gst=db_item.without_gst,
+            gst_amount=db_item.gst_amount,
+            amount_with_gst=db_item.amount_with_gst
         )
 
     except IntegrityError as e:
@@ -241,6 +253,10 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
+            amount_including_gst=history.amount_including_gst,
+            without_gst=history.without_gst,
+            gst_amount=history.gst_amount,
+            amount_with_gst=history.amount_with_gst,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -268,6 +284,10 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
+            amount_including_gst=history.amount_including_gst,
+            without_gst=history.without_gst,
+            gst_amount=history.gst_amount,
+            amount_with_gst=history.amount_with_gst,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -278,6 +298,13 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
     if not items:
         raise HTTPException(status_code=404, detail="No items found for this quotation id")
     return items
+
+def create_quotation(db: Session, quotation_data: QuotationCreate):
+    new_quotation = Quotation(**quotation_data.dict())  # ✅ Use SQLAlchemy Model
+    db.add(new_quotation)
+    db.commit()
+    db.refresh(new_quotation)
+    return new_quotation
 
 def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()

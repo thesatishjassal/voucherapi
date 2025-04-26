@@ -25,4 +25,9 @@ class QuotationItemHistory(Base):
     edited_at = Column(DateTime, default=datetime.utcnow)
     action = Column(String(50), nullable=True)
 
+    amount_including_gst = Column(Integer, nullable=True)
+    without_gst = Column(Integer, nullable=True)
+    gst_amount = Column(Integer, nullable=True)
+    amount_with_gst = Column(Integer, nullable=True)
+    
     quotationitem = relationship("QuotationItem", back_populates="itemshistory")
