@@ -17,6 +17,10 @@ class QuotationItemBase(BaseModel):
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item")
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
+    amount_including_gst: Optional[int] = None
+    without_gst: Optional[int] = None
+    gst_amount: Optional[int] = None
+    amount_with_gst: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 

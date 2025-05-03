@@ -13,6 +13,11 @@ class OutvoucherItem(Base):
     rack_code = Column(String(50), nullable=True)
     quantity = Column(Integer, nullable=False)
     comments = Column(Text, nullable=True)
-
+    
+    amount_including_gst = Column(Integer, nullable=True)
+    without_gst = Column(Integer, nullable=True)
+    gst_amount = Column(Integer, nullable=True)
+    amount_with_gst = Column(Integer, nullable=True)
+    
     outvoucher = relationship("Outvoucher", back_populates="items")
     product = relationship("Products", back_populates="outvoucher_items")
