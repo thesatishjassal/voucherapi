@@ -54,7 +54,7 @@ class ProductsResponse(BaseModel):
     unit: str
     category: str
     subcategory: str
-    price: float
+    price: Optional[float]
     quantity: int
     rackcode: str
     thumbnail: Optional[str] = None

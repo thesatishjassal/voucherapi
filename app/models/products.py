@@ -12,7 +12,7 @@ class Products(Base):
     description = Column(String)
     category = Column(String)
     subcategory = Column(String)
-    price = Column(Float)  # Changed from String to Float
+    price = Column(Float, nullable=True)  # Changed from String to Float
     quantity = Column(Integer)  # Changed from String to Integer
     rackcode = Column(String)
     thumbnail = Column(String, nullable=True)
