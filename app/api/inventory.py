@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from pydantic import BaseModel
 from database import get_db_connection
 from app.models.inventory import InventoryLog, HoldItem, ActionType
-from models import Products
+from app.models.products import Products
 
 router = APIRouter()
 

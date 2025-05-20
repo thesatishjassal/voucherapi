@@ -17,7 +17,7 @@ class SalesOrderBase(BaseModel):
     client_id: int  # Required to link client
 
     class Config:
-        orm_mode = True  # Make sure the model works with ORM
+        from_attributes = True  # Make sure the model works with ORM
 
 class SalesOrderCreate(SalesOrderBase):
     pass  # Same as base model, used for creating a new SalesOrder

@@ -17,7 +17,7 @@ from app.api.wooproducts import router as woo_router
 from app.api.csv_upload import upload_csv
 from sqlalchemy.orm import Session
 from app.api.inventory import router as inventory_router
-
+from app.api.switches_quotation import router as switches_quotation
 from database import get_db_connection
 
 app = FastAPI()
@@ -55,6 +55,7 @@ app.include_router(product_import_router)  # ✅ Correct
 app.include_router(sales_router)
 app.include_router(woo_router)
 app.include_router(inventory_router)
+app.include_router(switches_quotation)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Increase max request size
