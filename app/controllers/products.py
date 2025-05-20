@@ -129,7 +129,7 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
         if product_data.category:
             product.category = product_data.category
         if product_data.subcategory:
-            product.itemname = product_data.subcategory
+            product.subcategory = product_data.subcategory
         if product_data.size:
             product.size = product_data.size
         if product_data.model:
