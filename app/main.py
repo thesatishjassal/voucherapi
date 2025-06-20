@@ -1,14 +1,13 @@
-from fastapi import FastAPI, Depends, UploadFile, File
+from fastapi import FastAPI, Depends, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
 from starlette.responses import Response
 from sqlalchemy.orm import Session
 
-# ✅ API routers
+# Routers
 from app.api.user import router as user_router
 from app.api.clients import router as clients_router
 from app.api.category import router as category_router
@@ -25,20 +24,18 @@ from app.api.inventory import router as inventory_router
 from app.api.switches_quotation import router as switches_quotation
 from database import get_db_connection
 
+# Create app
 app = FastAPI()
 
-# ✅ Add middleware for large file uploads
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
-app.add_middleware(GZipMiddleware, minimum_size=1000)
-
-# ✅ Add CORS Middleware (fixes the CORS issue you're facing)
+# ✅ Set allowed origins including frontend and API domains
 origins = [
     "http://localhost:3000",
     "https://panvik.in",
     "https://www.panvik.in",
-    "https://api.panvic.in",  # ✅ ADD THIS
+    "https://api.panvic.in"
 ]
 
+# ✅ Apply CORS middleware before anything else
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -47,13 +44,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Log origin middleware (for debugging)
+# ✅ Log incoming request origin (for debugging CORS issues)
 @app.middleware("http")
 async def log_origin(request: Request, call_next):
-    print("🔍 Incoming Origin:", request.headers.get("origin"))
+    print("🔍 Request from Origin:", request.headers.get("origin"))
     return await call_next(request)
 
-# ✅ Middleware for upload size
+# ✅ Trusted Host Middleware (accept all for now)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+
+# ✅ Enable GZIP compression
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# ✅ Upload size middleware (10MB limit)
 class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         max_size = 10 * 1024 * 1024  # 10 MB
@@ -64,20 +67,20 @@ class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(MaxUploadSizeMiddleware)
 
-# ✅ Mount static files
+# ✅ Mount static folder
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# ✅ Base route
+# ✅ Root route
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to user API"}
+    return {"Hello": "World"}
 
-# ✅ CSV Upload route
+# ✅ Upload CSV route
 @app.post("/upload-csv/")
 async def upload_csv_endpoint(file: UploadFile = File(...), db: Session = Depends(get_db_connection)):
     return upload_csv(file, db)
 
-# ✅ Register all routers
+# ✅ Include all routers
 app.include_router(user_router)
 app.include_router(clients_router)
 app.include_router(category_router)
@@ -92,7 +95,7 @@ app.include_router(woo_router)
 app.include_router(inventory_router)
 app.include_router(switches_quotation)
 
-# ✅ Run app with Uvicorn
+# ✅ Run app
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=80, reload=True)
