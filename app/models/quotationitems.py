@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, Numeric, String, ForeignKey
 from sqlalchemy.orm import relationship
 from base import Base
 
@@ -19,6 +19,7 @@ class QuotationItem(Base):
     discount = Column(Integer, nullable=False)
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
+    amount_including_gst = Column(Numeric(10, 2), nullable=True)
 
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
