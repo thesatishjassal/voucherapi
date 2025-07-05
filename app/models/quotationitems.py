@@ -20,7 +20,9 @@ class QuotationItem(Base):
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
     amount_including_gst = Column(Numeric(10, 2), nullable=True)
-
+    without_gst = Column(Integer, nullable=True)
+    gst_amount = Column(Integer, nullable=True)
+    amount_with_gst = Column(Integer, nullable=True)
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
     product = relationship("Products", back_populates="quotation_items")
