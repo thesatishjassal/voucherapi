@@ -12,7 +12,7 @@ class QuotationItemBase(BaseModel):
     itemcode: Optional[str] = Field(None, description="Item code")
     brand: Optional[str] = Field(None, description="Brand name")
     mrp: Optional[int] = Field(None, description="Maximum Retail Price")
-    price: Optional[int] = Field(None, description="Price for quotation")
+    netPrice: Optional[int] = Field(None, description="Price for quotation")
     quantity: int = Field(..., description="Quantity of product", ge=0)
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item")
