@@ -14,7 +14,7 @@ from app.controllers.quotation import (
     get_all_quotations,
     update_quotation,
     delete_quotation,
-    delete_quotation_item,  # Import the new helper function
+    delete_quotation_item,
 )
 from app.schema.quotation import Quotation, QuotationCreate
 from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, QuotationItemResponse
@@ -30,7 +30,7 @@ def create_quotation_api(quotation: QuotationCreate, db: Session = Depends(get_d
     return create_quotation(db, quotation)
 
 # Add an item to a quotation
-@router.post("/quotation/{quotation_id}/items/", response_model=QuotationItemBase)
+@router.post("/quotation/{quotation_id}/items/", response_model=QuotationItemResponse)
 def create_quotation_item_api(quotation_id: int, item: QuotationItemCreate, db: Session = Depends(get_db_connection)):
     return create_quotation_item(db, quotation_id, item)
 
@@ -54,11 +54,16 @@ def read_quotation_items_api(quotation_id: int, db: Session = Depends(get_db_con
             itemcode=item.itemcode,
             brand=item.brand,
             mrp=item.mrp,
-            netPrice=item.netPrice,
+            netPrice=item.price,
             quantity=item.quantity,
             discount=item.discount,
             item_name=item.item_name,
             unit=item.unit,
+            amount_including_gst=item.amount_including_gst,
+            without_gst=item.without_gst,
+            gst_amount=item.gst_amount,
+            amount_with_gst=item.amount_with_gst,
+            remarks=item.remarks
         ) for item in items
     ]
 
@@ -101,7 +106,7 @@ def fetch_all_histories_api(db: Session = Depends(get_db_connection)):
 def fetch_history_by_item_id_api(quotation_item_id: int, db: Session = Depends(get_db_connection)):
     return get_history_by_quotation_item_id(db, quotation_item_id)
 
-# New endpoint: Delete a specific quotation item by ID
+# Delete a specific quotation item by ID
 @router.delete("/quotation/{quotation_id}/items/{item_id}")
 def delete_quotation_item_api(quotation_id: int, item_id: int, db: Session = Depends(get_db_connection)):
     try:

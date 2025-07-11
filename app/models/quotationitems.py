@@ -23,6 +23,7 @@ class QuotationItem(Base):
     without_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     gst_amount = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     amount_with_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
+    remarks = Column(String(500), nullable=True)  # Added remarks field
 
     # Relationships
     quotation = relationship("Quotation", back_populates="items")

@@ -36,6 +36,7 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         without_gst=item.without_gst,
         gst_amount=item.gst_amount,
         amount_with_gst=item.amount_with_gst,
+        remarks=item.remarks,
         edited_at=datetime.utcnow(),
         action="delete"
     )
@@ -47,17 +48,17 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
         updated_items_list = []
 
         with db.begin():  # Transaction start
-            # ✅ Check if the quotation exists
+            # Check if the quotation exists
             quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
             if not quotation:
                 raise HTTPException(status_code=404, detail="Quotation not found")
 
-            # ✅ Fetch existing items mapped by product_id
+            # Fetch existing items mapped by product_id
             existing_items = db.query(QuotationItem).filter(QuotationItem.quotation_id == quotation_id).all()
             existing_items_map = {item.product_id: item for item in existing_items}
             submitted_product_ids = set()
 
-            # ✅ Process each item in the request
+            # Process each item in the request
             for item_data in items:
                 product_id = item_data.product_id
                 submitted_product_ids.add(product_id)
@@ -65,7 +66,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                 if product_id in existing_items_map:
                     existing_item = existing_items_map[product_id]
 
-                    # ✅ Save history before update
+                    # Save history before update
                     history = QuotationItemHistory(
                         quotation_item_id=existing_item.id,
                         quotation_id=existing_item.quotation_id,
@@ -85,17 +86,18 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                         without_gst=existing_item.without_gst,
                         gst_amount=existing_item.gst_amount,
                         amount_with_gst=existing_item.amount_with_gst,
+                        remarks=existing_item.remarks,
                         edited_at=datetime.utcnow(),
                         action="update"
                     )
                     db.add(history)
 
-                    # ✅ Update existing item
+                    # Update existing item
                     for key, value in item_data.dict().items():  # Convert to dict before iterating
                         setattr(existing_item, key, value)
                     db.add(existing_item)
 
-                    # ✅ Append updated item to response list
+                    # Append updated item to response list
                     updated_items_list.append(
                         QuotationItemResponse(
                             id=existing_item.id,
@@ -107,7 +109,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=existing_item.itemcode,
                             brand=existing_item.brand,
                             mrp=existing_item.mrp,
-                            netPrice=existing_item.netPrice,
+                            netPrice=existing_item.price,
                             quantity=existing_item.quantity,
                             discount=existing_item.discount,
                             item_name=existing_item.item_name,
@@ -115,18 +117,19 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             amount_including_gst=existing_item.amount_including_gst,
                             without_gst=existing_item.without_gst,
                             gst_amount=existing_item.gst_amount,
-                            amount_with_gst=existing_item.amount_with_gst
+                            amount_with_gst=existing_item.amount_with_gst,
+                            remarks=existing_item.remarks
                         )
                     )
 
                 else:
-                    # ✅ Add new item
-                    new_item_data = item_data.dict(exclude={"item_id", "quotation_id"})  # Exclude unnecessary fields if any
+                    # Add new item
+                    new_item_data = item_data.dict(exclude={"item_id", "quotation_id"})  # Exclude unnecessary fields
                     new_item = QuotationItem(quotation_id=quotation_id, **new_item_data)
                     db.add(new_item)
-                    db.flush()  # To generate ID immediately if needed for history or response
+                    db.flush()  # To generate ID immediately
 
-                    # ✅ Append new item to response list
+                    # Append new item to response list
                     updated_items_list.append(
                         QuotationItemResponse(
                             id=new_item.id,
@@ -138,7 +141,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=new_item.itemcode,
                             brand=new_item.brand,
                             mrp=new_item.mrp,
-                            netPrice=new_item.netPrice,
+                            netPrice=new_item.price,
                             quantity=new_item.quantity,
                             discount=new_item.discount,
                             item_name=new_item.item_name,
@@ -146,17 +149,18 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             amount_including_gst=new_item.amount_including_gst,
                             without_gst=new_item.without_gst,
                             gst_amount=new_item.gst_amount,
-                            amount_with_gst=new_item.amount_with_gst
+                            amount_with_gst=new_item.amount_with_gst,
+                            remarks=new_item.remarks
                         )
                     )
 
-            # ✅ Delete items that are in the database but not in the submitted list
+            # Delete items that are in the database but not in the submitted list
             for product_id, existing_item in existing_items_map.items():
                 if product_id not in submitted_product_ids:
                     delete_quotation_item(db, existing_item)
 
-        db.commit()  # ✅ Commit transaction
-        return updated_items_list  # ✅ Return updated/created items list
+        db.commit()  # Commit transaction
+        return updated_items_list  # Return updated/created items list
 
     except IntegrityError as e:
         db.rollback()
@@ -173,17 +177,17 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
 def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCreate) -> QuotationItemResponse:
     try:
         with db.begin():  # Start transaction
-            # 🔍 Check if the quotation exists
+            # Check if the quotation exists
             db_quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
             if not db_quotation:
                 raise HTTPException(status_code=404, detail="Quotation not found")
 
-            # 🔍 Validate product_id
+            # Validate product_id
             product_id = item.product_id
             if not product_id:
                 raise HTTPException(status_code=400, detail="Product ID is required")
 
-            # 🔍 Check if product exists
+            # Check if product exists
             product = db.query(Products).filter(Products.itemcode == product_id).first()
             if not product:
                 raise HTTPException(
@@ -191,18 +195,18 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
                     detail=f"Product with itemcode '{product_id}' not found"
                 )
 
-            # ✅ Prepare data and exclude 'item_id', 'quotation_id' (quotation_id will be added separately)
+            # Prepare data and exclude 'item_id', 'quotation_id' (quotation_id will be added separately)
             item_data = item.model_dump(exclude={"item_id", "quotation_id"})
 
-            # 💾 Create and add the new QuotationItem
+            # Create and add the new QuotationItem
             db_item = QuotationItem(quotation_id=db_quotation.quotation_id, **item_data)
             db.add(db_item)
             db.flush()  # Get auto-generated ID
             db.refresh(db_item)  # Refresh to get the latest DB state
 
-        # ✅ Return the response schema (automatically maps 'id' to 'item_id' in response)
+        # Return the response schema (automatically maps 'id' to 'item_id' in response)
         return QuotationItemResponse(
-            item_id=db_item.id,  # map id -> item_id
+            item_id=db_item.id,
             quotation_id=db_item.quotation_id,
             product_id=db_item.product_id,
             customercode=db_item.customercode,
@@ -211,7 +215,7 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             itemcode=db_item.itemcode,
             brand=db_item.brand,
             mrp=db_item.mrp,
-            netPrice=db_item.netPrice,
+            netPrice=db_item.price,
             quantity=db_item.quantity,
             discount=db_item.discount,
             item_name=db_item.item_name,
@@ -219,7 +223,8 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             amount_including_gst=db_item.amount_including_gst,
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
-            amount_with_gst=db_item.amount_with_gst
+            amount_with_gst=db_item.amount_with_gst,
+            remarks=db_item.remarks
         )
 
     except IntegrityError as e:
@@ -257,6 +262,7 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
             amount_with_gst=history.amount_with_gst,
+            remarks=history.remarks,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -288,6 +294,7 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
             amount_with_gst=history.amount_with_gst,
+            remarks=history.remarks,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -300,7 +307,7 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
     return items
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
-    new_quotation = Quotation(**quotation_data.dict())  # ✅ Use SQLAlchemy Model
+    new_quotation = Quotation(**quotation_data.dict())  # Use SQLAlchemy Model
     db.add(new_quotation)
     db.commit()
     db.refresh(new_quotation)
@@ -310,7 +317,7 @@ def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
 
 def get_all_quotations(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Quotation).offset(skip).limit(limit).all()  # ✅ Ensure Using Model
+    return db.query(Quotation).offset(skip).limit(limit).all()  # Ensure Using Model
 
 def update_quotation(db: Session, quotation_id: int, update_data: dict):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
