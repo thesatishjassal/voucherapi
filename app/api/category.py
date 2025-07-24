@@ -4,7 +4,7 @@ from app.controllers.category_crud import create_catgeory, get_categories, updat
 from app.schema.category import CategoryResponse, CategoryCreate, CategoryUpdate
 from database import get_db_connection
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Response, HTTPException
+from fastapi import FastAPI, HTTPException
 import secrets
 
 app = FastAPI()
@@ -48,6 +48,7 @@ async def update_category_api(category_id: int, category_data: CategoryUpdate, d
         )
     except HTTPException as e:
         raise e
+
     
 @router.delete("/category/{category_id}")
 def delete_category_api(category_id: int, db: Session = Depends(get_db_connection)):
