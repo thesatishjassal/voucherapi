@@ -22,7 +22,6 @@ from app.api.wooproducts import router as woo_router
 from app.api.csv_upload import upload_csv
 from app.api.inventory import router as inventory_router
 from app.api.switches_quotation import router as switches_quotation
-from app.api.cus_quotation import router as cus_quotation_router
 from database import get_db_connection
 
 # Create app
@@ -95,7 +94,6 @@ app.include_router(sales_router)
 app.include_router(woo_router)
 app.include_router(inventory_router)
 app.include_router(switches_quotation)
-app.include_router(cus_quotation_router)
 
 # ✅ Run app
 if __name__ == "__main__":
