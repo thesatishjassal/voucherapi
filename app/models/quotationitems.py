@@ -15,6 +15,7 @@ class QuotationItem(Base):
     brand = Column(String(100), nullable=True)
     mrp = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     netPrice = Column(Numeric(10, 2), nullable=True)  # Renamed from price
+    price = Column(Numeric(10, 2), nullable=True)  # Renamed from price
     quantity = Column(Integer, nullable=False)
     discount = Column(Integer, nullable=False)  # Integer as per API requirement
     item_name = Column(String(100), nullable=True)

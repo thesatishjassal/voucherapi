@@ -54,6 +54,7 @@ def read_quotation_items_api(quotation_id: int, db: Session = Depends(get_db_con
             itemcode=item.itemcode,
             brand=item.brand,
             mrp=item.mrp,
+            price=item.price,
             netPrice=item.netPrice,
             quantity=item.quantity,
             discount=item.discount,
