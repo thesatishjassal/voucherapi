@@ -27,6 +27,10 @@ class InvoucherUpdate(InvoucherBase):
     """Schema for updating an existing invoucher."""
     pass
 
+class InvoucherItemSchema(BaseModel):
+    pass
+
+
 class Invoucher(InvoucherBase):
     """Schema for responding with invoucher data."""
     voucher_id: int
