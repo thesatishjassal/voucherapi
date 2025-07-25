@@ -188,12 +188,12 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
                 raise HTTPException(status_code=400, detail="Product ID is required")
 
             # Check if product exists
-            product = db.query(Products).filter(Products.itemcode == product_id).first()
-            if not product:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Product with itemcode '{product_id}' not found"
-                )
+            # product = db.query(Products).filter(Products.itemcode == product_id).first()
+            # if not product:
+            #     raise HTTPException(
+            #         status_code=404,
+            #         detail=f"Product with itemcode '{product_id}' not found"
+            #     )
 
             # Prepare data and exclude 'item_id', 'quotation_id' (quotation_id will be added separately)
             item_data = item.model_dump(exclude={"item_id", "quotation_id"})
