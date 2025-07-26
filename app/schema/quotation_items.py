@@ -17,6 +17,7 @@ class QuotationItemBase(BaseModel):
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item", max_length=100)
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
+    amount: int = Field(..., description="Total amount (quantity * netPrice)", ge=0)  # Added amount field
     amount_including_gst: Optional[int] = None
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None

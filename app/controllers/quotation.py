@@ -32,6 +32,7 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         discount=item.discount,
         item_name=item.item_name,
         unit=item.unit,
+        amount=item.amount,  # Added amount
         amount_including_gst=item.amount_including_gst,
         without_gst=item.without_gst,
         gst_amount=item.gst_amount,
@@ -82,6 +83,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                         discount=existing_item.discount,
                         item_name=existing_item.item_name,
                         unit=existing_item.unit,
+                        amount=existing_item.amount,  # Added amount
                         amount_including_gst=existing_item.amount_including_gst,
                         without_gst=existing_item.without_gst,
                         gst_amount=existing_item.gst_amount,
@@ -109,11 +111,13 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=existing_item.itemcode,
                             brand=existing_item.brand,
                             mrp=existing_item.mrp,
-                            netPrice=existing_item.price,
+                            netPrice=existing_item.netPrice,  # Fixed to use netPrice
+                            price=existing_item.price,
                             quantity=existing_item.quantity,
                             discount=existing_item.discount,
                             item_name=existing_item.item_name,
                             unit=existing_item.unit,
+                            amount=existing_item.amount,  # Added amount
                             amount_including_gst=existing_item.amount_including_gst,
                             without_gst=existing_item.without_gst,
                             gst_amount=existing_item.gst_amount,
@@ -141,11 +145,13 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=new_item.itemcode,
                             brand=new_item.brand,
                             mrp=new_item.mrp,
-                            netPrice=new_item.price,
+                            netPrice=new_item.netPrice,  # Fixed to use netPrice
+                            price=new_item.price,
                             quantity=new_item.quantity,
                             discount=new_item.discount,
                             item_name=new_item.item_name,
                             unit=new_item.unit,
+                            amount=new_item.amount,  # Added amount
                             amount_including_gst=new_item.amount_including_gst,
                             without_gst=new_item.without_gst,
                             gst_amount=new_item.gst_amount,
@@ -215,11 +221,13 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             itemcode=db_item.itemcode,
             brand=db_item.brand,
             mrp=db_item.mrp,
-            netPrice=db_item.price,
+            netPrice=db_item.netPrice,  # Fixed to use netPrice
+            price=db_item.price,
             quantity=db_item.quantity,
             discount=db_item.discount,
             item_name=db_item.item_name,
             unit=db_item.unit,
+            amount=db_item.amount,  # Added amount
             amount_including_gst=db_item.amount_including_gst,
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
@@ -258,6 +266,7 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
+            amount=history.amount,  # Added amount
             amount_including_gst=history.amount_including_gst,
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
@@ -290,6 +299,7 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
+            amount=history.amount,  # Added amount
             amount_including_gst=history.amount_including_gst,
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,

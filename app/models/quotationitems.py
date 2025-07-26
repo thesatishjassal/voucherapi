@@ -20,6 +20,7 @@ class QuotationItem(Base):
     discount = Column(Integer, nullable=False)  # Integer as per API requirement
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
+    amount = Column(Numeric(10, 2), nullable=False)  # Added amount column
     amount_including_gst = Column(Numeric(10, 2), nullable=True)
     without_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     gst_amount = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
