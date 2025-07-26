@@ -65,6 +65,7 @@ def read_quotation_items_api(quotation_id: int, db: Session = Depends(get_db_con
             gst_amount=item.gst_amount,
             amount_with_gst=item.amount_with_gst,
             remarks=item.remarks
+            amount=item.amount,  # Ensure amount is included
         ) for item in items
     ]
 
