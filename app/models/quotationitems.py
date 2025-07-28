@@ -31,7 +31,7 @@ class QuotationItem(Base):
     remarks = Column(String(500), nullable=True)  # Added remarks field
     netPrice: Optional[float] = Column(Float, info={"description": "NetPrice for quotation"})
 
-    amount: Decimal = Column(..., description="Total amount (quantity * netPrice)", ge=0)
+    amount: Optional[float] = Column(Float, info={"Total amount (quantity * netPrice)"})
     
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
