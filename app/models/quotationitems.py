@@ -1,6 +1,9 @@
+from pydantic import Field
 from sqlalchemy import Column, Integer, Numeric, String, ForeignKey
 from sqlalchemy.orm import relationship
 from base import Base
+from decimal import Decimal  # ✅ Use this for accurate float handling
+from typing import Optional
 
 class QuotationItem(Base):
     __tablename__ = "quotationitems"
@@ -20,13 +23,13 @@ class QuotationItem(Base):
     discount = Column(Integer, nullable=False)  # Integer as per API requirement
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
-    amount = Column(Numeric(10, 2), nullable=False)  # Added amount column
     amount_including_gst = Column(Numeric(10, 2), nullable=True)
     without_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     gst_amount = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     amount_with_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
     remarks = Column(String(500), nullable=True)  # Added remarks field
-
+    netPrice: Optional[Decimal] = Column(None, description="NetPrice for quotation")
+    amount: Decimal = Column(..., description="Total amount (quantity * netPrice)", ge=0)
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
     product = relationship("Products", back_populates="quotation_items")

@@ -11,13 +11,13 @@ class QuotationItemBase(BaseModel):
     itemcode: Optional[str] = Field(None, description="Item code")
     brand: Optional[str] = Field(None, description="Brand name")
     mrp: Optional[int] = Field(None, description="Maximum Retail Price")
-    netPrice: Optional[int] = Field(None, description="NetPrice for quotation")
+    netPrice: Optional[float] = Field(None, description="Net price for quotation")  # Changed to float
     price: Optional[int] = Field(None, description="Price for quotation")
     quantity: int = Field(..., description="Quantity of product", ge=0)
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item", max_length=100)
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
-    amount: int = Field(..., description="Total amount (quantity * netPrice)", ge=0)  # Added amount field
+    amount: float = Field(..., description="Total amount (quantity * netPrice)", ge=0)  # Changed to float
     amount_including_gst: Optional[int] = None
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None
