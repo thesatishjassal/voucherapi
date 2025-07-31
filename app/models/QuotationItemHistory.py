@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Float, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from base import Base
@@ -29,5 +29,6 @@ class QuotationItemHistory(Base):
     without_gst = Column(Integer, nullable=True)
     gst_amount = Column(Integer, nullable=True)
     amount_with_gst = Column(Integer, nullable=True)
-    
+    amount = Column(Float, nullable=False)  # or nullable=True if optional
+
     quotationitem = relationship("QuotationItem", back_populates="itemshistory")
