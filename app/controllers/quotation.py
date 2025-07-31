@@ -32,12 +32,10 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         discount=item.discount,
         item_name=item.item_name,
         unit=item.unit,
-        # amount=item.amount,  # Added amount
         amount_including_gst=item.amount_including_gst,
         without_gst=item.without_gst,
         gst_amount=item.gst_amount,
         amount_with_gst=item.amount_with_gst,
-        # remarks=item.remarks,
         edited_at=datetime.utcnow(),
         action="delete"
     )
@@ -83,12 +81,10 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                         discount=existing_item.discount,
                         item_name=existing_item.item_name,
                         unit=existing_item.unit,
-                        amount=existing_item.amount,  # Added amount
                         amount_including_gst=existing_item.amount_including_gst,
                         without_gst=existing_item.without_gst,
                         gst_amount=existing_item.gst_amount,
                         amount_with_gst=existing_item.amount_with_gst,
-                        remarks=existing_item.remarks,
                         edited_at=datetime.utcnow(),
                         action="update"
                     )
@@ -111,18 +107,16 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=existing_item.itemcode,
                             brand=existing_item.brand,
                             mrp=existing_item.mrp,
-                            netPrice=existing_item.netPrice,  # Fixed to use netPrice
+                            netPrice=existing_item.netPrice,
                             price=existing_item.price,
                             quantity=existing_item.quantity,
                             discount=existing_item.discount,
                             item_name=existing_item.item_name,
                             unit=existing_item.unit,
-                            amount=existing_item.amount,  # Added amount
                             amount_including_gst=existing_item.amount_including_gst,
                             without_gst=existing_item.without_gst,
                             gst_amount=existing_item.gst_amount,
-                            amount_with_gst=existing_item.amount_with_gst,
-                            remarks=existing_item.remarks
+                            amount_with_gst=existing_item.amount_with_gst
                         )
                     )
 
@@ -145,18 +139,16 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=new_item.itemcode,
                             brand=new_item.brand,
                             mrp=new_item.mrp,
-                            netPrice=new_item.netPrice,  # Fixed to use netPrice
+                            netPrice=new_item.netPrice,
                             price=new_item.price,
                             quantity=new_item.quantity,
                             discount=new_item.discount,
                             item_name=new_item.item_name,
                             unit=new_item.unit,
-                            amount=new_item.amount,  # Added amount
                             amount_including_gst=new_item.amount_including_gst,
                             without_gst=new_item.without_gst,
                             gst_amount=new_item.gst_amount,
-                            amount_with_gst=new_item.amount_with_gst,
-                            remarks=new_item.remarks
+                            amount_with_gst=new_item.amount_with_gst
                         )
                     )
 
@@ -193,15 +185,7 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             if not product_id:
                 raise HTTPException(status_code=400, detail="Product ID is required")
 
-            # Check if product exists
-            # product = db.query(Products).filter(Products.itemcode == product_id).first()
-            # if not product:
-            #     raise HTTPException(
-            #         status_code=404,
-            #         detail=f"Product with itemcode '{product_id}' not found"
-            #     )
-
-            # Prepare data and exclude 'item_id', 'quotation_id' (quotation_id will be added separately)
+            # Prepare data and exclude 'item_id', 'quotation_id'
             item_data = item.model_dump(exclude={"item_id", "quotation_id"})
 
             # Create and add the new QuotationItem
@@ -210,7 +194,7 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             db.flush()  # Get auto-generated ID
             db.refresh(db_item)  # Refresh to get the latest DB state
 
-        # Return the response schema (automatically maps 'id' to 'item_id' in response)
+        # Return the response schema
         return QuotationItemResponse(
             item_id=db_item.id,
             quotation_id=db_item.quotation_id,
@@ -221,18 +205,16 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             itemcode=db_item.itemcode,
             brand=db_item.brand,
             mrp=db_item.mrp,
-            netPrice=db_item.netPrice,  # Fixed to use netPrice
+            netPrice=db_item.netPrice,
             price=db_item.price,
             quantity=db_item.quantity,
             discount=db_item.discount,
             item_name=db_item.item_name,
             unit=db_item.unit,
-            amount=db_item.amount,  # Added amount
             amount_including_gst=db_item.amount_including_gst,
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
-            amount_with_gst=db_item.amount_with_gst,
-            remarks=db_item.remarks
+            amount_with_gst=db_item.amount_with_gst
         )
 
     except IntegrityError as e:
@@ -266,12 +248,10 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
-            amount=history.amount,  # Added amount
             amount_including_gst=history.amount_including_gst,
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
             amount_with_gst=history.amount_with_gst,
-            remarks=history.remarks,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -299,12 +279,10 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
-            amount=history.amount,  # Added amount
             amount_including_gst=history.amount_including_gst,
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
             amount_with_gst=history.amount_with_gst,
-            remarks=history.remarks,
             edited_at=history.edited_at,
             action=history.action
         ) for history in histories
@@ -317,7 +295,7 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
     return items
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
-    new_quotation = Quotation(**quotation_data.dict())  # Use SQLAlchemy Model
+    new_quotation = Quotation(**quotation_data.dict())
     db.add(new_quotation)
     db.commit()
     db.refresh(new_quotation)
@@ -327,7 +305,7 @@ def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
 
 def get_all_quotations(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Quotation).offset(skip).limit(limit).all()  # Ensure Using Model
+    return db.query(Quotation).offset(skip).limit(limit).all()
 
 def update_quotation(db: Session, quotation_id: int, update_data: dict):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
