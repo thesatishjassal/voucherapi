@@ -37,7 +37,7 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         without_gst=item.without_gst,
         gst_amount=item.gst_amount,
         amount_with_gst=item.amount_with_gst,
-        remarks=item.remarks,
+        # remarks=item.remarks,
         edited_at=datetime.utcnow(),
         action="delete"
     )
