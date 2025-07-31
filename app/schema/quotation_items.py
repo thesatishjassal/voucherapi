@@ -17,13 +17,12 @@ class QuotationItemBase(BaseModel):
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item", max_length=100)
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
-    amount: float = Field(..., description="Total amount (quantity * netPrice)", ge=0)  # Changed to float
     amount_including_gst: Optional[int] = None
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None
     amount_with_gst: Optional[int] = None
     remarks: Optional[str] = Field(None, description="Additional remarks for the item", max_length=500)
-
+    amount: Optional[float] = None
     model_config = ConfigDict(from_attributes=True)
 
 class QuotationItemCreate(QuotationItemBase):

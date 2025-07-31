@@ -1,5 +1,5 @@
 from pydantic import Field
-from sqlalchemy import Column, Integer, Numeric, String, ForeignKey
+from sqlalchemy import Column, Integer, Float, Numeric, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from base import Base
 from decimal import Decimal  # ✅ Use this for accurate float handling
@@ -31,8 +31,8 @@ class QuotationItem(Base):
     remarks = Column(String(500), nullable=True)  # Added remarks field
     netPrice: Optional[float] = Column(Float, info={"description": "NetPrice for quotation"})
 
-    amount: Optional[float] = Column(Float, info={"Total amount (quantity * netPrice)"})
-    
+    amount = Column(Float, nullable=True)  # ✅ as Float
+
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
     product = relationship("Products", back_populates="quotation_items")
