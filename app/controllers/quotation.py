@@ -32,7 +32,7 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         discount=item.discount,
         item_name=item.item_name,
         unit=item.unit,
-        amount=item.amount,  # Added amount
+        # amount=item.amount,  # Added amount
         amount_including_gst=item.amount_including_gst,
         without_gst=item.without_gst,
         gst_amount=item.gst_amount,
