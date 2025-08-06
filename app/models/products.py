@@ -12,8 +12,8 @@ class Products(Base):
     description = Column(String)
     category = Column(String)
     subcategory = Column(String)
-    price = Column(Float, nullable=True)  # Changed from String to Float
-    quantity = Column(Integer)  # Changed from String to Integer
+    price = Column(Float, nullable=True)
+    quantity = Column(Integer)
     rackcode = Column(String)
     thumbnail = Column(String, nullable=True)
     size = Column(String)
@@ -21,8 +21,10 @@ class Products(Base):
     model = Column(String)
     brand = Column(String)
     unit = Column(String)
-    reorderqty = Column(Integer, nullable=True)  # Changed from String to Integer
-    # reorderEnabled = Column(Boolean, default=False)
+    reorderqty = Column(Integer, nullable=True)
+
+    # ✅ New optional field
+    in_display = Column(Boolean, nullable=True, default=True)
 
     # Relationships
     items = relationship("InvoucherItem", back_populates="product")  
