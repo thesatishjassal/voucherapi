@@ -1,23 +1,33 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Float, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from base import Base
 
-class Client(Base):
-    __tablename__ = "clients"
-
+class Products(Base):
+    __tablename__ = "products"
+    
     id = Column(Integer, primary_key=True, index=True)
-    businessname = Column(String(255), nullable=True)  # ✅ Optional
-    address = Column(String(255), nullable=True)       # ✅ Optional
-    gst_number = Column(String(100), nullable=True)     # ✅ Optional
-    pincode = Column(String(20), nullable=True)         # ✅ Optional
-    city = Column(String(100))
-    state = Column(String(100))
-    client_name = Column(String(255), nullable=True)    # already optional
-    client_phone = Column(String(15), unique=True, index=True)
-    client_email = Column(String(255), nullable=True)   # ✅ Optional
-    client_type = Column(String(50))
+    hsncode = Column(String, unique=True)
+    itemcode = Column(String(50), unique=True, nullable=False)
+    itemname = Column(String)
+    description = Column(String)
+    category = Column(String)
+    subcategory = Column(String)
+    price = Column(Float, nullable=True)
+    quantity = Column(Integer)
+    rackcode = Column(String)
+    thumbnail = Column(String, nullable=True)
+    size = Column(String)
+    color = Column(String)
+    model = Column(String)
+    brand = Column(String)
+    unit = Column(String)
+    reorderqty = Column(Integer, nullable=True)
 
-    quotations = relationship("Quotation", back_populates="client")  
-    invouchers = relationship("Invoucher", back_populates="client")
-    outvouchers = relationship("Outvoucher", back_populates="client")
-    salesorder = relationship("SalesOrder", back_populates="client")  
+    # ✅ New optional field
+    in_display = Column(Boolean, nullable=True, default=True)
+
+    # Relationships
+    items = relationship("InvoucherItem", back_populates="product")  
+    salesitems = relationship("SalesorderItems", back_populates="product")  
+    outvoucher_items = relationship("OutvoucherItem", back_populates="product")
+    quotation_items = relationship("QuotationItem", back_populates="product")
