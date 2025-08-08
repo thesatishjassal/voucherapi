@@ -12,7 +12,7 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
     db.add(db_invoucher)
     db.commit()
     db.refresh(db_invoucher)
-    # Return a dictionary including the id
+    # Return a dictionary including the id and new GST fields
     return {
         "id": db_invoucher.id,
         "voucher_id": db_invoucher.voucher_id,
@@ -26,7 +26,10 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
         "number_of_packages": db_invoucher.number_of_packages,
         "freight_status": db_invoucher.freight_status,
         "total_amount": db_invoucher.total_amount,
-        "remarks": db_invoucher.remarks
+        "remarks": db_invoucher.remarks,
+        "gst_option": db_invoucher.gst_option,  # Include new field
+        "gst_percentage": db_invoucher.gst_percentage,  # Include new field
+        "gst_amount": db_invoucher.gst_amount  # Include new field
     }
 
 def create_invoucher_item(db: Session, voucher_id: str, item: InvoucherItemCreate):
@@ -45,7 +48,6 @@ def create_invoucher_item(db: Session, voucher_id: str, item: InvoucherItemCreat
     db.refresh(db_item)
     return db_item
 
-# Other functions remain unchanged
 def get_invouchers(db: Session, skip: int = 0, limit: int = 100):
     return db.query(InvoucherModel).offset(skip).limit(limit).all()
 

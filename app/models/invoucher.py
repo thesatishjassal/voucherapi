@@ -18,6 +18,9 @@ class Invoucher(Base):
     freight_status = Column(String(20), CheckConstraint("freight_status IN ('Paid', 'Unpaid')"))
     total_amount = Column(DECIMAL(12, 2), default=0.00)
     remarks = Column(Text)
+    gst_option = Column(String(20), CheckConstraint("gst_option IN ('Include', 'Exclude')"), default="Include")  # New column
+    gst_percentage = Column(DECIMAL(5, 2), default=0.00)  # New column
+    gst_amount = Column(DECIMAL(12, 2), default=0.00)  # New column
 
     client = relationship("Client", back_populates="invouchers")
-    items = relationship("InvoucherItem", back_populates="invoucher")  # ✅ Ensure this exists
+    items = relationship("InvoucherItem", back_populates="invoucher")

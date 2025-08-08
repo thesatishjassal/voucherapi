@@ -1,5 +1,3 @@
-"""Pydantic schemas for Invoucher data validation in the IN Voucher API."""
-
 from pydantic import BaseModel, ConfigDict
 from datetime import date
 from typing import Optional
@@ -18,6 +16,9 @@ class InvoucherBase(BaseModel):
     freight_status: Optional[str] = "Paid"
     total_amount: Optional[float] = 0.00
     remarks: Optional[str] = None
+    gst_option: Optional[str] = "Include"  # New field for GST option
+    gst_percentage: Optional[float] = 0.00  # New field for GST percentage
+    gst_amount: Optional[float] = 0.00  # New field for GST amount
 
 class InvoucherCreate(InvoucherBase):
     """Schema for creating a new invoucher."""
@@ -26,10 +27,6 @@ class InvoucherCreate(InvoucherBase):
 class InvoucherUpdate(InvoucherBase):
     """Schema for updating an existing invoucher."""
     pass
-
-class InvoucherItemSchema(BaseModel):
-    pass
-
 
 class Invoucher(InvoucherBase):
     """Schema for responding with invoucher data."""
