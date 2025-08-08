@@ -153,6 +153,5 @@ def delete_product(product_id: int, db: Session):
     else:
         raise HTTPException(status_code=404, detail="product not found")
 
-
 def get_product_by_itemcode(itemcode: str, db: Session):
     return db.query(Products).filter(Products.itemcode == itemcode).first()
