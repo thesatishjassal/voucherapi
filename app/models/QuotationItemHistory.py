@@ -31,4 +31,7 @@ class QuotationItemHistory(Base):
     amount_with_gst = Column(Integer, nullable=True)
     amount = Column(Float, nullable=False)  # or nullable=True if optional
 
+    # New field
+    remarks = Column(String(255), nullable=True)
+
     quotationitem = relationship("QuotationItem", back_populates="itemshistory")

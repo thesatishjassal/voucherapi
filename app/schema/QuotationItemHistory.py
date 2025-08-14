@@ -24,7 +24,7 @@ class QuotationItemHistorySchema(BaseModel):
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None
     amount_with_gst: Optional[int] = None
-
+    remarks: Optional[str] = None
 
 class QuotationItemHistoryResponse(BaseModel):
     id: int
@@ -48,7 +48,7 @@ class QuotationItemHistoryResponse(BaseModel):
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None
     amount_with_gst: Optional[int] = None
-
+    remarks: Optional[str] = None
 
     class Config:
         from_attributes = True
