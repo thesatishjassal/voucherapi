@@ -5,6 +5,7 @@ from base import Base
 from decimal import Decimal  # ✅ Use this for accurate float handling
 from typing import Optional
 from sqlalchemy import Float
+from sqlalchemy import Text
 
 class QuotationItem(Base):
     __tablename__ = "quotationitems"
@@ -13,7 +14,7 @@ class QuotationItem(Base):
     quotation_id = Column(Integer, ForeignKey("quotations.quotation_id"), nullable=True)
     product_id = Column(String(50), ForeignKey("products.itemcode"))
     customercode = Column(String(100), nullable=True)
-    customerdescription = Column(String(100), nullable=True)
+    customerdescription = Column(Text, nullable=True)
     image = Column(String(100), nullable=True)
     itemcode = Column(String(100), nullable=True)
     brand = Column(String(100), nullable=True)

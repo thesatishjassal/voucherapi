@@ -6,7 +6,10 @@ class QuotationItemBase(BaseModel):
     quotation_id: Optional[int] = Field(None, description="Associated quotation ID")
     product_id: Optional[str] = Field(None, description="Product unique identifier")
     customercode: Optional[str] = Field(None, description="Customer code")
-    customerdescription: Optional[str] = Field(None, description="Customer product description")
+    customerdescription: Optional[str] = Field(
+        None,
+        description="Customer product description"
+    )
     image: Optional[str] = Field(None, description="Image URL or path")
     itemcode: Optional[str] = Field(None, description="Item code")
     brand: Optional[str] = Field(None, description="Brand name")
