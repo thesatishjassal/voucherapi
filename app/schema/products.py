@@ -21,8 +21,14 @@ class ProductsCreate(BaseModel):
     unit: str
     reorderqty: Optional[int] = None
 
+    # ✅ New text fields
+    cct: Optional[str] = None
+    beamangle: Optional[str] = None
+    cutoutdia: Optional[str] = None
+
     # ✅ Optional field
     in_display: Optional[bool] = True
+
 
 # -----------------------------------------------
 # ✅ Update Product Schema (Optional fields)
@@ -45,8 +51,14 @@ class ProductsUpdate(BaseModel):
     unit: Optional[str] = None
     reorderqty: Optional[int] = None
 
+    # ✅ New text fields
+    cct: Optional[str] = None
+    beamangle: Optional[str] = None
+    cutoutdia: Optional[str] = None
+
     # ✅ Optional field
     in_display: Optional[bool] = None
+
 
 # -----------------------------------------------
 # ✅ Response Schema
@@ -69,6 +81,11 @@ class ProductsResponse(BaseModel):
     model: str
     brand: str
     reorderqty: Optional[int] = None
+
+    # ✅ New text fields
+    cct: Optional[str] = None
+    beamangle: Optional[str] = None
+    cutoutdia: Optional[str] = None
 
     # ✅ Optional field
     in_display: Optional[bool] = None

@@ -137,6 +137,14 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
         if product_data.in_display is not None:
             product.in_display = product_data.in_display
 
+        # ✅ New fields
+        if product_data.cct:
+            product.cct = product_data.cct
+        if product_data.beamangle:
+            product.beamangle = product_data.beamangle
+        if product_data.cutoutdia:
+            product.cutoutdia = product_data.cutoutdia
+
         db.commit()
         db.refresh(product)
         return product
@@ -152,6 +160,7 @@ def delete_product(product_id: int, db: Session):
         return {"Message": "product Deleted Successfuly!"}
     else:
         raise HTTPException(status_code=404, detail="product not found")
+
 
 def get_product_by_itemcode(itemcode: str, db: Session):
     return db.query(Products).filter(Products.itemcode == itemcode).first()

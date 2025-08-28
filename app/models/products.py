@@ -23,7 +23,12 @@ class Products(Base):
     unit = Column(String)
     reorderqty = Column(Integer, nullable=True)
 
-    # ✅ New optional field
+    # ✅ New optional fields (text type)
+    cct = Column(String, nullable=True)
+    beamangle = Column(String, nullable=True)
+    cutoutdia = Column(String, nullable=True)
+
+    # ✅ Optional field
     in_display = Column(Boolean, nullable=True, default=True)
 
     # Relationships

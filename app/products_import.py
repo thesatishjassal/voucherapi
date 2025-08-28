@@ -26,7 +26,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
 
     Expects the following columns in order:
     hsncode, itemcode, itemname, description, category, subcategory, price,
-    quantity, rackcode, size, color, model, brand, unit, reorderqty
+    quantity, rackcode, size, color, model, brand, unit, reorderqty, cct, beamangle, cutoutdia
     """
     if not file.filename.endswith(('.xlsx', '.xls')):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file.")
@@ -43,11 +43,11 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
 
         products_list = []
 
-        for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip header
-            if all(cell is None for cell in row[:14]):
+        for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip header row
+            if all(cell is None for cell in row[:18]):  # check first 18 cols (updated count)
                 continue
 
-            if any(cell is None for cell in row[:3]):
+            if any(cell is None for cell in row[:3]):  # require hsncode, itemcode, itemname
                 continue
 
             product_data_dict = {
@@ -66,7 +66,9 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "brand": str(row[12]).strip() if row[12] else "",
                 "unit": str(row[13]).strip() if row[13] else "",
                 "reorderqty": int(row[14]) if row[14] else 10,
-                "reorderEnabled": True if row[14] and int(row[14]) > 0 else False
+                "cct": str(row[15]).strip() if row[15] else None,
+                "beamangle": str(row[16]).strip() if row[16] else None,
+                "cutoutdia": str(row[17]).strip() if row[17] else None,
             }
 
             product_data = ProductsCreate(**product_data_dict)
