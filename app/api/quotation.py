@@ -20,9 +20,53 @@ from app.schema.quotation import Quotation, QuotationCreate
 from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, QuotationItemResponse
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 from app.models.quotationitems import QuotationItem  # Import the model for querying
+from app.controllers.quotation import add_or_update_item_image
 
 app = FastAPI()
 router = APIRouter(tags=["Quotations API"])  # Tag added for better Swagger UI grouping
+
+from fastapi import UploadFile, File
+
+@router.put("/quotation/items/{quotation_item_id}/image", response_model=QuotationItemResponse)
+def update_item_image_api(
+    quotation_item_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db_connection),
+):
+    # Save uploaded file locally (or to S3 if needed)
+    file_location = f"uploads/quotation_items/{quotation_item_id}_{file.filename}"
+    with open(file_location, "wb+") as f:
+        f.write(file.file.read())
+
+    # Save relative path in DB (so frontend can access via API domain)
+    image_path = f"/{file_location}"
+
+    updated_item = add_or_update_item_image(db, quotation_item_id, image_path)
+
+    return QuotationItemResponse(
+        id=updated_item.id,
+        quotation_id=updated_item.quotation_id,
+        product_id=updated_item.product_id,
+        customercode=updated_item.customercode,
+        customerdescription=updated_item.customerdescription,
+        image=updated_item.image,
+        itemcode=updated_item.itemcode,
+        brand=updated_item.brand,
+        mrp=updated_item.mrp,
+        netPrice=updated_item.netPrice,
+        price=updated_item.price,
+        quantity=updated_item.quantity,
+        discount=updated_item.discount,
+        item_name=updated_item.item_name,
+        unit=updated_item.unit,
+        amount=updated_item.amount,
+        amount_including_gst=updated_item.amount_including_gst,
+        without_gst=updated_item.without_gst,
+        gst_amount=updated_item.gst_amount,
+        amount_with_gst=updated_item.amount_with_gst,
+        remarks=updated_item.remarks,
+    )
+
 
 # Create a new quotation
 @router.post("/quotation/", response_model=Quotation)

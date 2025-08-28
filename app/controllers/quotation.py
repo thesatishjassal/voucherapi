@@ -11,6 +11,52 @@ from app.schema.quotation_items import QuotationItemCreate, QuotationItemRespons
 from fastapi import HTTPException
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 
+def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str) -> QuotationItem:
+    """
+    Add or update an image for a QuotationItem by its ID,
+    and log the change in QuotationItemHistory.
+    """
+    # Fetch the item
+    item = db.query(QuotationItem).filter(QuotationItem.id == quotation_item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Quotation item with ID {quotation_item_id} not found")
+
+    # Save history before updating
+    history = QuotationItemHistory(
+        quotation_item_id=item.id,
+        quotation_id=item.quotation_id,
+        product_id=item.product_id,
+        customercode=item.customercode,
+        customerdescription=item.customerdescription,
+        image=item.image,  # old image before update
+        itemcode=item.itemcode,
+        brand=item.brand,
+        mrp=item.mrp,
+        price=item.price,
+        quantity=item.quantity,
+        discount=item.discount,
+        item_name=item.item_name,
+        unit=item.unit,
+        amount=item.amount,
+        amount_including_gst=item.amount_including_gst,
+        without_gst=item.without_gst,
+        gst_amount=item.gst_amount,
+        amount_with_gst=item.amount_with_gst,
+        remarks=item.remarks,
+        edited_at=datetime.utcnow(),
+        action="update_image"
+    )
+    db.add(history)
+
+    # Update the image
+    item.image = image_url
+    item.updated_at = datetime.utcnow() if hasattr(item, "updated_at") else None
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+
+    return item
+
 # Helper function to delete a quotation item and log it in history
 def delete_quotation_item(db: Session, item: QuotationItem) -> None:
     """
