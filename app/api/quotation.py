@@ -29,25 +29,39 @@ router = APIRouter(tags=["Quotations API"])  # Tag added for better Swagger UI g
 
 from fastapi import UploadFile, File
 
-@router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image")
+# ✅ Directory for uploads
+UPLOAD_DIR = "uploads/quotations"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+@router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image", response_model=QuotationItemResponse)
 def upload_item_image(
     quotation_id: int,
     quotation_item_id: int,
     file: UploadFile = File(...),
     db: Session = Depends(get_db_connection),
 ):
-    # Save file logic here...
-    file_location = f"/uploads/quotations/{file.filename}"
-    with open(f"media{file_location}", "wb") as buffer:
+    # Ensure item belongs to the correct quotation
+    item = db.query(QuotationItem).filter(
+        QuotationItem.id == quotation_item_id,
+        QuotationItem.quotation_id == quotation_id
+    ).first()
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Quotation item not found for given quotation")
+
+    # Save file to uploads/quotations/
+    file_location = os.path.join(UPLOAD_DIR, f"{quotation_item_id}_{file.filename}")
+    with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    item = add_or_update_item_image(db, quotation_item_id, file_location)
+    # Store relative path for static serving
+    image_path = f"/{file_location}"
 
-    return {
-        "id": item.id,
-        "quotation_id": item.quotation_id,
-        "image_url": f"https://api.panvic.in{item.image}"
-    }
+    # Update DB
+    updated_item = add_or_update_item_image(db, quotation_item_id, image_path)
+
+    return QuotationItemResponse.from_orm(updated_item)
 
 
 # Create a new quotation
