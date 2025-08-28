@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import List
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -28,61 +29,26 @@ router = APIRouter(tags=["Quotations API"])  # Tag added for better Swagger UI g
 
 from fastapi import UploadFile, File
 
-@router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image", response_model=QuotationItemResponse)
-def update_item_image_api(
+@router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image")
+def upload_item_image(
     quotation_id: int,
     quotation_item_id: int,
     file: UploadFile = File(...),
     db: Session = Depends(get_db_connection),
 ):
-    # Ensure the item belongs to the quotation
-    item = db.query(QuotationItem).filter(
-        QuotationItem.id == quotation_item_id,
-        QuotationItem.quotation_id == quotation_id
-    ).first()
+    # Save file logic here...
+    file_location = f"/uploads/quotations/{file.filename}"
+    with open(f"media{file_location}", "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-    if not item:
-        raise HTTPException(status_code=404, detail="Quotation item not found for this quotation")
+    item = add_or_update_item_image(db, quotation_item_id, file_location)
 
-    # Save uploaded file locally (or to S3 if needed)
-    upload_dir = "uploads/quotation_items"
-    os.makedirs(upload_dir, exist_ok=True)
+    return {
+        "id": item.id,
+        "quotation_id": item.quotation_id,
+        "image_url": f"https://api.panvic.in{item.image}"
+    }
 
-    file_location = os.path.join(upload_dir, f"{quotation_id}_{quotation_item_id}_{file.filename}")
-    with open(file_location, "wb+") as f:
-        f.write(file.file.read())
-
-    # Save relative path in DB (so frontend can access via API domain)
-    image_path = f"/{file_location}"
-
-    # Update DB record
-    item.image = image_path
-    db.commit()
-    db.refresh(item)
-
-    return QuotationItemResponse(
-        id=item.id,
-        quotation_id=item.quotation_id,
-        product_id=item.product_id,
-        customercode=item.customercode,
-        customerdescription=item.customerdescription,
-        image=item.image,
-        itemcode=item.itemcode,
-        brand=item.brand,
-        mrp=item.mrp,
-        netPrice=item.netPrice,
-        price=item.price,
-        quantity=item.quantity,
-        discount=item.discount,
-        item_name=item.item_name,
-        unit=item.unit,
-        amount=item.amount,
-        amount_including_gst=item.amount_including_gst,
-        without_gst=item.without_gst,
-        gst_amount=item.gst_amount,
-        amount_with_gst=item.amount_with_gst,
-        remarks=item.remarks,
-    )
 
 # Create a new quotation
 @router.post("/quotation/", response_model=Quotation)
