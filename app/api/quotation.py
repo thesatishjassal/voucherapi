@@ -23,6 +23,7 @@ from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, Q
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 from app.models.quotationitems import QuotationItem  # Import the model for querying
 from app.controllers.quotation import add_or_update_item_image
+from app.controllers.quotation import update_single_quotation_item
 
 app = FastAPI()
 router = APIRouter(tags=["Quotations API"])  # Tag added for better Swagger UI grouping
@@ -33,6 +34,14 @@ from fastapi import UploadFile, File
 UPLOAD_DIR = "uploads/quotations"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+@router.put("/quotation/{quotation_id}/items/{item_id}", response_model=QuotationItemResponse)
+def update_item(
+    quotation_id: int,
+    item_id: int,
+    item: QuotationItemCreate,
+    db: Session = Depends(get_db_connection)
+):
+    return update_single_quotation_item(db, quotation_id, item_id, item)
 
 @router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image", response_model=QuotationItemResponse)
 def upload_item_image(

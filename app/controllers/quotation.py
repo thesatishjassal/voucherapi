@@ -96,6 +96,97 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
     db.add(history)
     db.delete(item)
 
+def update_single_quotation_item(
+    db: Session, quotation_id: int, item_id: int, item_data: QuotationItemCreate
+) -> QuotationItemResponse:
+    """
+    Update a single quotation item by quotation_id and item_id,
+    and log the previous state into QuotationItemHistory.
+    """
+
+    try:
+        # Check if quotation exists
+        quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
+        if not quotation:
+            raise HTTPException(status_code=404, detail=f"Quotation {quotation_id} not found")
+
+        # Fetch the item
+        db_item = (
+            db.query(QuotationItem)
+            .filter(QuotationItem.id == item_id, QuotationItem.quotation_id == quotation_id)
+            .first()
+        )
+        if not db_item:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Quotation item {item_id} not found for quotation {quotation_id}"
+            )
+
+        # Save history before update
+        history = QuotationItemHistory(
+            quotation_item_id=db_item.id,
+            quotation_id=db_item.quotation_id,
+            product_id=db_item.product_id,
+            customercode=db_item.customercode,
+            customerdescription=db_item.customerdescription,
+            image=db_item.image,
+            itemcode=db_item.itemcode,
+            brand=db_item.brand,
+            mrp=db_item.mrp,
+            price=db_item.price,
+            quantity=db_item.quantity,
+            discount=db_item.discount,
+            item_name=db_item.item_name,
+            unit=db_item.unit,
+            amount=db_item.amount,
+            amount_including_gst=db_item.amount_including_gst,
+            without_gst=db_item.without_gst,
+            gst_amount=db_item.gst_amount,
+            amount_with_gst=db_item.amount_with_gst,
+            remarks=db_item.remarks,
+            edited_at=datetime.utcnow(),
+            action="update_single"
+        )
+        db.add(history)
+
+        # Update fields
+        for key, value in item_data.dict(exclude_unset=True).items():
+            setattr(db_item, key, value)
+
+        db.commit()
+        db.refresh(db_item)
+
+        return QuotationItemResponse(
+            id=db_item.id,
+            quotation_id=db_item.quotation_id,
+            product_id=db_item.product_id,
+            customercode=db_item.customercode,
+            customerdescription=db_item.customerdescription,
+            image=db_item.image,
+            itemcode=db_item.itemcode,
+            brand=db_item.brand,
+            mrp=db_item.mrp,
+            netPrice=db_item.netPrice,
+            price=db_item.price,
+            quantity=db_item.quantity,
+            discount=db_item.discount,
+            item_name=db_item.item_name,
+            unit=db_item.unit,
+            amount=db_item.amount,
+            amount_including_gst=db_item.amount_including_gst,
+            without_gst=db_item.without_gst,
+            gst_amount=db_item.gst_amount,
+            amount_with_gst=db_item.amount_with_gst,
+            remarks=db_item.remarks,
+        )
+
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error updating item: {str(e)}")
+
 def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[QuotationItemCreate]) -> List[QuotationItemResponse]:
     try:
         updated_items_list = []
