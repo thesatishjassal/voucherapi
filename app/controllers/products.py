@@ -144,6 +144,10 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
             product.beamangle = product_data.beamangle
         if product_data.cutoutdia:
             product.cutoutdia = product_data.cutoutdia
+        if product_data.cri:
+            product.cri = product_data.cri
+        if product_data.lumens:
+            product.lumens = product_data.lumens
 
         db.commit()
         db.refresh(product)

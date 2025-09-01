@@ -27,7 +27,8 @@ class Products(Base):
     cct = Column(String, nullable=True)
     beamangle = Column(String, nullable=True)
     cutoutdia = Column(String, nullable=True)
-
+    cri = Column(String, nullable=True)
+    lumens = Column(String, nullable=True)
     # ✅ Optional field
     in_display = Column(Boolean, nullable=True, default=True)
 

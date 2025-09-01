@@ -25,7 +25,9 @@ class ProductsCreate(BaseModel):
     cct: Optional[str] = None
     beamangle: Optional[str] = None
     cutoutdia: Optional[str] = None
-
+    cri: Optional[str] = None
+    lumens: Optional[str] = None
+ 
     # ✅ Optional field
     in_display: Optional[bool] = True
 
@@ -55,7 +57,8 @@ class ProductsUpdate(BaseModel):
     cct: Optional[str] = None
     beamangle: Optional[str] = None
     cutoutdia: Optional[str] = None
-
+    cri: Optional[str] = None
+    lumens: Optional[str] = None
     # ✅ Optional field
     in_display: Optional[bool] = None
 
@@ -85,7 +88,9 @@ class ProductsResponse(BaseModel):
     # ✅ New text fields
     cct: Optional[str] = None
     beamangle: Optional[str] = None
+    cri: Optional[str] = None
     cutoutdia: Optional[str] = None
+    lumens: Optional[str] = None
 
     # ✅ Optional field
     in_display: Optional[bool] = None
