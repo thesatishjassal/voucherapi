@@ -33,7 +33,12 @@ class QuotationItem(Base):
     netPrice: Optional[float] = Column(Float, info={"description": "NetPrice for quotation"})
 
     amount = Column(Float, nullable=True)  # ✅ as Float
-
+    # ✅ New fields
+    cct = Column(String(50), nullable=True)          # Correlated Color Temperature
+    beamangle = Column(String(50), nullable=True)    # Beam angle (in degrees)
+    cri = Column(String(50), nullable=True)          # Color Rendering Index
+    cutoutdia = Column(String(50), nullable=True)    # Cutout diameter size
+    lumens = Column(String(50), nullable=True)       # Luminous flux
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
     product = relationship("Products", back_populates="quotation_items")

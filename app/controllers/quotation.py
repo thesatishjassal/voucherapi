@@ -90,6 +90,11 @@ def delete_quotation_item(db: Session, item: QuotationItem) -> None:
         gst_amount=item.gst_amount,
         amount_with_gst=item.amount_with_gst,
         remarks=item.remarks,
+        cct=item.cct,
+        beamangle=item.beamangle,
+        cri=item.cri,
+        cutoutdia=item.cutoutdia,
+        lumens=item.lumens,
         edited_at=datetime.utcnow(),
         action="delete"
     )
@@ -144,6 +149,11 @@ def update_single_quotation_item(
             gst_amount=db_item.gst_amount,
             amount_with_gst=db_item.amount_with_gst,
             remarks=db_item.remarks,
+            cct=db_item.cct,
+            beamangle=db_item.beamangle,
+            cri=db_item.cri,
+            cutoutdia=db_item.cutoutdia,
+            lumens=db_item.lumens,
             edited_at=datetime.utcnow(),
             action="update_single"
         )
@@ -177,6 +187,11 @@ def update_single_quotation_item(
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
             amount_with_gst=db_item.amount_with_gst,
+            cct=db_item.cct,
+            beamangle=db_item.beamangle,
+            cri=db_item.cri,
+            cutoutdia=db_item.cutoutdia,
+            lumens=db_item.lumens,
             remarks=db_item.remarks,
         )
 
@@ -232,6 +247,11 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                         gst_amount=existing_item.gst_amount,
                         amount_with_gst=existing_item.amount_with_gst,
                         remarks=existing_item.remarks,
+                        cct=existing_item.cct,
+                        beamangle=existing_item.beamangle,
+                        cri=existing_item.cri,
+                        cutoutdia=existing_item.cutoutdia,
+                        lumens=existing_item.lumens,
                         edited_at=datetime.utcnow(),
                         action="update"
                     )
@@ -265,6 +285,11 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             without_gst=existing_item.without_gst,
                             gst_amount=existing_item.gst_amount,
                             amount_with_gst=existing_item.amount_with_gst,
+                            cct=existing_item.cct,
+                            beamangle=existing_item.beamangle,
+                            cri=existing_item.cri,
+                            cutoutdia=existing_item.cutoutdia,
+                            lumens=existing_item.lumens,
                             remarks=existing_item.remarks
                         )
                     )
@@ -299,6 +324,11 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             without_gst=new_item.without_gst,
                             gst_amount=new_item.gst_amount,
                             amount_with_gst=new_item.amount_with_gst,
+                            cct=new_item.cct,
+                            beamangle=new_item.beamangle,
+                            cri=new_item.cri,
+                            cutoutdia=new_item.cutoutdia,
+                            lumens=new_item.lumens,
                             remarks=new_item.remarks
                         )
                     )
@@ -375,7 +405,12 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
             amount_with_gst=db_item.amount_with_gst,
-            remarks=db_item.remarks
+            remarks=db_item.remarks,
+            cct=db_item.cct,
+            beamangle=db_item.beamangle,
+            cri=db_item.cri,
+            cutoutdia=db_item.cutoutdia,
+            lumens=db_item.lumens,
         )
 
     except IntegrityError as e:
@@ -416,7 +451,12 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             amount_with_gst=history.amount_with_gst,
             remarks=history.remarks,
             edited_at=history.edited_at,
-            action=history.action
+            action=history.action,
+            cct=history.cct,
+            beamangle=history.beamangle,
+            cri=history.cri,
+            cutoutdia=history.cutoutdia,
+            lumens=history.lumens,
         ) for history in histories
     ]
 
@@ -449,6 +489,11 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             amount_with_gst=history.amount_with_gst,
             remarks=history.remarks,
             edited_at=history.edited_at,
+            cct=history.cct,
+            beamangle=history.beamangle,
+            cri=history.cri,
+            cutoutdia=history.cutoutdia,
+            lumens=history.lumens,
             action=history.action
         ) for history in histories
     ]

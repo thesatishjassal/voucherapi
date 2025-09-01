@@ -26,6 +26,14 @@ class QuotationItemBase(BaseModel):
     amount_with_gst: Optional[int] = None
     remarks: Optional[str] = Field(None, description="Additional remarks for the item", max_length=500)
     amount: Optional[float] = None
+
+    # New fields
+    cct: Optional[str] = Field(None, description="Correlated Color Temperature (e.g., 3000K, 4000K)")
+    beamangle: Optional[str] = Field(None, description="Beam angle of the light (in degrees)")
+    cri: Optional[str] = Field(None, description="Color Rendering Index (e.g., >80, >90)")
+    cutoutdia: Optional[str] = Field(None, description="Cutout diameter size")
+    lumens: Optional[str] = Field(None, description="Luminous flux (brightness)")
+
     model_config = ConfigDict(from_attributes=True)
 
 class QuotationItemCreate(QuotationItemBase):
