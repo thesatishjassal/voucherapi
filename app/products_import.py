@@ -69,6 +69,8 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "cct": str(row[15]).strip() if row[15] else None,
                 "beamangle": str(row[16]).strip() if row[16] else None,
                 "cutoutdia": str(row[17]).strip() if row[17] else None,
+                "cri": str(row[16]).strip() if row[16] else None,
+                "lumens": str(row[17]).strip() if row[17] else None,
             }
 
             product_data = ProductsCreate(**product_data_dict)
