@@ -14,7 +14,7 @@ class QuotationBase(BaseModel):
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[str] = None
-    date: Optional[date] = None
+    date: Optional[date] = None # type: ignore
     client_id: int  # Required to link client
 
 class QuotationCreate(BaseModel):
@@ -28,7 +28,7 @@ class QuotationCreate(BaseModel):
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[str] = None
-    date: Optional[date] = None
+    date: Optional[date] = None # type: ignore
     client_id: int
 
 class QuotationUpdate(QuotationBase):
