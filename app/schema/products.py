@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict
 # ✅ Create Product Schema
 # -----------------------------------------------
 class ProductsCreate(BaseModel):
-    hsncode: str
+    # hsncode: str
     itemcode: str
     itemname: str
     description: str
@@ -36,7 +36,7 @@ class ProductsCreate(BaseModel):
 # ✅ Update Product Schema (Optional fields)
 # -----------------------------------------------
 class ProductsUpdate(BaseModel):
-    hsncode: Optional[str] = None
+    # hsncode: Optional[str] = None
     itemcode: Optional[str] = None
     itemname: Optional[str] = None
     description: Optional[str] = None
@@ -68,7 +68,7 @@ class ProductsUpdate(BaseModel):
 # -----------------------------------------------
 class ProductsResponse(BaseModel):
     id: int
-    hsncode: str
+    # hsncode: str
     itemcode: str
     itemname: str
     description: str

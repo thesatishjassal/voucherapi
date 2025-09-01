@@ -32,7 +32,7 @@ def upload_csv(file: UploadFile, db: Session):
             row_count += 1
             try:
                 # Ensure all required fields are present
-                required_fields = ['hsncode', 'itemcode', 'itemname', 'description', 'category', 'subcategory', 'price', 'quantity', 'rackcode', 'size', 'color', 'model', 'brand', 'unit', 'reorderqty']
+                required_fields = ['itemcode', 'itemname', 'description', 'category', 'subcategory', 'price', 'quantity', 'rackcode', 'size', 'color', 'model', 'brand', 'unit', 'reorderqty']
                 for field in required_fields:
                     if field not in row or not row[field].strip():
                         raise ValueError(f"Missing or empty field: {field}")
@@ -53,7 +53,7 @@ def upload_csv(file: UploadFile, db: Session):
                 logger.info(f"Row {row_num} - price: {price} (type: {type(price)}), quantity: {quantity} (type: {type(quantity)}), reorderqty: {reorderqty} (type: {type(reorderqty)})")
 
                 product_data = ProductsCreate(
-                    hsncode=row['hsncode'],
+                    # hsncode=row['hsncode'],
                     itemcode=row['itemcode'],
                     itemname=row['itemname'],
                     description=row['description'],

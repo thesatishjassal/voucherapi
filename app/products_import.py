@@ -25,7 +25,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
     Imports products from an uploaded Excel (.xlsx or .xls) file into the database.
 
     Expects the following columns in order:
-    hsncode, itemcode, itemname, description, category, subcategory, price,
+    itemcode, itemname, description, category, subcategory, price,
     quantity, rackcode, size, color, model, brand, unit, reorderqty, cct, beamangle, cutoutdia
     """
     if not file.filename.endswith(('.xlsx', '.xls')):
@@ -51,7 +51,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 continue
 
             product_data_dict = {
-                "hsncode": str(row[0]).strip() if row[0] else "",
+                # "hsncode": str(row[0]).strip() if row[0] else "",
                 "itemcode": str(row[1]).strip() if row[1] else "",
                 "itemname": str(row[2]).strip() if row[2] else "",
                 "description": str(row[3]).strip() if row[3] else "",

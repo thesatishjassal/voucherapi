@@ -41,15 +41,15 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
 
 def create_products(products_data: ProductsCreate, db: Session):
     existing_product = db.query(Products).filter(
-        (Products.hsncode == products_data.hsncode) |
+        # (Products.hsncode == products_data.hsncode) |
         (Products.itemcode == products_data.itemcode) |
         (Products.itemname == products_data.itemname)
     ).first()
 
     if existing_product:
         errors = []
-        if existing_product.hsncode == products_data.hsncode:
-            errors.append("HSN Code already exists.")
+        # if existing_product.hsncode == products_data.hsncode:
+        #     errors.append("HSN Code already exists.")
         if existing_product.itemcode == products_data.itemcode:
             errors.append("Item Code already exists.")
         if existing_product.itemname == products_data.itemname:
@@ -75,7 +75,7 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
     errors = []
 
     for idx, product_data in enumerate(products_data):
-        logger.info(f"Processing product {idx + 1}: hsncode={product_data.hsncode}, itemcode={product_data.itemcode}")
+        logger.info(f"Processing product {idx + 1}:  itemcode={product_data.itemcode}")
 
         try:
             product_dict = product_data.model_dump()
@@ -84,7 +84,7 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
             db.commit()
             db.refresh(product)
             inserted_count += 1
-            logger.info(f"Inserted product {idx + 1}: hsncode={product_data.hsncode}, itemcode={product_data.itemcode}")
+            logger.info(f"Inserted product {idx + 1}:  itemcode={product_data.itemcode}")
         except Exception as e:
             db.rollback()
             logger.error(f"Failed to insert product {idx + 1}: {str(e)}")
@@ -114,8 +114,8 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
             product.itemcode = product_data.itemcode
         if product_data.itemname:
             product.itemname = product_data.itemname
-        if product_data.hsncode:
-            product.hsncode = product_data.hsncode
+        # if product_data.hsncode:
+        #     product.hsncode = product_data.hsncode
         if product_data.price:
             product.price = product_data.price
         if product_data.quantity:
