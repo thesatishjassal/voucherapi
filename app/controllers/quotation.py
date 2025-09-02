@@ -380,6 +380,7 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             # Create and add the new QuotationItem
             db_item = QuotationItem(quotation_id=db_quotation.quotation_id, **item_data)
             db.add(db_item)
+            db.commit()
             db.flush()  # Get auto-generated ID
             db.refresh(db_item)  # Refresh to get the latest DB state
 
