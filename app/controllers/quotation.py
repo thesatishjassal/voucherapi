@@ -247,11 +247,11 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                         gst_amount=existing_item.gst_amount,
                         amount_with_gst=existing_item.amount_with_gst,
                         remarks=existing_item.remarks,
-                        cct=existing_item.cct,
-                        beamangle=existing_item.beamangle,
-                        cri=existing_item.cri,
-                        cutoutdia=existing_item.cutoutdia,
-                        lumens=existing_item.lumens,
+                        # cct=existing_item.cct,
+                        # beamangle=existing_item.beamangle,
+                        # cri=existing_item.cri,
+                        # cutoutdia=existing_item.cutoutdia,
+                        # lumens=existing_item.lumens,
                         edited_at=datetime.utcnow(),
                         action="update"
                     )
@@ -453,11 +453,11 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             remarks=history.remarks,
             edited_at=history.edited_at,
             action=history.action,
-            cct=history.cct,
-            beamangle=history.beamangle,
-            cri=history.cri,
-            cutoutdia=history.cutoutdia,
-            lumens=history.lumens,
+            # cct=history.cct,
+            # beamangle=history.beamangle,
+            # cri=history.cri,
+            # cutoutdia=history.cutoutdia,
+            # lumens=history.lumens,
         ) for history in histories
     ]
 
@@ -490,12 +490,12 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             amount_with_gst=history.amount_with_gst,
             remarks=history.remarks,
             edited_at=history.edited_at,
-            cct=history.cct,
-            beamangle=history.beamangle,
-            cri=history.cri,
-            cutoutdia=history.cutoutdia,
-            lumens=history.lumens,
-            action=history.action
+            # cct=history.cct,
+            # beamangle=history.beamangle,
+            # cri=history.cri,
+            # cutoutdia=history.cutoutdia,
+            # lumens=history.lumens,
+            # action=history.action
         ) for history in histories
     ]
 
