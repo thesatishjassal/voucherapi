@@ -50,7 +50,7 @@ def get_items_by_voucher_id(db: Session, voucher_id: str) -> List[OutvoucherItem
 def get_outvoucher_by_id(db: Session, voucher_id: int):
     return db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
 
-def get_all_outvouchers(db: Session, skip: int = 0, limit: int = 100):
+def get_all_outvouchers(db: Session, skip: int = 0, limit: int = 1000):
     return db.query(Outvoucher).offset(skip).limit(limit).all()  # ✅ Ensure Using Model
 
 def update_outvoucher(db: Session, voucher_id: int, update_data: dict):
