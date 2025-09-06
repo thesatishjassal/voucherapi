@@ -14,14 +14,14 @@ router = APIRouter()
 def create_voucher(outvoucher: OutvoucherCreate, db: Session = Depends(get_db_connection)):
     return create_outvoucher(db, outvoucher)
 
-@router.post("/outvouchers/{voucher_id}/items/", response_model=OutvoucherItem)
-def create_outoucher_item_endpoint(voucher_id: int, item: OutvoucherItemCreate, db: Session = Depends(get_db_connection)):
+@router.post("/outvouchers/{id}/items/", response_model=OutvoucherItem)
+def create_outoucher_item_endpoint(id: int, item: OutvoucherItemCreate, db: Session = Depends(get_db_connection)):
     """Add an item to an existing invoucher."""
-    return create_outvoucher_item(db, voucher_id, item)
+    return create_outvoucher_item(db, id, item)
 
-@router.get("/outvouchers/{voucher_id}", response_model=Outvoucher)
-def read_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
-    outvoucher = get_outvoucher_by_id(db, voucher_id)
+@router.get("/outvouchers/{id}", response_model=Outvoucher)
+def read_voucher(id: int, db: Session = Depends(get_db_connection)):
+    outvoucher = get_outvoucher_by_id(db, id)
     if not outvoucher:
         raise HTTPException(status_code=404, detail="Voucher not found")
     return outvoucher
@@ -44,10 +44,10 @@ def delete_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
         raise HTTPException(status_code=404, detail="Voucher not found")
     return {"message": "Voucher deleted successfully"}
 
-@router.get("/outvouchers/{voucher_id}/items/", response_model=List[OutvoucherItem])
-def read_invoucher_items_endpoint(voucher_id: int, db: Session = Depends(get_db_connection)):
+@router.get("/outvouchers/{id}/items/", response_model=List[OutvoucherItem])
+def read_invoucher_items_endpoint(id: int, db: Session = Depends(get_db_connection)):
     """Retrieve all items for a specific outvouchers by voucher ID."""
-    return get_items_by_voucher_id(db, voucher_id)
+    return get_items_by_voucher_id(db, id)
 
 
 # Include the router in the main app

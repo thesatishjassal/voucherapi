@@ -58,8 +58,8 @@ def get_all_outvouchers(db: Session, skip: int = 0):
         .offset(skip)
         .all()
     )
-def update_outvoucher(db: Session, id: int, update_data: dict):
-    outvoucher = db.query(Outvoucher).filter(Outvoucher.id == id).first()
+def update_outvoucher(db: Session, voucher_id: int, update_data: dict):
+    outvoucher = db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
     if not outvoucher:
         return None
     for key, value in update_data.items():
@@ -68,8 +68,8 @@ def update_outvoucher(db: Session, id: int, update_data: dict):
     db.refresh(outvoucher)
     return outvoucher
 
-def delete_outvoucher(db: Session, id: int):
-    outvoucher = db.query(Outvoucher).filter(Outvoucher.id == id).first()
+def delete_outvoucher(db: Session, voucher_id: int):
+    outvoucher = db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
     if outvoucher:
         db.delete(outvoucher)
         db.commit()
