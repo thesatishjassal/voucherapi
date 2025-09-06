@@ -41,14 +41,14 @@ def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCre
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
     
-def get_items_by_voucher_id(db: Session, voucher_id: str) -> List[OutvoucherItem]:
-    items = db.query(OutvoucherItem).filter(OutvoucherItem.voucher_id == int(voucher_id)).all()
+def get_items_by_voucher_id(db: Session, id: str) -> List[OutvoucherItem]:
+    items = db.query(OutvoucherItem).filter(OutvoucherItem.id == int(id)).all()
     if not items:
         raise HTTPException(status_code=404, detail="No items found for this voucher ID")
     return items
 
-def get_outvoucher_by_id(db: Session, voucher_id: int):
-    return db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
+def get_outvoucher_by_id(db: Session, id: int):
+    return db.query(Outvoucher).filter(Outvoucher.id == id).first()
 
 def get_all_outvouchers(db: Session, skip: int = 0):
     # ✅ Fetch all vouchers in order, no limit
