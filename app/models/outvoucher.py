@@ -1,5 +1,4 @@
-# models/outvoucher.py
-from sqlalchemy import Column, ForeignKey, Integer, String, DECIMAL, Text, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String, DECIMAL, Text
 from sqlalchemy.orm import relationship
 from base import Base
 
@@ -7,7 +6,7 @@ class Outvoucher(Base):
     __tablename__ = "outvouchers"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    voucher_id = Column(Integer, unique=True, nullable=False)   # ✅ enforce uniqueness
+    voucher_id = Column(Integer, nullable=True)
     voucher_no = Column(String(50), nullable=False, unique=True)
     issue_slip_no = Column(String(50), nullable=True)
     sale_order_no = Column(String(50), nullable=True)
@@ -22,7 +21,7 @@ class Outvoucher(Base):
     mobile_number = Column(String(20), nullable=True)
     transaction_types = Column(String(20), nullable=True)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
-
-    # ✅ Relationships
+    
+    # ✅ Fix Relationships
     client = relationship("Client", back_populates="outvouchers")
-    items = relationship("OutvoucherItem", back_populates="outvoucher")
+    items = relationship("OutvoucherItem", back_populates="outvoucher") 
