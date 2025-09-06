@@ -15,10 +15,10 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
     db.refresh(new_outvoucher)
     return new_outvoucher
 
-def create_outvoucher_item(db: Session, id: int, item: OutvoucherItemCreate):
+def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     try:
         with db.begin():
-            db_voucher = db.query(Outvoucher).filter(Outvoucher.id == id).first()
+            db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
             if not db_voucher:
                 raise HTTPException(status_code=404, detail="Voucher not found")
             product_id = item.product_id
@@ -29,8 +29,8 @@ def create_outvoucher_item(db: Session, id: int, item: OutvoucherItemCreate):
             if not product:
                 raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
             
-            item_data = item.model_dump(exclude={"item_id", "id"})
-            db_item = OutvoucherItem(id=db_voucher.id, **item_data)
+            item_data = item.model_dump(exclude={"item_id", "voucher_id"})
+            db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
             db.add(db_item)
         #  the inxstance outside the transaction context if needed
         db.refresh(db_item)

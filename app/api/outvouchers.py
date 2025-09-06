@@ -30,16 +30,16 @@ def read_voucher(id: int, db: Session = Depends(get_db_connection)):
 def read_all_vouchers(skip: int = 0, db: Session = Depends(get_db_connection)):
     return get_all_outvouchers(db, skip)
 
-@router.put("/outvouchers/{voucher_id}", response_model=Outvoucher)
-def update_voucher(voucher_id: int, update_data: dict, db: Session = Depends(get_db_connection)):
-    updated_voucher = update_outvoucher(db, voucher_id, update_data)
+@router.put("/outvouchers/{id}", response_model=Outvoucher)
+def update_voucher(id: int, update_data: dict, db: Session = Depends(get_db_connection)):
+    updated_voucher = update_outvoucher(db, id, update_data)
     if not updated_voucher:
         raise HTTPException(status_code=404, detail="Voucher not found")
     return updated_voucher
 
-@router.delete("/{voucher_id}")
-def delete_voucher(voucher_id: int, db: Session = Depends(get_db_connection)):
-    success = delete_outvoucher(db, voucher_id)
+@router.delete("/{id}")
+def delete_voucher(id: int, db: Session = Depends(get_db_connection)):
+    success = delete_outvoucher(db, id)
     if not success:
         raise HTTPException(status_code=404, detail="Voucher not found")
     return {"message": "Voucher deleted successfully"}
