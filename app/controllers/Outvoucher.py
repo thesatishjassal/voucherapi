@@ -17,29 +17,33 @@ def create_outvoucher(db: Session, outvoucher_data: OutvoucherCreate):
 
 def create_outvoucher_item(db: Session, voucher_id: int, item: OutvoucherItemCreate):
     try:
-        with db.begin():
-            db_voucher = db.query(Outvoucher).filter(Outvoucher.voucher_id == voucher_id).first()
-            if not db_voucher:
-                raise HTTPException(status_code=404, detail="Voucher not found")
-            product_id = item.product_id
-            if not product_id:
-                raise HTTPException(status_code=400, detail="Product ID is required")
-            
-            product = db.query(Products).filter(Products.itemcode == product_id).first()
-            if not product:
-                raise HTTPException(status_code=404, detail=f"Product with itemcode {product_id} not found")
-            
-            item_data = item.model_dump(exclude={"item_id", "voucher_id"})
-            db_item = OutvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
-            db.add(db_item)
-        #  the inxstance outside the transaction context if needed
+        # Fetch voucher by primary key ID
+        db_voucher = db.query(Outvoucher).filter(Outvoucher.id == voucher_id).first()
+        if not db_voucher:
+            raise HTTPException(status_code=404, detail="Voucher not found")
+
+        # Validate product
+        product = db.query(Products).filter(Products.itemcode == item.product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail=f"Product with itemcode {item.product_id} not found")
+
+        # Prepare item data (exclude auto fields)
+        item_data = item.model_dump(exclude={"item_id", "voucher_id"})
+        
+        # Use Outvoucher.id (NOT voucher_id field)
+        db_item = OutvoucherItem(voucher_id=db_voucher.id, **item_data)
+        
+        db.add(db_item)
+        db.commit()
         db.refresh(db_item)
+
         return db_item
 
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
     
 def get_items_by_voucher_id(db: Session, id: str) -> List[OutvoucherItem]:
     items = db.query(OutvoucherItem).filter(OutvoucherItem.voucher_id == int(id)).all()
