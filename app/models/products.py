@@ -29,6 +29,7 @@ class Products(Base):
     cutoutdia = Column(String, nullable=True)
     cri = Column(String, nullable=True)
     lumens = Column(String, nullable=True)
+    watt = Column(String, nullable=True)
     # ✅ Optional field
     in_display = Column(Boolean, nullable=True, default=True)
 

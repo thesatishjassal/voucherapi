@@ -148,6 +148,8 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
             product.cri = product_data.cri
         if product_data.lumens:
             product.lumens = product_data.lumens
+        if product_data.watt:
+            product.watt = product_data.watt
 
         db.commit()
         db.refresh(product)

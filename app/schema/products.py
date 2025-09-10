@@ -91,6 +91,7 @@ class ProductsResponse(BaseModel):
     cri: Optional[str] = None
     cutoutdia: Optional[str] = None
     lumens: Optional[str] = None
+    watt: Optional[str] = None
 
     # ✅ Optional field
     in_display: Optional[bool] = None

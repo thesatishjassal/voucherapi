@@ -65,12 +65,14 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "model": str(row[11]).strip() if row[11] else "",
                 "brand": str(row[12]).strip() if row[12] else "",
                 "unit": str(row[13]).strip() if row[13] else "",
+                "watt": str(row[13]).strip() if row[13] else "",
                 "reorderqty": int(row[14]) if row[14] else 10,
                 "cct": str(row[15]).strip() if row[15] else None,
                 "beamangle": str(row[16]).strip() if row[16] else None,
                 "cutoutdia": str(row[17]).strip() if row[17] else None,
                 "cri": str(row[16]).strip() if row[16] else None,
                 "lumens": str(row[17]).strip() if row[17] else None,
+                "in_display": str(row[17]).strip() if row[17] else None,
             }
 
             product_data = ProductsCreate(**product_data_dict)
