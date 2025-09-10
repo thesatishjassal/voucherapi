@@ -42,7 +42,7 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
 def create_products(products_data: ProductsCreate, db: Session):
     existing_product = db.query(Products).filter(
         # (Products.hsncode == products_data.hsncode) |
-        (Products.itemcode == products_data.itemcode) |
+        # (Products.itemcode == products_data.itemcode) |
         (Products.itemname == products_data.itemname)
     ).first()
 
@@ -50,8 +50,8 @@ def create_products(products_data: ProductsCreate, db: Session):
         errors = []
         # if existing_product.hsncode == products_data.hsncode:
         #     errors.append("HSN Code already exists.")
-        if existing_product.itemcode == products_data.itemcode:
-            errors.append("Item Code already exists.")
+        # if existing_product.itemcode == products_data.itemcode:
+        #     errors.append("Item Code already exists.")
         if existing_product.itemname == products_data.itemname:
             errors.append("Product Name already exists.")
         raise HTTPException(
