@@ -40,24 +40,24 @@ def upload_thumbnail(product_id: int, db: Session, file: UploadFile):
 
 
 def create_products(products_data: ProductsCreate, db: Session):
-    existing_product = db.query(Products).filter(
+    # existing_product = db.query(Products).filter(
         # (Products.hsncode == products_data.hsncode) |
         # (Products.itemcode == products_data.itemcode) |
-        (Products.itemname == products_data.itemname)
-    ).first()
+        # (Products.itemname == products_data.itemname)
+    # ).first()
 
-    if existing_product:
-        errors = []
+    # if existing_product:
+    #     errors = []
         # if existing_product.hsncode == products_data.hsncode:
         #     errors.append("HSN Code already exists.")
         # if existing_product.itemcode == products_data.itemcode:
         #     errors.append("Item Code already exists.")
         # if existing_product.itemname == products_data.itemname:
         #     errors.append("Product Name already exists.")
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Validation Error", "errors": errors}
-        )
+        # raise HTTPException(
+        #     status_code=400,
+        #     detail={"message": "Validation Error", "errors": errors}
+        # )
 
     products = Products(**products_data.model_dump())
     db.add(products)
