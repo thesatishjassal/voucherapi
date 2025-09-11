@@ -27,7 +27,8 @@ class ProductsCreate(BaseModel):
     cutoutdia: Optional[str] = None
     cri: Optional[str] = None
     lumens: Optional[str] = None
- 
+    watt: Optional[str] = None
+
     # ✅ Optional field
     in_display: Optional[bool] = True
 
@@ -61,6 +62,7 @@ class ProductsUpdate(BaseModel):
     lumens: Optional[str] = None
     # ✅ Optional field
     in_display: Optional[bool] = None
+    watt: Optional[str] = None
 
 
 # -----------------------------------------------
