@@ -65,49 +65,42 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str
         
 # Helper function to delete a quotation item and log it in history
 def delete_quotation_item(db: Session, item: QuotationItem) -> None:
-    """
-    Deletes a quotation item and logs the deletion in the QuotationItemHistory table.
-    """
     # Save history before deletion
-    history = QuotationItemHistory(
-        quotation_item_id=item.id,
-        quotation_id=item.quotation_id,
-        product_id=item.product_id,
-        customercode=item.customercode,
-        customerdescription=item.customerdescription,
-        image=item.image,
-        itemcode=item.itemcode,
-        brand=item.brand,
-        mrp=item.mrp,
-        price=item.price,
-        quantity=item.quantity,
-        discount=item.discount,
-        item_name=item.item_name,
-        unit=item.unit,
-        # amount=item.amount,  # Added amount
-        amount_including_gst=item.amount_including_gst,
-        without_gst=item.without_gst,
-        gst_amount=item.gst_amount,
-        amount_with_gst=item.amount_with_gst,
-        remarks=item.remarks,
-        # cct=item.cct,
-        # beamangle=item.beamangle,
-        # cri=item.cri,
-        # cutoutdia=item.cutoutdia,
-        # lumens=item.lumens,
-        edited_at=datetime.utcnow(),
-        action="delete"
-    )
-    db.add(history)
+    # history = QuotationItemHistory(
+    #     quotation_item_id=item.id,
+    #     quotation_id=item.quotation_id,
+    #     product_id=item.product_id,
+    #     customercode=item.customercode,
+    #     customerdescription=item.customerdescription,
+    #     image=item.image,
+    #     itemcode=item.itemcode,
+    #     brand=item.brand,
+    #     mrp=item.mrp,
+    #     price=item.price,
+    #     quantity=item.quantity,
+    #     discount=item.discount,
+    #     item_name=item.item_name,
+    #     unit=item.unit,
+    #     # amount=item.amount,  # Added amount
+    #     amount_including_gst=item.amount_including_gst,
+    #     without_gst=item.without_gst,
+    #     gst_amount=item.gst_amount,
+    #     amount_with_gst=item.amount_with_gst,
+    #     remarks=item.remarks,
+    #     # cct=item.cct,
+    #     # beamangle=item.beamangle,
+    #     # cri=item.cri,
+    #     # cutoutdia=item.cutoutdia,
+    #     # lumens=item.lumens,
+    #     edited_at=datetime.utcnow(),
+    #     action="delete"
+    # )
+    # db.add(history)
     db.delete(item)
 
 def update_single_quotation_item(
     db: Session, quotation_id: int, item_id: int, item_data: QuotationItemCreate
 ) -> QuotationItemResponse:
-    """
-    Update a single quotation item by quotation_id and item_id,
-    and log the previous state into QuotationItemHistory.
-    """
 
     try:
         # Check if quotation exists
@@ -128,36 +121,36 @@ def update_single_quotation_item(
             )
 
         # Save history before update
-        history = QuotationItemHistory(
-            quotation_item_id=db_item.id,
-            quotation_id=db_item.quotation_id,
-            product_id=db_item.product_id,
-            customercode=db_item.customercode,
-            customerdescription=db_item.customerdescription,
-            image=db_item.image,
-            itemcode=db_item.itemcode,
-            brand=db_item.brand,
-            mrp=db_item.mrp,
-            price=db_item.price,
-            quantity=db_item.quantity,
-            discount=db_item.discount,
-            item_name=db_item.item_name,
-            unit=db_item.unit,
-            amount=db_item.amount,
-            amount_including_gst=db_item.amount_including_gst,
-            without_gst=db_item.without_gst,
-            gst_amount=db_item.gst_amount,
-            amount_with_gst=db_item.amount_with_gst,
-            remarks=db_item.remarks,
-            # cct=db_item.cct,
-            # beamangle=db_item.beamangle,
-            # cri=db_item.cri,
-            # cutoutdia=db_item.cutoutdia,
-            # lumens=db_item.lumens,
-            edited_at=datetime.utcnow(),
-            action="update_single"
-        )
-        db.add(history)
+        # history = QuotationItemHistory(
+        #     quotation_item_id=db_item.id,
+        #     quotation_id=db_item.quotation_id,
+        #     product_id=db_item.product_id,
+        #     customercode=db_item.customercode,
+        #     customerdescription=db_item.customerdescription,
+        #     image=db_item.image,
+        #     itemcode=db_item.itemcode,
+        #     brand=db_item.brand,
+        #     mrp=db_item.mrp,
+        #     price=db_item.price,
+        #     quantity=db_item.quantity,
+        #     discount=db_item.discount,
+        #     item_name=db_item.item_name,
+        #     unit=db_item.unit,
+        #     amount=db_item.amount,
+        #     amount_including_gst=db_item.amount_including_gst,
+        #     without_gst=db_item.without_gst,
+        #     gst_amount=db_item.gst_amount,
+        #     amount_with_gst=db_item.amount_with_gst,
+        #     remarks=db_item.remarks,
+        #     # cct=db_item.cct,
+        #     # beamangle=db_item.beamangle,
+        #     # cri=db_item.cri,
+        #     # cutoutdia=db_item.cutoutdia,
+        #     # lumens=db_item.lumens,
+        #     edited_at=datetime.utcnow(),
+        #     action="update_single"
+        # )
+        # db.add(history)
 
         # Update fields
         for key, value in item_data.dict(exclude_unset=True).items():
@@ -226,36 +219,36 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                     existing_item = existing_items_map[product_id]
 
                     # Save history before update
-                    history = QuotationItemHistory(
-                        quotation_item_id=existing_item.id,
-                        quotation_id=existing_item.quotation_id,
-                        product_id=existing_item.product_id,
-                        customercode=existing_item.customercode,
-                        customerdescription=existing_item.customerdescription,
-                        image=existing_item.image,
-                        itemcode=existing_item.itemcode,
-                        brand=existing_item.brand,
-                        mrp=existing_item.mrp,
-                        price=existing_item.price,
-                        quantity=existing_item.quantity,
-                        discount=existing_item.discount,
-                        item_name=existing_item.item_name,
-                        unit=existing_item.unit,
-                        amount=existing_item.amount,  # Added amount
-                        amount_including_gst=existing_item.amount_including_gst,
-                        without_gst=existing_item.without_gst,
-                        gst_amount=existing_item.gst_amount,
-                        amount_with_gst=existing_item.amount_with_gst,
-                        remarks=existing_item.remarks,
-                        # cct=existing_item.cct,
-                        # beamangle=existing_item.beamangle,
-                        # cri=existing_item.cri,
-                        # cutoutdia=existing_item.cutoutdia,
-                        # lumens=existing_item.lumens,
-                        edited_at=datetime.utcnow(),
-                        action="update"
-                    )
-                    db.add(history)
+                    # history = QuotationItemHistory(
+                    #     quotation_item_id=existing_item.id,
+                    #     quotation_id=existing_item.quotation_id,
+                    #     product_id=existing_item.product_id,
+                    #     customercode=existing_item.customercode,
+                    #     customerdescription=existing_item.customerdescription,
+                    #     image=existing_item.image,
+                    #     itemcode=existing_item.itemcode,
+                    #     brand=existing_item.brand,
+                    #     mrp=existing_item.mrp,
+                    #     price=existing_item.price,
+                    #     quantity=existing_item.quantity,
+                    #     discount=existing_item.discount,
+                    #     item_name=existing_item.item_name,
+                    #     unit=existing_item.unit,
+                    #     amount=existing_item.amount,  # Added amount
+                    #     amount_including_gst=existing_item.amount_including_gst,
+                    #     without_gst=existing_item.without_gst,
+                    #     gst_amount=existing_item.gst_amount,
+                    #     amount_with_gst=existing_item.amount_with_gst,
+                    #     remarks=existing_item.remarks,
+                    #     # cct=existing_item.cct,
+                    #     # beamangle=existing_item.beamangle,
+                    #     # cri=existing_item.cri,
+                    #     # cutoutdia=existing_item.cutoutdia,
+                    #     # lumens=existing_item.lumens,
+                    #     edited_at=datetime.utcnow(),
+                    #     action="update"
+                    # )
+                    # db.add(history)
 
                     # Update existing item
                     for key, value in item_data.dict().items():  # Convert to dict before iterating
