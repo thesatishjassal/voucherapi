@@ -34,4 +34,4 @@ class QuotationItemHistory(Base):
     # New field
     remarks = Column(String(255), nullable=True)
 
-    quotationitem = relationship("QuotationItem", back_populates="itemshistory")
+    # quotationitem = relationship("QuotationItem", back_populates="itemshistory")

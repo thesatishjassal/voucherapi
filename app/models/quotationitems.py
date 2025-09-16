@@ -1,11 +1,9 @@
 from pydantic import Field
-from sqlalchemy import Column, Integer, Float, Numeric, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Float, Numeric, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from base import Base
 from decimal import Decimal  # ✅ Use this for accurate float handling
 from typing import Optional
-from sqlalchemy import Float
-from sqlalchemy import Text
 
 class QuotationItem(Base):
     __tablename__ = "quotationitems"
@@ -18,28 +16,33 @@ class QuotationItem(Base):
     image = Column(String(100), nullable=True)
     itemcode = Column(String(100), nullable=True)
     brand = Column(String(100), nullable=True)
-    mrp = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
-    netPrice = Column(Numeric(10, 2), nullable=True)  # Renamed from price
-    price = Column(Numeric(10, 2), nullable=True)  # Renamed from price
+    mrp = Column(Numeric(10, 2), nullable=True)
+    netPrice = Column(Numeric(10, 2), nullable=True)
+    price = Column(Numeric(10, 2), nullable=True)
     quantity = Column(Integer, nullable=False)
-    discount = Column(Integer, nullable=False)  # Integer as per API requirement
-    item_name = Column(String(100), nullable=True)
+    discount = Column(Integer, nullable=False)
+
+    # 🔑 Changed from String(100) to Text for unlimited text length
+    item_name = Column(Text, nullable=True)
+
     unit = Column(String(20), nullable=True)
     amount_including_gst = Column(Numeric(10, 2), nullable=True)
-    without_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
-    gst_amount = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
-    amount_with_gst = Column(Numeric(10, 2), nullable=True)  # Changed to Numeric for precision
-    remarks = Column(String(500), nullable=True)  # Added remarks field
-    netPrice: Optional[float] = Column(Float, info={"description": "NetPrice for quotation"})
+    without_gst = Column(Numeric(10, 2), nullable=True)
+    gst_amount = Column(Numeric(10, 2), nullable=True)
+    amount_with_gst = Column(Numeric(10, 2), nullable=True)
+    remarks = Column(String(500), nullable=True)
 
-    amount = Column(Float, nullable=True)  # ✅ as Float
+    netPrice: Optional[float] = Column(Float, info={"description": "NetPrice for quotation"})
+    amount = Column(Float, nullable=True)
+
     # ✅ New fields
-    cct = Column(String(50), nullable=True)          # Correlated Color Temperature
-    beamangle = Column(String(50), nullable=True)    # Beam angle (in degrees)
-    cri = Column(String(50), nullable=True)          # Color Rendering Index
-    cutoutdia = Column(String(50), nullable=True)    # Cutout diameter size
-    lumens = Column(String(50), nullable=True)       # Luminous flux
+    cct = Column(String(50), nullable=True)
+    beamangle = Column(String(50), nullable=True)
+    cri = Column(String(50), nullable=True)
+    cutoutdia = Column(String(50), nullable=True)
+    lumens = Column(String(50), nullable=True)
+
     # Relationships
     quotation = relationship("Quotation", back_populates="items")
     product = relationship("Products", back_populates="quotation_items")
-    itemshistory = relationship("QuotationItemHistory", back_populates="quotationitem", cascade="all, delete-orphan")
+    # itemshistory = relationship("QuotationItemHistory", back_populates="quotationitem", cascade="all, delete-orphan")

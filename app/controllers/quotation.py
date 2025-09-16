@@ -24,31 +24,31 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str
 
     try:
         # Save history before updating
-        history = QuotationItemHistory(
-            quotation_item_id=item.id,
-            quotation_id=item.quotation_id,
-            product_id=item.product_id,
-            customercode=item.customercode,
-            customerdescription=item.customerdescription,
-            image=item.image,  # old image before update
-            itemcode=item.itemcode,
-            brand=item.brand,
-            mrp=item.mrp,
-            price=item.price,
-            quantity=item.quantity,
-            discount=item.discount,
-            item_name=item.item_name,
-            unit=item.unit,
-            amount=item.amount,
-            amount_including_gst=item.amount_including_gst,
-            without_gst=item.without_gst,
-            gst_amount=item.gst_amount,
-            amount_with_gst=item.amount_with_gst,
-            remarks=item.remarks,
-            edited_at=datetime.utcnow(),
-            action="update_image"
-        )
-        db.add(history)
+        # history = QuotationItemHistory(
+        #     quotation_item_id=item.id,
+        #     quotation_id=item.quotation_id,
+        #     product_id=item.product_id,
+        #     customercode=item.customercode,
+        #     customerdescription=item.customerdescription,
+        #     image=item.image,  # old image before update
+        #     itemcode=item.itemcode,
+        #     brand=item.brand,
+        #     mrp=item.mrp,
+        #     price=item.price,
+        #     quantity=item.quantity,
+        #     discount=item.discount,
+        #     item_name=item.item_name,
+        #     unit=item.unit,
+        #     amount=item.amount,
+        #     amount_including_gst=item.amount_including_gst,
+        #     without_gst=item.without_gst,
+        #     gst_amount=item.gst_amount,
+        #     amount_with_gst=item.amount_with_gst,
+        #     remarks=item.remarks,
+        #     edited_at=datetime.utcnow(),
+        #     action="update_image"
+        # )
+        # db.add(history)
 
         # Update the image
         item.image = image_url
