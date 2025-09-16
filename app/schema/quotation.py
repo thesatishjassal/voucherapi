@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel, ConfigDict
 from datetime import date
 from typing import Optional
@@ -16,6 +17,7 @@ class QuotationBase(BaseModel):
     status: Optional[str] = None
     date: Optional[date] = None # type: ignore
     client_id: int  # Required to link client
+    created_at: datetime   # ✅ add this
 
 class QuotationCreate(BaseModel):
     quotation_no: str

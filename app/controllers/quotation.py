@@ -95,32 +95,6 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str
         raise HTTPException(status_code=404, detail=f"Quotation item with ID {quotation_item_id} not found")
 
     try:
-        # Save history before updating
-        # history = QuotationItemHistory(
-        #     quotation_item_id=item.id,
-        #     quotation_id=item.quotation_id,
-        #     product_id=item.product_id,
-        #     customercode=item.customercode,
-        #     customerdescription=item.customerdescription,
-        #     image=item.image,  # old image before update
-        #     itemcode=item.itemcode,
-        #     brand=item.brand,
-        #     mrp=item.mrp,
-        #     price=item.price,
-        #     quantity=item.quantity,
-        #     discount=item.discount,
-        #     item_name=item.item_name,
-        #     unit=item.unit,
-        #     amount=item.amount,
-        #     amount_including_gst=item.amount_including_gst,
-        #     without_gst=item.without_gst,
-        #     gst_amount=item.gst_amount,
-        #     amount_with_gst=item.amount_with_gst,
-        #     remarks=item.remarks,
-        #     edited_at=datetime.utcnow(),
-        #     action="update_image"
-        # )
-        # db.add(history)
 
         # Update the image
         item.image = image_url
@@ -137,37 +111,6 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str
         
 # Helper function to delete a quotation item and log it in history
 def delete_quotation_item(db: Session, item: QuotationItem) -> None:
-    # Save history before deletion
-    # history = QuotationItemHistory(
-    #     quotation_item_id=item.id,
-    #     quotation_id=item.quotation_id,
-    #     product_id=item.product_id,
-    #     customercode=item.customercode,
-    #     customerdescription=item.customerdescription,
-    #     image=item.image,
-    #     itemcode=item.itemcode,
-    #     brand=item.brand,
-    #     mrp=item.mrp,
-    #     price=item.price,
-    #     quantity=item.quantity,
-    #     discount=item.discount,
-    #     item_name=item.item_name,
-    #     unit=item.unit,
-    #     # amount=item.amount,  # Added amount
-    #     amount_including_gst=item.amount_including_gst,
-    #     without_gst=item.without_gst,
-    #     gst_amount=item.gst_amount,
-    #     amount_with_gst=item.amount_with_gst,
-    #     remarks=item.remarks,
-    #     # cct=item.cct,
-    #     # beamangle=item.beamangle,
-    #     # cri=item.cri,
-    #     # cutoutdia=item.cutoutdia,
-    #     # lumens=item.lumens,
-    #     edited_at=datetime.utcnow(),
-    #     action="delete"
-    # )
-    # db.add(history)
     db.delete(item)
 
 def update_single_quotation_item(
@@ -191,38 +134,6 @@ def update_single_quotation_item(
                 status_code=404,
                 detail=f"Quotation item {item_id} not found for quotation {quotation_id}"
             )
-
-        # Save history before update
-        # history = QuotationItemHistory(
-        #     quotation_item_id=db_item.id,
-        #     quotation_id=db_item.quotation_id,
-        #     product_id=db_item.product_id,
-        #     customercode=db_item.customercode,
-        #     customerdescription=db_item.customerdescription,
-        #     image=db_item.image,
-        #     itemcode=db_item.itemcode,
-        #     brand=db_item.brand,
-        #     mrp=db_item.mrp,
-        #     price=db_item.price,
-        #     quantity=db_item.quantity,
-        #     discount=db_item.discount,
-        #     item_name=db_item.item_name,
-        #     unit=db_item.unit,
-        #     amount=db_item.amount,
-        #     amount_including_gst=db_item.amount_including_gst,
-        #     without_gst=db_item.without_gst,
-        #     gst_amount=db_item.gst_amount,
-        #     amount_with_gst=db_item.amount_with_gst,
-        #     remarks=db_item.remarks,
-        #     # cct=db_item.cct,
-        #     # beamangle=db_item.beamangle,
-        #     # cri=db_item.cri,
-        #     # cutoutdia=db_item.cutoutdia,
-        #     # lumens=db_item.lumens,
-        #     edited_at=datetime.utcnow(),
-        #     action="update_single"
-        # )
-        # db.add(history)
 
         # Update fields
         for key, value in item_data.dict(exclude_unset=True).items():
@@ -431,14 +342,6 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             if not product_id:
                 raise HTTPException(status_code=400, detail="Product ID is required")
 
-            # Check if product exists
-            # product = db.query(Products).filter(Products.itemcode == product_id).first()
-            # if not product:
-            #     raise HTTPException(
-            #         status_code=404,
-            #         detail=f"Product with itemcode '{product_id}' not found"
-            #     )
-
             # Prepare data and exclude 'item_id', 'quotation_id' (quotation_id will be added separately)
             item_data = item.model_dump(exclude={"item_id", "quotation_id"})
 
@@ -572,7 +475,8 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
     new_quotation = Quotation(**quotation_data.dict())  # Use SQLAlchemy Model  
-    new_quotation["created_at"] = datetime.utcnow()       # ✅ add timestamp
+    new_quotation.created_at = datetime.utcnow()   # ✅ correct way
+
     db.add(new_quotation)
     db.commit()
     db.refresh(new_quotation)
