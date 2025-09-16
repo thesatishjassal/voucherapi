@@ -58,6 +58,7 @@ def create_quotation_revision(
         data.update(update_data)
 
     data["quotation_no"] = new_no
+    data["created_at"]   = datetime.utcnow()    # ✅ fresh timestamp
 
     new_quote = Quotation(**data)
     db.add(new_quote)
@@ -570,7 +571,8 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
     return items
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
-    new_quotation = Quotation(**quotation_data.dict())  # Use SQLAlchemy Model
+    new_quotation = Quotation(**quotation_data.dict())  # Use SQLAlchemy Model  
+    new_quotation["created_at"] = datetime.utcnow()       # ✅ add timestamp
     db.add(new_quotation)
     db.commit()
     db.refresh(new_quotation)
