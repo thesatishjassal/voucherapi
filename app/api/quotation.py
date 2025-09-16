@@ -1,11 +1,12 @@
 import os
 import shutil
-from typing import List
+from typing import List, Optional
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
 from app.controllers.quotation import (
+    create_quotation_revision,
     get_all_quotation_item_histories,
     get_history_by_quotation_item_id,
     bulk_update_quotation_items,
@@ -33,6 +34,20 @@ from fastapi import UploadFile, File
 # ✅ Directory for uploads
 UPLOAD_DIR = "uploads/quotations"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# ---------- New Revision Endpoint ----------
+@router.post("/quotation/{quotation_id}/revise", response_model=Quotation)
+def revise_quotation_api(
+    quotation_id: int,
+    update_data: Optional[dict] = None,
+    db: Session = Depends(get_db_connection)
+):
+    """
+    Duplicate a quotation and all its items into a new revision.
+    Example: PLQOT-022 -> PLQOT-022-A -> PLQOT-022-B ...
+    `update_data` can override fields like remarks or status.
+    """
+    return create_quotation_revision(db, quotation_id, update_data)
 
 @router.put("/quotation/{quotation_id}/items/{item_id}", response_model=QuotationItemResponse)
 def update_item(
