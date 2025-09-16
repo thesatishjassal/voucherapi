@@ -24,37 +24,44 @@ def create_quotation_revision(
     """
 
     # ---- 1. Fetch the original quotation
-    orig = db.query(Quotation).filter(Quotation.quotation_id == base_quotation_id).first()
+    orig = (
+        db.query(Quotation)
+        .filter(Quotation.quotation_id == base_quotation_id)
+        .first()
+    )
     if not orig:
-        raise HTTPException(status_code=404,
-                            detail=f"Quotation {base_quotation_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Quotation {base_quotation_id} not found",
+        )
 
     # ---- 2. Determine next revision suffix
-    # base like "PLQOT-022"
     parts = orig.quotation_no.split("-")
     base_no = "-".join(parts[:2]) if len(parts) >= 2 else orig.quotation_no
-
-    # count existing revisions PLQOT-022-A, -B, ...
     count = (
         db.query(func.count())
         .filter(Quotation.quotation_no.like(f"{base_no}-%"))
         .scalar()
     )
-    suffix = chr(65 + count)   # 65 = 'A'
+    suffix = chr(65 + count)  # 65 = 'A'
     new_no = f"{base_no}-{suffix}"
 
     # ---- 3. Create the new quotation record
-    data = {c.name: getattr(orig, c.name) for c in Quotation.__table__.columns
-            if c.name not in ("quotation_id", "created_at", "updated_at")}
+    # Copy all column values except PK
+    data = {
+        c.name: getattr(orig, c.name)
+        for c in Quotation.__table__.columns
+        if c.name != "quotation_id"
+    }
+
     if update_data:
         data.update(update_data)
+
     data["quotation_no"] = new_no
-    data["created_at"] = datetime.utcnow()
-    data["updated_at"] = datetime.utcnow()
 
     new_quote = Quotation(**data)
     db.add(new_quote)
-    db.flush()  # to get new_quote.quotation_id
+    db.flush()  # so new_quote.quotation_id is available
 
     # ---- 4. Duplicate all items
     orig_items = (
@@ -63,8 +70,11 @@ def create_quotation_revision(
         .all()
     )
     for it in orig_items:
-        item_dict = {c.name: getattr(it, c.name) for c in QuotationItem.__table__.columns
-                     if c.name not in ("id", "quotation_id", "created_at", "updated_at")}
+        item_dict = {
+            c.name: getattr(it, c.name)
+            for c in QuotationItem.__table__.columns
+            if c.name not in ("id", "quotation_id")
+        }
         item_dict["quotation_id"] = new_quote.quotation_id
         db.add(QuotationItem(**item_dict))
 
