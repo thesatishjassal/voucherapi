@@ -58,11 +58,70 @@ def create_quotation_revision(
         data.update(update_data)
 
     data["quotation_no"] = new_no
-    data["created_at"]   = datetime.utcnow()    # ✅ fresh timestamp
+    data["created_at"] = datetime.utcnow()  # Fresh timestamp
+    data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
 
     new_quote = Quotation(**data)
     db.add(new_quote)
-    db.flush()  # so new_quote.quotation_id is available
+    db.flush()  # So new_quote.quotation_id is available
+
+    # ---- 4. Duplicate all items
+    orig_items = (
+        db.query(QuotationItem)
+        .filter(QuotationItem.quotation_id == base_quotation_id)
+        .all()
+    )
+    for it in orig_items:
+        item_dict = {
+            c.name: getattr(it, c.name)
+            for c in QuotationItem.__table__.columns
+            if c.name not in ("id", "quotation_id")
+        }
+        item_dict["quotation_id"] = new_quote.quotation_id
+        db.add(QuotationItem(**item_dict))
+
+    db.commit()
+    db.refresh(new_quote)
+    return new_quote
+
+def clone_quotation(
+    db: Session,
+    base_quotation_id: int,
+) -> Quotation:
+    """
+    Clone an existing quotation (and all its items) into a new quotation with a unique quotation_no.
+    The new quotation_no is appended with a timestamp-based suffix to ensure uniqueness.
+    """
+
+    # ---- 1. Fetch the original quotation
+    orig = (
+        db.query(Quotation)
+        .filter(Quotation.quotation_id == base_quotation_id)
+        .first()
+    )
+    if not orig:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Quotation {base_quotation_id} not found",
+        )
+
+    # ---- 2. Create unique quotation number
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    new_no = f"{orig.quotation_no}-CLONE-{timestamp}"
+
+    # ---- 3. Create the new quotation record
+    data = {
+        c.name: getattr(orig, c.name)
+        for c in Quotation.__table__.columns
+        if c.name != "quotation_id"
+    }
+    data["quotation_no"] = new_no
+    data["created_at"] = datetime.utcnow()  # Fresh timestamp
+    data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
+
+    new_quote = Quotation(**data)
+    db.add(new_quote)
+    db.flush()  # So new_quote.quotation_id is available
 
     # ---- 4. Duplicate all items
     orig_items = (
@@ -95,7 +154,6 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str
         raise HTTPException(status_code=404, detail=f"Quotation item with ID {quotation_item_id} not found")
 
     try:
-
         # Update the image
         item.image = image_url
         if hasattr(item, "updated_at"):  
@@ -163,11 +221,6 @@ def update_single_quotation_item(
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
             amount_with_gst=db_item.amount_with_gst,
-            # cct=db_item.cct,
-            # beamangle=db_item.beamangle,
-            # cri=db_item.cri,
-            # cutoutdia=db_item.cutoutdia,
-            # lumens=db_item.lumens,
             remarks=db_item.remarks,
         )
 
@@ -201,38 +254,6 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                 if product_id in existing_items_map:
                     existing_item = existing_items_map[product_id]
 
-                    # Save history before update
-                    # history = QuotationItemHistory(
-                    #     quotation_item_id=existing_item.id,
-                    #     quotation_id=existing_item.quotation_id,
-                    #     product_id=existing_item.product_id,
-                    #     customercode=existing_item.customercode,
-                    #     customerdescription=existing_item.customerdescription,
-                    #     image=existing_item.image,
-                    #     itemcode=existing_item.itemcode,
-                    #     brand=existing_item.brand,
-                    #     mrp=existing_item.mrp,
-                    #     price=existing_item.price,
-                    #     quantity=existing_item.quantity,
-                    #     discount=existing_item.discount,
-                    #     item_name=existing_item.item_name,
-                    #     unit=existing_item.unit,
-                    #     amount=existing_item.amount,  # Added amount
-                    #     amount_including_gst=existing_item.amount_including_gst,
-                    #     without_gst=existing_item.without_gst,
-                    #     gst_amount=existing_item.gst_amount,
-                    #     amount_with_gst=existing_item.amount_with_gst,
-                    #     remarks=existing_item.remarks,
-                    #     # cct=existing_item.cct,
-                    #     # beamangle=existing_item.beamangle,
-                    #     # cri=existing_item.cri,
-                    #     # cutoutdia=existing_item.cutoutdia,
-                    #     # lumens=existing_item.lumens,
-                    #     edited_at=datetime.utcnow(),
-                    #     action="update"
-                    # )
-                    # db.add(history)
-
                     # Update existing item
                     for key, value in item_data.dict().items():  # Convert to dict before iterating
                         setattr(existing_item, key, value)
@@ -250,29 +271,24 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=existing_item.itemcode,
                             brand=existing_item.brand,
                             mrp=existing_item.mrp,
-                            netPrice=existing_item.netPrice,  # Fixed to use netPrice
+                            netPrice=existing_item.netPrice,
                             price=existing_item.price,
                             quantity=existing_item.quantity,
                             discount=existing_item.discount,
                             item_name=existing_item.item_name,
                             unit=existing_item.unit,
-                            amount=existing_item.amount,  # Added amount
+                            amount=existing_item.amount,
                             amount_including_gst=existing_item.amount_including_gst,
                             without_gst=existing_item.without_gst,
                             gst_amount=existing_item.gst_amount,
                             amount_with_gst=existing_item.amount_with_gst,
-                            cct=existing_item.cct,
-                            beamangle=existing_item.beamangle,
-                            cri=existing_item.cri,
-                            cutoutdia=existing_item.cutoutdia,
-                            lumens=existing_item.lumens,
-                            remarks=existing_item.remarks
+                            remarks=existing_item.remarks,
                         )
                     )
 
                 else:
                     # Add new item
-                    new_item_data = item_data.dict(exclude={"item_id", "quotation_id"})  # Exclude unnecessary fields
+                    new_item_data = item_data.dict(exclude={"item_id", "quotation_id"})
                     new_item = QuotationItem(quotation_id=quotation_id, **new_item_data)
                     db.add(new_item)
                     db.flush()  # To generate ID immediately
@@ -289,23 +305,18 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             itemcode=new_item.itemcode,
                             brand=new_item.brand,
                             mrp=new_item.mrp,
-                            netPrice=new_item.netPrice,  # Fixed to use netPrice
+                            netPrice=new_item.netPrice,
                             price=new_item.price,
                             quantity=new_item.quantity,
                             discount=new_item.discount,
                             item_name=new_item.item_name,
                             unit=new_item.unit,
-                            amount=new_item.amount,  # Added amount
+                            amount=new_item.amount,
                             amount_including_gst=new_item.amount_including_gst,
                             without_gst=new_item.without_gst,
                             gst_amount=new_item.gst_amount,
                             amount_with_gst=new_item.amount_with_gst,
-                            cct=new_item.cct,
-                            beamangle=new_item.beamangle,
-                            cri=new_item.cri,
-                            cutoutdia=new_item.cutoutdia,
-                            lumens=new_item.lumens,
-                            remarks=new_item.remarks
+                            remarks=new_item.remarks,
                         )
                     )
 
@@ -374,11 +385,6 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             gst_amount=db_item.gst_amount,
             amount_with_gst=db_item.amount_with_gst,
             remarks=db_item.remarks,
-            cct=db_item.cct,
-            beamangle=db_item.beamangle,
-            cri=db_item.cri,
-            cutoutdia=db_item.cutoutdia,
-            lumens=db_item.lumens,
         )
 
     except IntegrityError as e:
@@ -387,6 +393,7 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
 def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryResponse]:
     histories = db.query(QuotationItemHistory).all()
     if not histories:
@@ -409,7 +416,7 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
-            amount=history.amount,  # Added amount
+            amount=history.amount,
             amount_including_gst=history.amount_including_gst,
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
@@ -417,11 +424,6 @@ def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryRe
             remarks=history.remarks,
             edited_at=history.edited_at,
             action=history.action,
-            # cct=history.cct,
-            # beamangle=history.beamangle,
-            # cri=history.cri,
-            # cutoutdia=history.cutoutdia,
-            # lumens=history.lumens,
         ) for history in histories
     ]
 
@@ -447,19 +449,13 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
             discount=history.discount,
             item_name=history.item_name,
             unit=history.unit,
-            amount=history.amount,  # Added amount
+            amount=history.amount,
             amount_including_gst=history.amount_including_gst,
             without_gst=history.without_gst,
             gst_amount=history.gst_amount,
             amount_with_gst=history.amount_with_gst,
             remarks=history.remarks,
             edited_at=history.edited_at,
-            # cct=history.cct,
-            # beamangle=history.beamangle,
-            # cri=history.cri,
-            # cutoutdia=history.cutoutdia,
-            # lumens=history.lumens,
-            # action=history.action
         ) for history in histories
     ]
 
@@ -470,8 +466,9 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
     return items
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
-    new_quotation = Quotation(**quotation_data.dict())  # Use SQLAlchemy Model  
-    new_quotation.created_at = datetime.utcnow()   # ✅ correct way
+    new_quotation = Quotation(**quotation_data.dict())
+    new_quotation.created_at = datetime.utcnow()
+    new_quotation.updated_at = datetime.utcnow()
 
     db.add(new_quotation)
     db.commit()
@@ -482,7 +479,7 @@ def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
 
 def get_all_quotations(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Quotation).offset(skip).limit(limit).all()  # Ensure Using Model
+    return db.query(Quotation).offset(skip).limit(limit).all()
 
 def update_quotation(db: Session, quotation_id: int, update_data: dict):
     quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
@@ -490,6 +487,7 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
         return None
     for key, value in update_data.items():
         setattr(quotation, key, value)
+    quotation.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(quotation)
     return quotation

@@ -1,12 +1,13 @@
 import os
 import shutil
 from typing import List, Optional
-from fastapi import FastAPI, APIRouter, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
 from app.controllers.quotation import (
     create_quotation_revision,
+    clone_quotation,
     get_all_quotation_item_histories,
     get_history_by_quotation_item_id,
     bulk_update_quotation_items,
@@ -18,24 +19,34 @@ from app.controllers.quotation import (
     update_quotation,
     delete_quotation,
     delete_quotation_item,
+    add_or_update_item_image,
+    update_single_quotation_item,
 )
 from app.schema.quotation import Quotation, QuotationCreate
 from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, QuotationItemResponse
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
-from app.models.quotationitems import QuotationItem  # Import the model for querying
-from app.controllers.quotation import add_or_update_item_image
-from app.controllers.quotation import update_single_quotation_item
+from app.models.quotationitems import QuotationItem
 
 app = FastAPI()
-router = APIRouter(tags=["Quotations API"])  # Tag added for better Swagger UI grouping
+router = APIRouter(tags=["Quotations API"])
 
-from fastapi import UploadFile, File
-
-# ✅ Directory for uploads
+# Directory for uploads
 UPLOAD_DIR = "uploads/quotations"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ---------- New Revision Endpoint ----------
+# Clone Quotation Endpoint
+@router.post("/quotation/{quotation_id}/clone", response_model=Quotation)
+def clone_quotation_api(
+    quotation_id: int,
+    db: Session = Depends(get_db_connection)
+):
+    """
+    Clone a quotation and all its items into a new quotation with a unique quotation_no.
+    The new quotation_no is suffixed with a timestamp (e.g., PLQOT-022-CLONE-20250918123456).
+    """
+    return clone_quotation(db, quotation_id)
+
+# New Revision Endpoint
 @router.post("/quotation/{quotation_id}/revise", response_model=Quotation)
 def revise_quotation_api(
     quotation_id: int,
@@ -87,7 +98,6 @@ def upload_item_image(
 
     return QuotationItemResponse.from_orm(updated_item)
 
-
 # Create a new quotation
 @router.post("/quotation/", response_model=Quotation)
 def create_quotation_api(quotation: QuotationCreate, db: Session = Depends(get_db_connection)):
@@ -134,7 +144,7 @@ def read_quotation_items_api(quotation_id: int, db: Session = Depends(get_db_con
             cri=item.cri,
             cutoutdia=item.cutoutdia,
             lumens=item.lumens,
-            amount=item.amount,  # Ensure amount is included
+            amount=item.amount,
         ) for item in items
     ]
 
