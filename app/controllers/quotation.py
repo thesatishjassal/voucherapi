@@ -59,7 +59,7 @@ def create_quotation_revision(
 
     data["quotation_no"] = new_no
     data["created_at"] = datetime.utcnow()  # Fresh timestamp
-    data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
+    # data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
 
     new_quote = Quotation(**data)
     db.add(new_quote)
@@ -117,7 +117,7 @@ def clone_quotation(
     }
     data["quotation_no"] = new_no
     data["created_at"] = datetime.utcnow()  # Fresh timestamp
-    data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
+    # data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
 
     new_quote = Quotation(**data)
     db.add(new_quote)
@@ -156,8 +156,8 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_url: str
     try:
         # Update the image
         item.image = image_url
-        if hasattr(item, "updated_at"):  
-            item.updated_at = datetime.utcnow()
+        # if hasattr(item, "updated_at"):  
+        #     item.updated_at = datetime.utcnow()
 
         db.commit()
         db.refresh(item)
@@ -468,7 +468,7 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
 def create_quotation(db: Session, quotation_data: QuotationCreate):
     new_quotation = Quotation(**quotation_data.dict())
     new_quotation.created_at = datetime.utcnow()
-    new_quotation.updated_at = datetime.utcnow()
+    # new_quotation.updated_at = datetime.utcnow()
 
     db.add(new_quotation)
     db.commit()
@@ -487,7 +487,7 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
         return None
     for key, value in update_data.items():
         setattr(quotation, key, value)
-    quotation.updated_at = datetime.utcnow()
+    # quotation.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(quotation)
     return quotation
