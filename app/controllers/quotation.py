@@ -348,11 +348,10 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             # Create and add the new QuotationItem
             db_item = QuotationItem(quotation_id=db_quotation.quotation_id, **item_data)
             db.add(db_item)
-            db.commit()
-            db.flush()  # Get auto-generated ID
+            db.flush()  # Generate ID immediately within the transaction
             db.refresh(db_item)  # Refresh to get the latest DB state
 
-        # Return the response schema (automatically maps 'id' to 'item_id' in response)
+        # Return the response schema
         return QuotationItemResponse(
             item_id=db_item.id,
             quotation_id=db_item.quotation_id,
@@ -363,13 +362,13 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             itemcode=db_item.itemcode,
             brand=db_item.brand,
             mrp=db_item.mrp,
-            netPrice=db_item.netPrice,  # Fixed to use netPrice
+            netPrice=db_item.netPrice,
             price=db_item.price,
             quantity=db_item.quantity,
             discount=db_item.discount,
             item_name=db_item.item_name,
             unit=db_item.unit,
-            amount=db_item.amount,  # Added amount
+            amount=db_item.amount,
             amount_including_gst=db_item.amount_including_gst,
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
@@ -384,13 +383,10 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
 
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
-
     except HTTPException:
-        raise  # Re-raise HTTPExceptions without modification
-
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
 def get_all_quotation_item_histories(db: Session) -> List[QuotationItemHistoryResponse]:
     histories = db.query(QuotationItemHistory).all()
     if not histories:
