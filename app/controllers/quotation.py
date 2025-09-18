@@ -90,7 +90,7 @@ def clone_quotation(
 ) -> Quotation:
     """
     Clone an existing quotation (and all its items) into a new quotation with a unique quotation_no.
-    The new quotation_no is appended with a timestamp-based suffix to ensure uniqueness.
+    The new quotation_no is appended with a suffix like -A, -B, -C, etc., based on existing revisions.
     """
 
     # ---- 1. Fetch the original quotation
@@ -105,9 +105,16 @@ def clone_quotation(
             detail=f"Quotation {base_quotation_id} not found",
         )
 
-    # ---- 2. Create unique quotation number
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    new_no = f"{orig.quotation_no}-CLONE-{timestamp}"
+    # ---- 2. Determine next revision suffix
+    parts = orig.quotation_no.split("-")
+    base_no = "-".join(parts[:2]) if len(parts) >= 2 else orig.quotation_no
+    count = (
+        db.query(func.count())
+        .filter(Quotation.quotation_no.like(f"{base_no}-%"))
+        .scalar()
+    )
+    suffix = chr(65 + count)  # 65 = 'A'
+    new_no = f"{base_no}-{suffix}"
 
     # ---- 3. Create the new quotation record
     data = {
@@ -117,7 +124,10 @@ def clone_quotation(
     }
     data["quotation_no"] = new_no
     data["created_at"] = datetime.utcnow()  # Fresh timestamp
-    # data["updated_at"] = datetime.utcnow()  # Fresh timestamp for update
+
+    # Remove updated_at if it exists but is not a valid column
+    # if "updated_at" in data and "updated_at" not in [c.name for c in Quotation.__table__.columns]:
+    #     del data["updated_at"]
 
     new_quote = Quotation(**data)
     db.add(new_quote)
