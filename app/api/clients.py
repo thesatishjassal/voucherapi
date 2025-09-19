@@ -49,7 +49,7 @@ async def create_new_client(client: ClientCreate, db:Session = Depends(get_db_co
 async def get_all_clients(db:Session = Depends(get_db_connection)):
     return get_clients(db=db)
 
-@router.put("/client/{client_id}")
+@router.patch("/client/{client_id}")
 def update_client_api(client_id: int, client_data: ClientUpdate, db: Session= Depends(get_db_connection)):
     print(client_id)
     try:
