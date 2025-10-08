@@ -31,29 +31,31 @@ def upload_csv(file: UploadFile, db: Session):
         for row_num, row in enumerate(csv_reader, start=1):
             row_count += 1
             try:
-                # Ensure all required fields are present
-                required_fields = ['itemcode', 'itemname', 'description', 'category', 'subcategory', 'price', 'quantity', 'rackcode', 'size', 'color', 'model', 'brand', 'unit', 'reorderqty']
+                # Ensure required fields are present
+                required_fields = [
+                    'itemcode', 'itemname', 'description', 'category', 'subcategory', 
+                    'price', 'quantity', 'rackcode', 'size', 'color', 'model', 
+                    'brand', 'unit', 'reorderqty'
+                ]
                 for field in required_fields:
                     if field not in row or not row[field].strip():
                         raise ValueError(f"Missing or empty field: {field}")
 
-                # Explicit type conversion with validation
+                # Convert types safely
                 price = float(row['price'])
                 quantity = int(row['quantity'])
                 reorderqty = int(row['reorderqty']) if row['reorderqty'].strip() else 0
+                in_display = row.get('in_display', 'true').strip().lower() in ('true', '1', 'yes')
 
-                # Validate types
-                if not isinstance(price, float):
-                    raise ValueError(f"Invalid price value for row {row_num}: {row['price']}")
-                if not isinstance(quantity, int):
-                    raise ValueError(f"Invalid quantity value for row {row_num}: {row['quantity']}")
-                if not isinstance(reorderqty, int):
-                    raise ValueError(f"Invalid reorderqty value for row {row_num}: {row['reorderqty']}")
-
-                logger.info(f"Row {row_num} - price: {price} (type: {type(price)}), quantity: {quantity} (type: {type(quantity)}), reorderqty: {reorderqty} (type: {type(reorderqty)})")
+                # Optional fields
+                cct = row.get('cct', None)
+                beamangle = row.get('beamangle', None)
+                cutoutdia = row.get('cutoutdia', None)
+                cri = row.get('cri', None)
+                lumens = row.get('lumens', None)
+                watt = row.get('watt', None)
 
                 product_data = ProductsCreate(
-                    # hsncode=row['hsncode'],
                     itemcode=row['itemcode'],
                     itemname=row['itemname'],
                     description=row['description'],
@@ -67,7 +69,14 @@ def upload_csv(file: UploadFile, db: Session):
                     model=row['model'],
                     brand=row['brand'],
                     unit=row['unit'],
-                    reorderqty=reorderqty
+                    reorderqty=reorderqty,
+                    cct=cct,
+                    beamangle=beamangle,
+                    cutoutdia=cutoutdia,
+                    cri=cri,
+                    lumens=lumens,
+                    watt=watt,
+                    in_display=in_display
                 )
                 products_data.append(product_data)
             except (ValueError, KeyError) as e:
