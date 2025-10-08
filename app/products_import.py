@@ -26,7 +26,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
 
     Expects the following columns in order:
     itemcode, itemname, description, category, subcategory, price,
-    quantity, rackcode, size, color, model, brand, unit, reorderqty, cct, beamangle, cutoutdia
+    quantity, rackcode, size, color, model, brand, unit, reorderqty, cct, beamangle, cutoutdia, cri, lumens, in_display
     """
     if not file.filename.endswith(('.xlsx', '.xls')):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file.")

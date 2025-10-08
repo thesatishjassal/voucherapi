@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 
+
 class SalesOrder(Base):
     __tablename__ = 'salesorders'
 
@@ -18,6 +19,10 @@ class SalesOrder(Base):
     date = Column(Date, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
-    # ✅ Relationship
+    # ✅ New fields added
+    payment_method = Column(String(50), nullable=True)  # e.g. "Cash", "Card", "UPI", etc.
+    freight = Column(String(20), nullable=True)         # e.g. "Paid" or "To Pay"
+
+    # ✅ Relationships
     client = relationship("Client", back_populates="salesorder")
     salesitems = relationship("SalesorderItems", back_populates="salesorder", cascade="all, delete-orphan")
