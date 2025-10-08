@@ -9,7 +9,7 @@ import os
 
 router = APIRouter()
 
-
+# ---------- DB Dependency ----------
 def get_db():
     db = SessionLocal()
     try:
@@ -17,15 +17,13 @@ def get_db():
     finally:
         db.close()
 
-
+# ---------- Utility Cleaners ----------
 def clean_value(val):
-    """Converts empty or invalid to None, preserves 'N/A' as 'N/A', else returns stripped string."""
+    """Convert empty/invalid to None, preserve 'N/A'."""
     if val is None:
         return None
-    val_str = str(val).strip()
-    if val_str == "":
-        return None
-    if val_str.lower() in ["none", "-"]:
+    val_str = str(val).replace("\xa0", " ").strip()  # remove non-breaking spaces
+    if val_str == "" or val_str.lower() in ["none", "null", "-", "na"]:
         return None
     if val_str.lower() == "n/a":
         return "N/A"
@@ -33,43 +31,56 @@ def clean_value(val):
 
 
 def clean_numeric(val, default=0.0):
-    """Cleans and converts to float, handling invalid values."""
+    """Convert to float safely."""
     if val is None:
         return default
-    val_str = str(val).strip()
-    if val_str == "":
-        return default
-    if val_str.lower() in ["n/a", "na", "none", "-"]:
-        return None  # For numerics, N/A to None
-    # Remove common currency symbols
-    val_str = val_str.replace("₹", "").replace("$", "").replace("€", "").replace("£", "").strip()
+    val_str = str(val).replace("\xa0", " ").strip()
+    if val_str == "" or val_str.lower() in ["n/a", "na", "none", "-"]:
+        return None
+    val_str = (
+        val_str.replace("₹", "")
+        .replace("$", "")
+        .replace("€", "")
+        .replace("£", "")
+        .strip()
+    )
     try:
-        num_val = float(val_str)
-        return num_val
+        return float(val_str)
     except ValueError:
         return default
 
 
 def clean_int(val, default=0):
-    """Cleans and converts to int, handling invalid values."""
+    """Convert to int safely."""
     if val is None:
         return default
-    val_str = str(val).strip()
-    if val_str == "":
-        return default
-    if val_str.lower() in ["n/a", "na", "none", "-"]:
+    val_str = str(val).replace("\xa0", " ").strip()
+    if val_str == "" or val_str.lower() in ["n/a", "na", "none", "-"]:
         return default
     try:
-        return int(float(val_str))  # Handles decimals by truncating
+        return int(float(val_str))
     except ValueError:
         return default
 
 
+def clean_bool(val):
+    """Convert Excel bool-like values to True/False."""
+    if val is None:
+        return True  # default True
+    val_str = str(val).replace("\xa0", " ").strip().lower()
+    if val_str in ["true", "yes", "1", "y"]:
+        return True
+    if val_str in ["false", "no", "0", "n"]:
+        return False
+    return True  # fallback default
+
+
+# ---------- Main Import Route ----------
 @router.post("/import-products/", response_model=List[ProductsResponse])
 async def import_products(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
-    Imports products from Excel into DB.
-    Expected order:
+    Imports products from Excel into DB using header-based column mapping.
+    Expected headers:
     itemcode, itemname, description, brand, watt, color, cct, beamangle, cri, lumens,
     price, quantity, unit, rackcode, size, cutoutdia, category, subcategory,
     in_display, model, reorderqty
@@ -79,13 +90,18 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file.")
 
     try:
+        # Save temporary Excel file
         contents = await file.read()
         temp_file_path = "temp_import.xlsx"
         with open(temp_file_path, "wb") as f:
             f.write(contents)
 
-        workbook = load_workbook(filename=temp_file_path)
+        workbook = load_workbook(filename=temp_file_path, data_only=True)
         sheet = workbook.active
+
+        # Get headers (lowercase, stripped)
+        headers = [str(cell.value).strip().lower() if cell.value else "" for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
+        print("🧾 Excel Headers:", headers)
 
         products_list = []
 
@@ -93,53 +109,42 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
             if all(cell is None for cell in row):
                 continue
 
-            # Handle boolean safely, default to True if invalid
-            in_display_raw = row[18]
-            in_display_value = str(in_display_raw).strip().lower() if in_display_raw else "true"
-            if in_display_value in ["n/a", "na", "none", "-"]:
-                in_display = True  # Default as per schema
-            else:
-                in_display = in_display_value in ["true", "yes", "1", "y"]
-
-            # For reorderqty, default to 10 if 0 or invalid
-            reorder_raw = row[20]
-            reorder_cleaned = clean_int(reorder_raw, 10)
+            row_data = dict(zip(headers, row))
 
             product_data_dict = {
-                "itemcode": clean_value(row[0]),
-                "itemname": clean_value(row[1]),
-                "description": clean_value(row[2]),
-                "brand": clean_value(row[3]),
-                "watt": clean_value(row[4]),
-                "color": clean_value(row[5]),
-                "cct": clean_value(row[6]),
-                "beamangle": clean_value(row[7]),
-                "cri": clean_value(row[8]),
-                "lumens": clean_value(row[9]),
-                "price": clean_numeric(row[10], 0.0),
-                "quantity": clean_int(row[11], 0),
-                "unit": clean_value(row[12]),
-                "rackcode": clean_value(row[13]),
-                "size": clean_value(row[14]),
-                "cutoutdia": clean_value(row[15]),
-                "category": clean_value(row[16]),
-                "subcategory": clean_value(row[17]),
-                "in_display": in_display,
-                "model": clean_value(row[19]),
-                "reorderqty": reorder_cleaned,
+                "itemcode": clean_value(row_data.get("itemcode")),
+                "itemname": clean_value(row_data.get("itemname")),
+                "description": clean_value(row_data.get("description")),
+                "brand": clean_value(row_data.get("brand")),
+                "watt": clean_value(row_data.get("watt")),
+                "color": clean_value(row_data.get("color")),
+                "cct": clean_value(row_data.get("cct")),
+                "beamangle": clean_value(row_data.get("beamangle")),
+                "cri": clean_value(row_data.get("cri")),
+                "lumens": clean_value(row_data.get("lumens")),
+                "price": clean_numeric(row_data.get("price"), 0.0),
+                "quantity": clean_int(row_data.get("quantity"), 0),
+                "unit": clean_value(row_data.get("unit")),
+                "rackcode": clean_value(row_data.get("rackcode")),
+                "size": clean_value(row_data.get("size")),
+                "cutoutdia": clean_value(row_data.get("cutoutdia")),
+                "category": clean_value(row_data.get("category")),
+                "subcategory": clean_value(row_data.get("subcategory")),
+                "in_display": clean_bool(row_data.get("in_display")),
+                "model": clean_value(row_data.get("model")),
+                "reorderqty": clean_int(row_data.get("reorderqty"), 10),
             }
 
-            # Skip incomplete mandatory fields
+            # Skip rows missing required fields
             if not product_data_dict["itemcode"] or not product_data_dict["itemname"]:
+                print(f"⚠️ Skipped row {idx}: Missing itemcode or itemname")
                 continue
 
-            # Debug print: show first 3 rows
-            if idx <= 5:
-                print(f"Row {idx} raw: {row}")
-                print(f"Row {idx} processed: {product_data_dict}")
+            # Debug for first 3 rows
+            if idx <= 4:
+                print(f"Row {idx} processed:", product_data_dict)
 
-            product_data = ProductsCreate(**product_data_dict)
-            products_list.append(product_data)
+            products_list.append(ProductsCreate(**product_data_dict))
 
         os.remove(temp_file_path)
 
