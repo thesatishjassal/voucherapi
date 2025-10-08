@@ -28,6 +28,34 @@ def clean_value(val):
     return val
 
 
+def clean_numeric(val, default=0.0):
+    """Cleans and converts to float, handling N/A, empty, and currency symbols."""
+    if val is None:
+        return default
+    val = str(val).strip()
+    if val.lower() in ["n/a", "na", "none", "-", ""]:
+        return default
+    # Remove common currency symbols
+    val = val.replace("₹", "").replace("$", "").replace("€", "").replace("£", "").strip()
+    try:
+        return float(val)
+    except ValueError:
+        return default
+
+
+def clean_int(val, default=0):
+    """Cleans and converts to int, handling N/A and empty."""
+    if val is None:
+        return default
+    val = str(val).strip()
+    if val.lower() in ["n/a", "na", "none", "-", ""]:
+        return default
+    try:
+        return int(float(val))  # Handles decimals by truncating
+    except ValueError:
+        return default
+
+
 @router.post("/import-products/", response_model=List[ProductsResponse])
 async def import_products(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
@@ -56,9 +84,13 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
             if all(cell is None for cell in row):
                 continue
 
-            # Handle boolean safely
-            in_display_value = str(row[18]).strip().lower() if row[18] else "true"
-            in_display = in_display_value in ["true", "yes", "1", "y"]
+            # Handle boolean safely, default to True if N/A or invalid
+            in_display_raw = row[18]
+            in_display_value = str(in_display_raw).strip().lower() if in_display_raw else "true"
+            if in_display_value in ["n/a", "na", "none", "-"]:
+                in_display = True  # Default as per schema
+            else:
+                in_display = in_display_value in ["true", "yes", "1", "y"]
 
             product_data_dict = {
                 "itemcode": clean_value(row[0]),
@@ -71,8 +103,8 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "beamangle": clean_value(row[7]),
                 "cri": clean_value(row[8]),
                 "lumens": clean_value(row[9]),
-                "price": float(row[10]) if row[10] else 0.0,
-                "quantity": int(row[11]) if row[11] else 0,
+                "price": clean_numeric(row[10], 0.0),
+                "quantity": clean_int(row[11], 0),
                 "unit": clean_value(row[12]),
                 "rackcode": clean_value(row[13]),
                 "size": clean_value(row[14]),
@@ -81,7 +113,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "subcategory": clean_value(row[17]),
                 "in_display": in_display,
                 "model": clean_value(row[19]),
-                "reorderqty": int(row[20]) if row[20] else 10,
+                "reorderqty": clean_int(row[20], 10),
             }
 
             # Skip incomplete mandatory fields
