@@ -19,39 +19,48 @@ def get_db():
 
 
 def clean_value(val):
-    """Converts Excel 'N/A' or empty to None, else returns stripped string."""
+    """Converts empty or invalid to None, preserves 'N/A' as 'N/A', else returns stripped string."""
     if val is None:
         return None
-    val = str(val).strip()
-    if val.lower() in ["n/a", "na", "none", "-", ""]:
+    val_str = str(val).strip()
+    if val_str == "":
         return None
-    return val
+    if val_str.lower() in ["none", "-"]:
+        return None
+    if val_str.lower() == "n/a":
+        return "N/A"
+    return val_str
 
 
 def clean_numeric(val, default=0.0):
-    """Cleans and converts to float, handling N/A, empty, and currency symbols."""
+    """Cleans and converts to float, handling invalid values."""
     if val is None:
         return default
-    val = str(val).strip()
-    if val.lower() in ["n/a", "na", "none", "-", ""]:
+    val_str = str(val).strip()
+    if val_str == "":
         return default
+    if val_str.lower() in ["n/a", "na", "none", "-"]:
+        return None  # For numerics, N/A to None
     # Remove common currency symbols
-    val = val.replace("₹", "").replace("$", "").replace("€", "").replace("£", "").strip()
+    val_str = val_str.replace("₹", "").replace("$", "").replace("€", "").replace("£", "").strip()
     try:
-        return float(val)
+        num_val = float(val_str)
+        return num_val
     except ValueError:
         return default
 
 
 def clean_int(val, default=0):
-    """Cleans and converts to int, handling N/A and empty."""
+    """Cleans and converts to int, handling invalid values."""
     if val is None:
         return default
-    val = str(val).strip()
-    if val.lower() in ["n/a", "na", "none", "-", ""]:
+    val_str = str(val).strip()
+    if val_str == "":
+        return default
+    if val_str.lower() in ["n/a", "na", "none", "-"]:
         return default
     try:
-        return int(float(val))  # Handles decimals by truncating
+        return int(float(val_str))  # Handles decimals by truncating
     except ValueError:
         return default
 
@@ -84,13 +93,17 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
             if all(cell is None for cell in row):
                 continue
 
-            # Handle boolean safely, default to True if N/A or invalid
+            # Handle boolean safely, default to True if invalid
             in_display_raw = row[18]
             in_display_value = str(in_display_raw).strip().lower() if in_display_raw else "true"
             if in_display_value in ["n/a", "na", "none", "-"]:
                 in_display = True  # Default as per schema
             else:
                 in_display = in_display_value in ["true", "yes", "1", "y"]
+
+            # For reorderqty, default to 10 if 0 or invalid
+            reorder_raw = row[20]
+            reorder_cleaned = clean_int(reorder_raw, 10)
 
             product_data_dict = {
                 "itemcode": clean_value(row[0]),
@@ -113,7 +126,7 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
                 "subcategory": clean_value(row[17]),
                 "in_display": in_display,
                 "model": clean_value(row[19]),
-                "reorderqty": clean_int(row[20], 10),
+                "reorderqty": reorder_cleaned,
             }
 
             # Skip incomplete mandatory fields
@@ -122,7 +135,8 @@ async def import_products(file: UploadFile = File(...), db: Session = Depends(ge
 
             # Debug print: show first 3 rows
             if idx <= 5:
-                print(f"Row {idx} -> {product_data_dict}")
+                print(f"Row {idx} raw: {row}")
+                print(f"Row {idx} processed: {product_data_dict}")
 
             product_data = ProductsCreate(**product_data_dict)
             products_list.append(product_data)
