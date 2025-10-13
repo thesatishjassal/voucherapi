@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -16,7 +16,7 @@ class SalesOrder(Base):
     amount_with_gst = Column(Integer, nullable=True)
     remarks = Column(String(100), nullable=True)
     status = Column(String, nullable=True)
-    date = Column(Date, nullable=True)
+    date = Column(DateTime, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
     # ✅ New fields added

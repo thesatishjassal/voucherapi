@@ -183,6 +183,10 @@ def create_salesorder(db: Session, salesorder_data: SalesOrderCreate) -> SalesOr
             count = db.query(SalesOrder).count() + 1
             data["issue_slip_no"] = f"IS-{datetime.now().year}-{count:04d}"
 
+        # ✅ Automatically set date to current datetime if not provided
+        if not data.get("date"):
+            data["date"] = datetime.now()
+
         new_salesorder = SalesOrder(**data)
         db.add(new_salesorder)
         db.commit()

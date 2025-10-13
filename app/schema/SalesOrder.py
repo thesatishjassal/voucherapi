@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from datetime import date
+from datetime import datetime
 from typing import Optional
 
 
@@ -14,7 +14,7 @@ class SalesOrderBase(BaseModel):
     amount_with_gst: Optional[int] = None
     remarks: Optional[str] = None
     status: Optional[str] = None
-    date: Optional[date] = None
+    date: Optional[datetime] = None
     client_id: int  # Required to link client
 
     # ✅ Added new fields
