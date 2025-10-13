@@ -22,6 +22,7 @@ class SalesOrder(Base):
     # ✅ New fields added
     payment_method = Column(String(50), nullable=True)  # e.g. "Cash", "Card", "UPI", etc.
     freight = Column(String(20), nullable=True)         # e.g. "Paid" or "To Pay"
+    issue_slip_no = Column(String(50), nullable=True)   # ✅ Newly added field
 
     # ✅ Relationships
     client = relationship("Client", back_populates="salesorder")

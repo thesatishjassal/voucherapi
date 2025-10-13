@@ -10,6 +10,9 @@ from app.models.salesoderitems import SalesorderItems
 from app.schema.SalesOrder import SalesOrderCreate, SalesOrder as SalesOrderSchema, SalesOrderUpdate
 from app.schema.Salesoderitems import SalesorderItemCreate, SalesorderItemResponse
 
+
+# --- Sales Order Item Functions ---
+
 def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItemCreate) -> SalesorderItemResponse:
     try:
         with db.begin():
@@ -25,7 +28,6 @@ def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItem
                 raise HTTPException(status_code=404, detail=f"Product with itemcode '{item.product_id}' not found")
 
             item_data = item.dict(exclude={"salesoderitems_id"})
-
             db_item = SalesorderItems(salesorder_id=salesorder_id, **item_data)
             db.add(db_item)
             db.flush()
@@ -125,6 +127,7 @@ def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[Sa
                         unit=new_item.unit
                     ))
 
+            # Delete removed items
             for product_id, existing_item in existing_items_map.items():
                 if product_id not in submitted_product_ids:
                     db.delete(existing_item)
@@ -148,7 +151,7 @@ def get_items_by_salesorder_id(db: Session, salesorder_id: int) -> List[Salesord
     items = db.query(SalesorderItems).filter(SalesorderItems.salesorder_id == salesorder_id).all()
     if not items:
         raise HTTPException(status_code=404, detail="No items found for this sales order ID")
-    
+
     return [
         SalesorderItemResponse(
             item_id=item.id,
@@ -169,15 +172,23 @@ def get_items_by_salesorder_id(db: Session, salesorder_id: int) -> List[Salesord
     ]
 
 
-# --- Sales Order Functions ---
+# --- Sales Order CRUD Functions ---
 
 def create_salesorder(db: Session, salesorder_data: SalesOrderCreate) -> SalesOrderSchema:
     try:
-        new_salesorder = SalesOrder(**salesorder_data.dict())
+        # ✅ Include issue_slip_no automatically if not provided
+        data = salesorder_data.dict()
+        if not data.get("issue_slip_no"):
+            # Example: Auto-generate Issue Slip like IS-2025-0001
+            count = db.query(SalesOrder).count() + 1
+            data["issue_slip_no"] = f"IS-{datetime.now().year}-{count:04d}"
+
+        new_salesorder = SalesOrder(**data)
         db.add(new_salesorder)
         db.commit()
         db.refresh(new_salesorder)
         return SalesOrderSchema.from_orm(new_salesorder)
+
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Integrity error: {str(e)}")
