@@ -16,26 +16,31 @@ from app.schema.Salesoderitems import SalesorderItemCreate, SalesorderItemRespon
 def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItemCreate) -> SalesorderItemResponse:
     try:
         with db.begin():
+            # Check if sales order exists
             db_salesorder = db.query(SalesOrder).filter(SalesOrder.salesorder_id == salesorder_id).first()
             if not db_salesorder:
                 raise HTTPException(status_code=404, detail="Sales order not found")
 
+            # Product ID is required
             if not item.product_id:
                 raise HTTPException(status_code=400, detail="Product ID is required")
 
+            # Check if product exists
             product = db.query(Products).filter(Products.itemcode == item.product_id).first()
             if not product:
                 raise HTTPException(status_code=404, detail=f"Product with itemcode '{item.product_id}' not found")
 
-            item_data = item.dict(exclude={"salesoderitems_id"})
+            # Exclude the Pydantic field salesorderitems_id before creating DB object
+            item_data = item.dict(exclude={"salesorderitems_id"})
             db_item = SalesorderItems(salesorder_id=salesorder_id, **item_data)
             db.add(db_item)
             db.flush()
             db.refresh(db_item)
 
+        # Construct response
         return SalesorderItemResponse(
             item_id=db_item.id,
-            salesoderitems_id=db_item.id,
+            salesorderitems_id=db_item.id,
             product_id=db_item.product_id,
             customercode=db_item.customercode,
             customerdescription=db_item.customerdescription,
@@ -52,13 +57,10 @@ def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItem
 
     except (IntegrityError, SQLiteIntegrityError) as e:
         raise HTTPException(status_code=400, detail=f"Integrity error: {str(e)}")
-
     except HTTPException:
         raise
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
 
 def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[SalesorderItemCreate]) -> List[SalesorderItemResponse]:
     try:
