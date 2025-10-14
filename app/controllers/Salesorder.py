@@ -52,7 +52,8 @@ def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItem
             quantity=db_item.quantity,
             discount=db_item.discount,
             item_name=db_item.item_name,
-            unit=db_item.unit
+            unit=db_item.unit,
+            color=db_item.color
         )
 
     except (IntegrityError, SQLiteIntegrityError) as e:
@@ -105,7 +106,8 @@ def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[Sa
                         quantity=existing_item.quantity,
                         discount=existing_item.discount,
                         item_name=existing_item.item_name,
-                        unit=existing_item.unit
+                        unit=existing_item.unit,
+                        color=existing_item.color
                     ))
                 else:
                     new_item_data = item_data.dict(exclude={"salesoderitems_id"})
@@ -126,7 +128,8 @@ def bulk_update_salesorder_items(db: Session, salesorder_id: int, items: List[Sa
                         quantity=new_item.quantity,
                         discount=new_item.discount,
                         item_name=new_item.item_name,
-                        unit=new_item.unit
+                        unit=new_item.unit,
+                        color=new_item.color
                     ))
 
             # Delete removed items
@@ -169,7 +172,8 @@ def get_items_by_salesorder_id(db: Session, salesorder_id: int) -> List[Salesord
             quantity=item.quantity,
             discount=item.discount,
             item_name=item.item_name,
-            unit=item.unit
+            unit=item.unit,
+            color=item.color
         ) for item in items
     ]
 

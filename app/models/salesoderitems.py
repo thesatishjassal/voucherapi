@@ -20,6 +20,7 @@ class SalesorderItems(Base):
     discount = Column(Integer, nullable=False)
     item_name = Column(String(100), nullable=True)
     unit = Column(String(20), nullable=True)
+    color = Column(String(20), nullable=True)
 
     # Relationships
     salesorder = relationship("SalesOrder", back_populates="salesitems")

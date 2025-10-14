@@ -17,6 +17,7 @@ class SalesorderItemBase(BaseModel):
     discount: int = Field(..., description="Discount percentage", ge=0)
     item_name: Optional[str] = Field(None, description="Name of the item")
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
+    color: Optional[str] = Field(None, description="color")
 
     model_config = ConfigDict(from_attributes=True)
 
