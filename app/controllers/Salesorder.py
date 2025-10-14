@@ -21,14 +21,14 @@ def create_salesorder_item(db: Session, salesorder_id: int, item: SalesorderItem
             if not db_salesorder:
                 raise HTTPException(status_code=404, detail="Sales order not found")
 
-            # Product ID is required
-            if not item.product_id:
-                raise HTTPException(status_code=400, detail="Product ID is required")
+            # # Product ID is required
+            # if not item.product_id:
+            #     raise HTTPException(status_code=400, detail="Product ID is required")
 
-            # Check if product exists
-            product = db.query(Products).filter(Products.itemcode == item.product_id).first()
-            if not product:
-                raise HTTPException(status_code=404, detail=f"Product with itemcode '{item.product_id}' not found")
+            # # Check if product exists
+            # product = db.query(Products).filter(Products.itemcode == item.product_id).first()
+            # if not product:
+            #     raise HTTPException(status_code=404, detail=f"Product with itemcode '{item.product_id}' not found")
 
             # Exclude the Pydantic field salesorderitems_id before creating DB object
             item_data = item.dict(exclude={"salesorderitems_id"})
