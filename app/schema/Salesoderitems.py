@@ -18,6 +18,7 @@ class SalesorderItemBase(BaseModel):
     item_name: Optional[str] = Field(None, description="Name of the item")
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
     color: Optional[str] = Field(None, description="color")
+    remarks: Optional[str] = Field(None, description="remarks")
 
     model_config = ConfigDict(from_attributes=True)
 
