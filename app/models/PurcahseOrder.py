@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from database import Base
-
+from base import Base
 
 class PurchaseOrder(Base):
     __tablename__ = 'purchaseorders'
@@ -19,10 +18,10 @@ class PurchaseOrder(Base):
     date = Column(DateTime, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
-    # ✅ New fields added
-    payment_method = Column(String(50), nullable=True)  # e.g. "Cash", "Card", "UPI", etc.
-    freight = Column(String(20), nullable=True)         # e.g. "Paid" or "To Pay"
-    issue_slip_no = Column(String(50), nullable=True)   # ✅ Newly added field
+    # ✅ New fields
+    payment_method = Column(String(50), nullable=True)  # "Cash", "Card", "UPI", etc.
+    freight = Column(String(20), nullable=True)          # "Paid" or "To Pay"
+    issue_slip_no = Column(String(50), nullable=True)
 
     # ✅ Relationships
     client = relationship("Client", back_populates="purchaseorder")
