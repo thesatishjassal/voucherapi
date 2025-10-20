@@ -17,7 +17,7 @@ class Client(Base):
     client_email = Column(String(255), nullable=True)
     client_type = Column(String(50))
 
-    # ✅ Relationships
+    # Relationships using string references
     quotations = relationship("Quotation", back_populates="client")
     invouchers = relationship("Invoucher", back_populates="client")
     outvouchers = relationship("Outvoucher", back_populates="client")

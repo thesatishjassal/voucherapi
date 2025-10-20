@@ -26,5 +26,3 @@ class PurchaseOrderItems(Base):
     # Relationships
     purchaseorder = relationship("PurchaseOrder", back_populates="purchaseitems")
     product = relationship("Products", back_populates="purchaseitems")
-
- 

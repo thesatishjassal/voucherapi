@@ -18,11 +18,11 @@ class PurchaseOrder(Base):
     date = Column(DateTime, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
 
-    # ✅ New fields
-    payment_method = Column(String(50), nullable=True)  # "Cash", "Card", "UPI", etc.
-    freight = Column(String(20), nullable=True)          # "Paid" or "To Pay"
+    # New fields
+    payment_method = Column(String(50), nullable=True)  
+    freight = Column(String(20), nullable=True)          
     issue_slip_no = Column(String(50), nullable=True)
 
-    # ✅ Relationships
+    # Relationships
     client = relationship("Client", back_populates="purchaseorder")
     purchaseitems = relationship("PurchaseOrderItems", back_populates="purchaseorder", cascade="all, delete-orphan")
