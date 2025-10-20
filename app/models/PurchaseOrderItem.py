@@ -23,6 +23,6 @@ class PurchaseOrderItems(Base):
     color = Column(String(20), nullable=True)
     remarks = Column(String(20), nullable=True)
 
-    # Relationships
+    # Relationships using string names
     purchaseorder = relationship("PurchaseOrder", back_populates="purchaseitems")
     product = relationship("Products", back_populates="purchaseitems")
