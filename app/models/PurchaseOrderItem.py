@@ -24,5 +24,7 @@ class PurchaseOrderItems(Base):
     remarks = Column(String(20), nullable=True)
 
     # Relationships
-    purchaseorder = relationship("SalesOrder", back_populates="purchaseitems")
+    purchaseorder = relationship("PurchaseOrder", back_populates="purchaseitems")
     product = relationship("Products", back_populates="purchaseitems")
+
+ 
