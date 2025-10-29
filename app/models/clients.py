@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from base import Base
 
@@ -17,7 +17,10 @@ class Client(Base):
     client_email = Column(String(255), nullable=True)
     client_type = Column(String(50))
 
-    # Relationships using string names
+    # ✅ New field: Logged-in user info
+    created_by = Column(String(255), nullable=False)  # can store username, email, or user_id
+
+    # Relationships
     quotations = relationship("Quotation", back_populates="client")
     invouchers = relationship("Invoucher", back_populates="client")
     outvouchers = relationship("Outvoucher", back_populates="client")
