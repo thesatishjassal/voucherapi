@@ -28,7 +28,7 @@ class ClientResponse(BaseModel):
     client_email: Optional[str] = None
     client_type: str
     # ✅ New field
-    created_by: str
+    created_by: Optional[str] = None
 
 class ClientUpdate(BaseModel):
     businessname: Optional[str] = None

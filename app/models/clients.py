@@ -18,7 +18,7 @@ class Client(Base):
     client_type = Column(String(50))
 
     # ✅ New field: Logged-in user info
-    created_by = Column(String(255), nullable=False)  # can store username, email, or user_id
+    created_by = Column(String(255), nullable=False, default="System")
 
     # Relationships
     quotations = relationship("Quotation", back_populates="client")
