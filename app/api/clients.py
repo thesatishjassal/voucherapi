@@ -20,14 +20,13 @@ async def create_new_client(
     client: ClientCreate,
     db: Session = Depends(get_db_connection),
     # ✅ Assume you get current user from auth dependency
-    current_user: str = "admin"  # Replace with Depends(get_current_user) later
+    # current_user: str = "admin"  # Replace with Depends(get_current_user) later
 ):
     db_user = get_client_by_phone(client.client_phone, db)
     if db_user:
         raise HTTPException(status_code=400, detail="Phone number already exists!")
     
     # ✅ Attach logged-in user name/email before saving
-    client.created_by = current_user
 
     result = create_client(client, db)
     session_id = secrets.token_hex(16)
