@@ -17,7 +17,8 @@ class QuotationBase(BaseModel):
     date: Optional[date] = None
     client_id: int
     created_at: Optional[datetime] = None    # ✅ correct type
-
+    created_by: str
+    
 class QuotationCreate(BaseModel):
     quotation_no: str
     salesperson: Optional[str] = None
@@ -31,6 +32,7 @@ class QuotationCreate(BaseModel):
     status: Optional[str] = None
     date: Optional[date] = None
     client_id: int
+    created_by: Optional[str] = None
 
 class QuotationUpdate(QuotationBase):
     pass

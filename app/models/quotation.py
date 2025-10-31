@@ -19,7 +19,8 @@ class Quotation(Base):
     date = Column(Date, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
     created_at   = Column(DateTime(timezone=True), server_default=func.now())  # ✅
-
+    created_by = Column(String(255), nullable=False, default="System")
+    
     # Relationships
     client = relationship("Client", back_populates="quotations")
     items = relationship("QuotationItem", back_populates="quotation")
