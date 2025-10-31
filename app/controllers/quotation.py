@@ -25,13 +25,13 @@ def create_quotation(db: Session, quotation_data: QuotationCreate):
 # Get Quotation by ID
 # ------------------------------------------------------
 def get_quotation_by_id(db: Session, quotation_id: int):
-    return db.query(QuotationModel).filter(QuotationModel.id == quotation_id).first()
+    return db.query(QuotationModel).filter(QuotationModel.quotation_id == quotation_id).first()
 
 # ------------------------------------------------------
 # Get All Quotations
 # ------------------------------------------------------
 def get_all_quotations(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(QuotationModel).order_by(desc(QuotationModel.id)).offset(skip).limit(limit).all()
+    return db.query(QuotationModel).order_by(desc(QuotationModel.quotation_id)).offset(skip).limit(limit).all()
 
 # ------------------------------------------------------
 # Update Quotation
@@ -210,7 +210,7 @@ def create_quotation_revision(db: Session, quotation_id: int, update_data: Optio
     base_no = original.quotation_no.split("-")[0]
     last_revision = db.query(QuotationModel).filter(
         QuotationModel.quotation_no.like(f"{base_no}-%")
-    ).order_by(desc(QuotationModel.id)).first()
+    ).order_by(desc(QuotationModel.quotation_id)).first()
 
     if last_revision and "-" in last_revision.quotation_no:
         suffix = last_revision.quotation_no.split("-")[-1]
