@@ -3,13 +3,14 @@ import shutil
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from fastapi import HTTPException
+from typing import Optional
 
 from app.models.quotation import Quotation as QuotationModel
 from app.models.quotationitems import QuotationItem
 from app.models.QuotationItemHistory import QuotationItemHistory
 from app.schema.quotation import QuotationCreate
 from app.schema.quotation_items import QuotationItemCreate
-from typing import Optional
+
 
 # ------------------------------------------------------
 # Create New Quotation
@@ -21,17 +22,20 @@ def create_quotation(db: Session, quotation_data: QuotationCreate):
     db.refresh(quotation)
     return quotation
 
+
 # ------------------------------------------------------
 # Get Quotation by ID
 # ------------------------------------------------------
 def get_quotation_by_id(db: Session, quotation_id: int):
     return db.query(QuotationModel).filter(QuotationModel.quotation_id == quotation_id).first()
 
+
 # ------------------------------------------------------
 # Get All Quotations
 # ------------------------------------------------------
 def get_all_quotations(db: Session, skip: int = 0, limit: int = 100):
     return db.query(QuotationModel).order_by(desc(QuotationModel.quotation_id)).offset(skip).limit(limit).all()
+
 
 # ------------------------------------------------------
 # Update Quotation
@@ -48,6 +52,7 @@ def update_quotation(db: Session, quotation_id: int, update_data: dict):
     db.refresh(quotation)
     return quotation
 
+
 # ------------------------------------------------------
 # Delete Quotation
 # ------------------------------------------------------
@@ -56,7 +61,6 @@ def delete_quotation(db: Session, quotation_id: int):
     if not quotation:
         return False
 
-    # Delete all related items and histories
     db.query(QuotationItemHistory).filter(
         QuotationItemHistory.quotation_id == quotation_id
     ).delete()
@@ -67,6 +71,7 @@ def delete_quotation(db: Session, quotation_id: int):
     db.commit()
     return True
 
+
 # ------------------------------------------------------
 # Create Quotation Item
 # ------------------------------------------------------
@@ -75,17 +80,22 @@ def create_quotation_item(db: Session, quotation_id: int, item_data: QuotationIt
     if not quotation:
         raise HTTPException(status_code=404, detail="Quotation not found")
 
-    item = QuotationItem(**item_data.dict(), quotation_id=quotation_id)
+    # ✅ FIX: avoid duplicate quotation_id in **kwargs
+    data = item_data.dict(exclude={"quotation_id"})
+    item = QuotationItem(**data, quotation_id=quotation_id)
+
     db.add(item)
     db.commit()
     db.refresh(item)
     return item
+
 
 # ------------------------------------------------------
 # Get Items by Quotation ID
 # ------------------------------------------------------
 def get_items_by_quotation_id(db: Session, quotation_id: int):
     return db.query(QuotationItem).filter(QuotationItem.quotation_id == quotation_id).all()
+
 
 # ------------------------------------------------------
 # Update Single Quotation Item
@@ -99,7 +109,7 @@ def update_single_quotation_item(db: Session, quotation_id: int, item_id: int, i
     if not item:
         raise HTTPException(status_code=404, detail="Quotation item not found")
 
-    # Save current item to history before update
+    # Save old data to history
     history_entry = QuotationItemHistory(
         quotation_id=item.quotation_id,
         quotation_item_id=item.id,
@@ -108,13 +118,13 @@ def update_single_quotation_item(db: Session, quotation_id: int, item_id: int, i
     )
     db.add(history_entry)
 
-    # Apply updates
     for key, value in item_data.dict().items():
         setattr(item, key, value)
 
     db.commit()
     db.refresh(item)
     return item
+
 
 # ------------------------------------------------------
 # Bulk Update Items
@@ -136,6 +146,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items_data: list
     db.commit()
     return updated_items
 
+
 # ------------------------------------------------------
 # Add or Update Item Image
 # ------------------------------------------------------
@@ -149,11 +160,11 @@ def add_or_update_item_image(db: Session, quotation_item_id: int, image_path: st
     db.refresh(item)
     return item
 
+
 # ------------------------------------------------------
 # Delete Quotation Item
 # ------------------------------------------------------
 def delete_quotation_item(db: Session, item: QuotationItem):
-    # Save deleted item in history
     history_entry = QuotationItemHistory(
         quotation_id=item.quotation_id,
         quotation_item_id=item.id,
@@ -166,6 +177,7 @@ def delete_quotation_item(db: Session, item: QuotationItem):
     db.commit()
     return True
 
+
 # ------------------------------------------------------
 # Clone Quotation
 # ------------------------------------------------------
@@ -177,9 +189,10 @@ def clone_quotation(db: Session, quotation_id: int):
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     new_quotation_no = f"{original.quotation_no}-CLONE-{timestamp}"
 
+    # ✅ FIX: exclude `quotation_id` instead of `id`
     new_quotation = QuotationModel(
         **{col.name: getattr(original, col.name)
-           for col in QuotationModel.__table__.columns if col.name != "id"},
+           for col in QuotationModel.__table__.columns if col.name != "quotation_id"},
         quotation_no=new_quotation_no
     )
 
@@ -193,11 +206,12 @@ def clone_quotation(db: Session, quotation_id: int):
         cloned_item = QuotationItem(
             **{col.name: getattr(item, col.name)
                for col in QuotationItem.__table__.columns if col.name not in ["id", "quotation_id"]},
-            quotation_id=new_quotation.id
+            quotation_id=new_quotation.quotation_id
         )
         db.add(cloned_item)
     db.commit()
     return new_quotation
+
 
 # ------------------------------------------------------
 # Create Quotation Revision
@@ -214,10 +228,7 @@ def create_quotation_revision(db: Session, quotation_id: int, update_data: Optio
 
     if last_revision and "-" in last_revision.quotation_no:
         suffix = last_revision.quotation_no.split("-")[-1]
-        if suffix.isalpha():
-            new_suffix = chr(ord(suffix[-1]) + 1)
-        else:
-            new_suffix = "A"
+        new_suffix = chr(ord(suffix[-1]) + 1) if suffix.isalpha() else "A"
     else:
         new_suffix = "A"
 
@@ -225,7 +236,7 @@ def create_quotation_revision(db: Session, quotation_id: int, update_data: Optio
 
     new_quotation = QuotationModel(
         **{col.name: getattr(original, col.name)
-           for col in QuotationModel.__table__.columns if col.name != "id"},
+           for col in QuotationModel.__table__.columns if col.name != "quotation_id"},
         quotation_no=new_quotation_no
     )
 
@@ -243,17 +254,19 @@ def create_quotation_revision(db: Session, quotation_id: int, update_data: Optio
         revised_item = QuotationItem(
             **{col.name: getattr(item, col.name)
                for col in QuotationItem.__table__.columns if col.name not in ["id", "quotation_id"]},
-            quotation_id=new_quotation.id
+            quotation_id=new_quotation.quotation_id
         )
         db.add(revised_item)
     db.commit()
     return new_quotation
+
 
 # ------------------------------------------------------
 # Get All Item Histories
 # ------------------------------------------------------
 def get_all_quotation_item_histories(db: Session):
     return db.query(QuotationItemHistory).order_by(desc(QuotationItemHistory.changed_at)).all()
+
 
 # ------------------------------------------------------
 # Get History by Item ID
