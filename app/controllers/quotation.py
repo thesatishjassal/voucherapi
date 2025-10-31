@@ -9,6 +9,7 @@ from app.models.quotationitems import QuotationItem
 from app.models.QuotationItemHistory import QuotationItemHistory
 from app.schema.quotation import QuotationCreate
 from app.schema.quotation_items import QuotationItemCreate
+from typing import Optional
 
 # ------------------------------------------------------
 # Create New Quotation
