@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db_connection
 from app.controllers.quotation import (
+    create_quotation_revision,
     clone_quotation,
     get_all_quotation_item_histories,
     get_history_by_quotation_item_id,
@@ -20,56 +21,47 @@ from app.controllers.quotation import (
     delete_quotation_item,
     add_or_update_item_image,
     update_single_quotation_item,
-    create_quotation_revision,
 )
 from app.schema.quotation import Quotation, QuotationCreate
 from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, QuotationItemResponse
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 from app.models.quotationitems import QuotationItem
 
-# ------------------------------------------------------
-# FastAPI App & Router
-# ------------------------------------------------------
-app = FastAPI(title="Quotation Management API")
+app = FastAPI()
 router = APIRouter(tags=["Quotations API"])
 
-# ------------------------------------------------------
-# Upload Directory Setup
-# ------------------------------------------------------
+# Directory for uploads
 UPLOAD_DIR = "uploads/quotations"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ------------------------------------------------------
-# Clone Quotation
-# ------------------------------------------------------
+# Clone Quotation Endpoint
 @router.post("/quotation/{quotation_id}/clone", response_model=Quotation)
-def clone_quotation_api(quotation_id: int, db: Session = Depends(get_db_connection)):
+def clone_quotation_api(
+    quotation_id: int,
+    db: Session = Depends(get_db_connection)
+):
     """
-    Clone a quotation and all its items into a new quotation.
-    New quotation_no will include timestamp (e.g., PLQOT-022-CLONE-20250918123456).
+    Clone a quotation and all its items into a new quotation with a unique quotation_no.
+    The new quotation_no is suffixed with a timestamp (e.g., PLQOT-022-CLONE-20250918123456).
     """
     return clone_quotation(db, quotation_id)
 
-# ------------------------------------------------------
-# Create Revision
-# ------------------------------------------------------
-# @router.post("/quotation/{quotation_id}/revise", response_model=Quotation)
-# def revise_quotation_api(
-#     quotation_id: int,
-#     update_data: Optional[dict] = None,
-#     db: Session = Depends(get_db_connection)
-# ):
-#     """
-#     Create a new revision of an existing quotation (e.g. PLQOT-022 -> PLQOT-022-A).
-#     `update_data` may include remarks or status updates.
-#     """
-#     return create_quotation_revision(db, quotation_id, update_data)
+# New Revision Endpoint
+@router.post("/quotation/{quotation_id}/revise", response_model=Quotation)
+def revise_quotation_api(
+    quotation_id: int,
+    update_data: Optional[dict] = None,
+    db: Session = Depends(get_db_connection)
+):
+    """
+    Duplicate a quotation and all its items into a new revision.
+    Example: PLQOT-022 -> PLQOT-022-A -> PLQOT-022-B ...
+    `update_data` can override fields like remarks or status.
+    """
+    return create_quotation_revision(db, quotation_id, update_data)
 
-# ------------------------------------------------------
-# Update Single Item
-# ------------------------------------------------------
 @router.put("/quotation/{quotation_id}/items/{item_id}", response_model=QuotationItemResponse)
-def update_item_api(
+def update_item(
     quotation_id: int,
     item_id: int,
     item: QuotationItemCreate,
@@ -77,20 +69,14 @@ def update_item_api(
 ):
     return update_single_quotation_item(db, quotation_id, item_id, item)
 
-# ------------------------------------------------------
-# Upload Item Image
-# ------------------------------------------------------
 @router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image", response_model=QuotationItemResponse)
-def upload_item_image_api(
+def upload_item_image(
     quotation_id: int,
     quotation_item_id: int,
     file: UploadFile = File(...),
     db: Session = Depends(get_db_connection),
 ):
-    """
-    Upload or update an image for a specific quotation item.
-    Saves file in `uploads/quotations` folder.
-    """
+    # Ensure item belongs to the correct quotation
     item = db.query(QuotationItem).filter(
         QuotationItem.id == quotation_item_id,
         QuotationItem.quotation_id == quotation_id
@@ -99,50 +85,70 @@ def upload_item_image_api(
     if not item:
         raise HTTPException(status_code=404, detail="Quotation item not found for given quotation")
 
+    # Save file to uploads/quotations/
     file_location = os.path.join(UPLOAD_DIR, f"{quotation_item_id}_{file.filename}")
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    image_path = f"/{file_location}"  # relative path for serving
+    # Store relative path for static serving
+    image_path = f"/{file_location}"
+
+    # Update DB
     updated_item = add_or_update_item_image(db, quotation_item_id, image_path)
+
     return QuotationItemResponse.from_orm(updated_item)
 
-# ------------------------------------------------------
-# Create New Quotation
-# ------------------------------------------------------
+# Create a new quotation
 @router.post("/quotation/", response_model=Quotation)
 def create_quotation_api(quotation: QuotationCreate, db: Session = Depends(get_db_connection)):
     return create_quotation(db, quotation)
 
-# ------------------------------------------------------
-# Add Item to Quotation
-# ------------------------------------------------------
+# Add an item to a quotation
 @router.post("/quotation/{quotation_id}/items/", response_model=QuotationItemResponse)
 def create_quotation_item_api(quotation_id: int, item: QuotationItemCreate, db: Session = Depends(get_db_connection)):
     return create_quotation_item(db, quotation_id, item)
 
-# ------------------------------------------------------
-# Bulk Update Quotation Items
-# ------------------------------------------------------
+# Bulk update quotation items
 @router.put("/quotation/{quotation_id}/items/", response_model=List[QuotationItemResponse])
-def bulk_update_quotation_items_api(
-    quotation_id: int,
-    items: List[QuotationItemCreate],
-    db: Session = Depends(get_db_connection)
-):
+def bulk_update_quotation_items_api(quotation_id: int, items: List[QuotationItemCreate], db: Session = Depends(get_db_connection)):
     return bulk_update_quotation_items(db, quotation_id, items)
 
-# ------------------------------------------------------
-# Get All Items for Quotation
-# ------------------------------------------------------
+# Get items by quotation ID
 @router.get("/quotation/{quotation_id}/items/", response_model=List[QuotationItemResponse])
 def read_quotation_items_api(quotation_id: int, db: Session = Depends(get_db_connection)):
     items = get_items_by_quotation_id(db, quotation_id)
-    return [QuotationItemResponse.from_orm(item) for item in items]
+    return [
+        QuotationItemResponse(
+            id=item.id,
+            quotation_id=item.quotation_id,
+            product_id=item.product_id,
+            customercode=item.customercode,
+            customerdescription=item.customerdescription,
+            image=item.image,
+            itemcode=item.itemcode,
+            brand=item.brand,
+            mrp=item.mrp,
+            price=item.price,
+            netPrice=item.netPrice,
+            quantity=item.quantity,
+            discount=item.discount,
+            item_name=item.item_name,
+            unit=item.unit,
+            amount_including_gst=item.amount_including_gst,
+            without_gst=item.without_gst,
+            gst_amount=item.gst_amount,
+            amount_with_gst=item.amount_with_gst,
+            remarks=item.remarks,
+            cct=item.cct,
+            beamangle=item.beamangle,
+            cri=item.cri,
+            cutoutdia=item.cutoutdia,
+            lumens=item.lumens,
+            amount=item.amount,
+        ) for item in items
+    ]
 
-# ------------------------------------------------------
-# Get Quotation by ID
-# ------------------------------------------------------
+# Get quotation by ID
 @router.get("/quotation/{quotation_id}", response_model=Quotation)
 def read_quotation_api(quotation_id: int, db: Session = Depends(get_db_connection)):
     quotation = get_quotation_by_id(db, quotation_id)
@@ -150,16 +156,12 @@ def read_quotation_api(quotation_id: int, db: Session = Depends(get_db_connectio
         raise HTTPException(status_code=404, detail="Quotation not found")
     return quotation
 
-# ------------------------------------------------------
-# Get All Quotations (Paginated)
-# ------------------------------------------------------
+# Get all quotations with pagination
 @router.get("/quotation/", response_model=List[Quotation])
 def read_all_quotations_api(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_connection)):
     return get_all_quotations(db, skip, limit)
 
-# ------------------------------------------------------
-# Update Quotation
-# ------------------------------------------------------
+# Update quotation by ID
 @router.put("/quotation/{quotation_id}", response_model=Quotation)
 def update_quotation_api(quotation_id: int, update_data: dict, db: Session = Depends(get_db_connection)):
     updated_quotation = update_quotation(db, quotation_id, update_data)
@@ -167,9 +169,7 @@ def update_quotation_api(quotation_id: int, update_data: dict, db: Session = Dep
         raise HTTPException(status_code=404, detail="Quotation not found")
     return updated_quotation
 
-# ------------------------------------------------------
-# Delete Quotation
-# ------------------------------------------------------
+# Delete quotation by ID
 @router.delete("/quotation/{quotation_id}")
 def delete_quotation_api(quotation_id: int, db: Session = Depends(get_db_connection)):
     success = delete_quotation(db, quotation_id)
@@ -177,27 +177,22 @@ def delete_quotation_api(quotation_id: int, db: Session = Depends(get_db_connect
         raise HTTPException(status_code=404, detail="Quotation not found")
     return {"message": "Quotation deleted successfully"}
 
-# ------------------------------------------------------
-# Get All Item Histories
-# ------------------------------------------------------
+# Get all quotation item histories
 @router.get("/quotation-history/", response_model=List[QuotationItemHistoryResponse])
 def fetch_all_histories_api(db: Session = Depends(get_db_connection)):
     return get_all_quotation_item_histories(db)
 
-# ------------------------------------------------------
-# Get History by Quotation Item ID
-# ------------------------------------------------------
+# Get history by quotation item ID
 @router.get("/quotation-history/{quotation_item_id}", response_model=List[QuotationItemHistoryResponse])
 def fetch_history_by_item_id_api(quotation_item_id: int, db: Session = Depends(get_db_connection)):
     return get_history_by_quotation_item_id(db, quotation_item_id)
 
-# ------------------------------------------------------
-# Delete Specific Quotation Item
-# ------------------------------------------------------
+# Delete a specific quotation item by ID
 @router.delete("/quotation/{quotation_id}/items/{item_id}")
 def delete_quotation_item_api(quotation_id: int, item_id: int, db: Session = Depends(get_db_connection)):
     try:
-        with db.begin():
+        with db.begin():  # Start transaction
+            # Fetch the item to delete
             item = db.query(QuotationItem).filter(
                 QuotationItem.quotation_id == quotation_id,
                 QuotationItem.id == item_id
@@ -206,19 +201,19 @@ def delete_quotation_item_api(quotation_id: int, item_id: int, db: Session = Dep
             if not item:
                 raise HTTPException(status_code=404, detail="Quotation item not found")
 
+            # Delete the item and log it in history
             delete_quotation_item(db, item)
 
-        db.commit()
+        db.commit()  # Commit transaction
         return {"message": "Quotation item deleted successfully"}
 
     except HTTPException:
         db.rollback()
         raise
+
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-# ------------------------------------------------------
-# Register Router
-# ------------------------------------------------------
+# Include router in FastAPI app
 app.include_router(router)
