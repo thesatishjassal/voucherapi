@@ -21,7 +21,8 @@ class OutvoucherBase(BaseModel):
     mobile_number: Optional[str] = Field(None, description="Mobile Number of receiver")
     client_id: Optional[int] = Field(None, description="Client Id is required")
     transaction_types: Optional[str] = Field(None, description="transaction_type")
-
+    created_by: Optional[str] = "System"
+    
 class OutvoucherCreate(OutvoucherBase):
     """Schema for creating a new Outvoucher."""
     pass

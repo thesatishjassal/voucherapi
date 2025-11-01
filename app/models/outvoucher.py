@@ -21,7 +21,8 @@ class Outvoucher(Base):
     mobile_number = Column(String(20), nullable=True)
     transaction_types = Column(String(20), nullable=True)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
-    
+    created_by = Column(String(255), nullable=False, default="System")
+
     # ✅ Fix Relationships
     client = relationship("Client", back_populates="outvouchers")
     items = relationship("OutvoucherItem", back_populates="outvoucher") 
