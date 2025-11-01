@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 
 from database import get_db_connection
 from app.controllers.quotation import (
-    create_quotation_revision,
     clone_quotation,
     get_all_quotation_item_histories,
     get_history_by_quotation_item_id,
@@ -21,6 +20,7 @@ from app.controllers.quotation import (
     delete_quotation_item,
     add_or_update_item_image,
     update_single_quotation_item,
+    create_quotation_revision,
 )
 from app.schema.quotation import Quotation, QuotationCreate
 from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, QuotationItemResponse
@@ -53,17 +53,17 @@ def clone_quotation_api(quotation_id: int, db: Session = Depends(get_db_connecti
 # ------------------------------------------------------
 # Create Revision
 # ------------------------------------------------------
-@router.post("/quotation/{quotation_id}/revise", response_model=Quotation)
-def revise_quotation_api(
-    quotation_id: int,
-    update_data: Optional[dict] = None,
-    db: Session = Depends(get_db_connection)
-):
-    """
-    Create a new revision of an existing quotation (e.g. PLQOT-022 -> PLQOT-022-A).
-    `update_data` may include remarks or status updates.
-    """
-    return create_quotation_revision(db, quotation_id, update_data)
+# @router.post("/quotation/{quotation_id}/revise", response_model=Quotation)
+# def revise_quotation_api(
+#     quotation_id: int,
+#     update_data: Optional[dict] = None,
+#     db: Session = Depends(get_db_connection)
+# ):
+#     """
+#     Create a new revision of an existing quotation (e.g. PLQOT-022 -> PLQOT-022-A).
+#     `update_data` may include remarks or status updates.
+#     """
+#     return create_quotation_revision(db, quotation_id, update_data)
 
 # ------------------------------------------------------
 # Update Single Item
