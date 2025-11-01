@@ -29,7 +29,8 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
         "remarks": db_invoucher.remarks,
         "gst_option": db_invoucher.gst_option,  # Include new field
         "gst_percentage": db_invoucher.gst_percentage,  # Include new field
-        "gst_amount": db_invoucher.gst_amount  # Include new field
+        "gst_amount": db_invoucher.gst_amount,  # Include new field
+        "created_by": db_invoucher.created_by # Include new field
     }
 
 def create_invoucher_item(db: Session, voucher_id: str, item: InvoucherItemCreate):
