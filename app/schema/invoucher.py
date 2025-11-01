@@ -19,6 +19,7 @@ class InvoucherBase(BaseModel):
     gst_option: Optional[str] = "Include"  # New field for GST option
     gst_percentage: Optional[float] = 0.00  # New field for GST percentage
     gst_amount: Optional[float] = 0.00  # New field for GST amount
+    created_by: Optional[str] = "System"
 
 class InvoucherCreate(InvoucherBase):
     """Schema for creating a new invoucher."""
