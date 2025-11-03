@@ -30,6 +30,7 @@ class Products(Base):
     lumens = Column(String, nullable=True)
     watt = Column(String, nullable=True)
     in_display = Column(Boolean, nullable=True, default=True)
+    created_by = Column(String(255), nullable=False, default="System")
 
     # Relationships
     purchaseitems = relationship("PurchaseOrderItems", back_populates="product")

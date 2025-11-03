@@ -20,6 +20,7 @@ class ProductsCreate(BaseModel):
     brand: str
     unit: str
     reorderqty: Optional[int] = None
+    created_by: Optional[str] = "System"
 
     # ✅ New text fields
     cct: Optional[str] = None
@@ -53,6 +54,7 @@ class ProductsUpdate(BaseModel):
     brand: Optional[str] = None
     unit: Optional[str] = None
     reorderqty: Optional[int] = None
+    created_by: Optional[str] = "System"
 
     # ✅ New text fields
     cct: Optional[str] = None
@@ -86,6 +88,7 @@ class ProductsResponse(BaseModel):
     model: str
     brand: str
     reorderqty: Optional[int] = None
+    created_by: Optional[str] = "System"
 
     # ✅ New text fields
     cct: Optional[str] = None
