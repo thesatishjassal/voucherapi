@@ -16,7 +16,8 @@ class PurchaseOrderBase(BaseModel):
     status: Optional[str] = None
     date: Optional[datetime] = None
     client_id: int  # Required
-
+    created_by: Optional[str] = None
+    
     payment_method: Optional[str] = None
     freight: Optional[str] = None
     issue_slip_no: Optional[str] = None
