@@ -17,6 +17,7 @@ class PurchaseOrder(Base):
     status = Column(String, nullable=True)
     date = Column(DateTime, nullable=True)
     client_id = Column(Integer, ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
+    created_by = Column(String(255), nullable=False, default="System")
 
     # New fields
     payment_method = Column(String(50), nullable=True)  # Cash, Card, UPI

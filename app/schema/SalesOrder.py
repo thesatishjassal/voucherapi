@@ -16,6 +16,7 @@ class SalesOrderBase(BaseModel):
     status: Optional[str] = None
     date: Optional[datetime] = None
     client_id: int  # Required to link client
+    created_by: Optional[str] = None
 
     # ✅ Added new fields
     payment_method: Optional[str] = None  # e.g. "Cash", "Card", "UPI", "Bank Transfer"
