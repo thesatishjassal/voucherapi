@@ -18,7 +18,7 @@ class SalesOrder(Base):
     status = Column(String, nullable=True)
     date = Column(DateTime, nullable=True)
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
-
+    created_by = Column(String(255), nullable=False, default="System")
     # ✅ New fields added
     payment_method = Column(String(50), nullable=True)  # e.g. "Cash", "Card", "UPI", etc.
     freight = Column(String(20), nullable=True)         # e.g. "Paid" or "To Pay"
