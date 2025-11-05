@@ -25,6 +25,7 @@ from app.api.switches_quotation import router as switches_quotation
 from database import get_db_connection
 from app.api.products_router import router as products_update_router
 from app.api.purchaseorder_api import router as purchaseorder_router
+from app.api.catalogue_routes import router as catalogue_routes
 
 # Create app
 app = FastAPI()
@@ -98,6 +99,7 @@ app.include_router(inventory_router)
 app.include_router(switches_quotation)
 app.include_router(products_update_router)
 app.include_router(purchaseorder_router)
+app.include_router(catalogue_routes)
 
 # ✅ Run app
 if __name__ == "__main__":
