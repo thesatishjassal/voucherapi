@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict  # Add ConfigDict for v2 best practices
 from datetime import datetime
 from typing import Optional
 
@@ -6,6 +6,8 @@ class CatalogueBase(BaseModel):
     name: str
     category: Optional[str] = None
     brand: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)  # Global config for base (propagates)
 
 class CatalogueCreate(CatalogueBase):   
     pass
@@ -22,9 +24,10 @@ class CatalogueResponse(CatalogueBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)  # Explicit for response if needed
 
 class CatalogueDeleteResponse(BaseModel):
     message: str
     id: int
+
+    model_config = ConfigDict(from_attributes=True)  # If using ORM in delete (optional)
