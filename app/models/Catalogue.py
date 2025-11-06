@@ -8,7 +8,8 @@ class Catalogue(Base):
     name = Column(String(255), nullable=False)
     category = Column(String(100))
     brand = Column(String(100))
-    pdf_url = Column(Text)
-    is_deleted = Column(Boolean, default=False)  # Optional: for soft delete
+    google_drive_url = Column(Text)  # Changed from pdf_url to store Google Drive link
+    created_by = Column(String(100), nullable=False)  # New field for creator (e.g., user ID or name)
+    is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

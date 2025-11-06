@@ -1,63 +1,35 @@
 import os
-import shutil
-import uuid
-from fastapi import UploadFile, HTTPException, status
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from app.models.Catalogue import Catalogue  # Assuming import path; adjust if needed
-from app.schema.catalogue import CatalogueCreate, CatalogueUpdate, CatalogueResponse  # Assuming schemas dir
+from app.models.Catalogue import Catalogue  # Adjust import if needed
 
-UPLOAD_DIR = "uploads/catalogues"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+BASE_URL = "https://api.panvic.in"  # For API consistency, though not used for Drive links
 
-BASE_URL = "https://api.panvic.in"  # replace with VPS domain or IP
-
-def upload_catalogue_controller(db: Session, name: str, category: str, brand: str, pdf: UploadFile):
-    MAX_FILE_SIZE = 200 * 1024 * 1024  # 200MB in bytes
-    
-    # Check file size (pdf.size may be None for streamed uploads; fallback to manual read if needed)
-    if pdf.size and pdf.size > MAX_FILE_SIZE:
-        raise HTTPException(status_code=413, detail=f"File too large. Max size: 200MB")
-    
-    # For precise check (if size unavailable), read in chunks:
-    # content = await pdf.read()
-    # if len(content) > MAX_FILE_SIZE:
-    #     raise HTTPException(status_code=413, detail=f"File too large. Max size: 200MB")
-    # pdf.file.seek(0)  # Reset for later use
-    
-    # Validate file type
-    if pdf.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
-    
-    # Validate file type
-    if pdf.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
-
-    # Generate unique filename
-    filename = f"{uuid.uuid4()}.pdf"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-
-    # Save file locally
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(pdf.file, buffer)
-
-    pdf_url = f"/view-catalogue/{filename}"
+def upload_catalogue_controller(db: Session, name: str, category: str, brand: str, google_drive_url: str, created_by: str):
+    # Basic validation for URL (simple check; enhance if needed)
+    if not google_drive_url.startswith("https://drive.google.com"):
+        raise HTTPException(status_code=400, detail="Invalid Google Drive URL. Must start with https://drive.google.com")
 
     # Create DB entry
-    catalogue = Catalogue(name=name, category=category or None, brand=brand or None, pdf_url=pdf_url)
+    catalogue = Catalogue(
+        name=name, 
+        category=category or None, 
+        brand=brand or None, 
+        google_drive_url=google_drive_url,
+        created_by=created_by
+    )
     db.add(catalogue)
     db.commit()
     db.refresh(catalogue)
 
     return {
-        "message": "Catalogue uploaded successfully ✅",
+        "message": "Catalogue created successfully ✅",
         "id": catalogue.id,
-        "view_link": f"{BASE_URL}{pdf_url}",
-        "download_link": f"{BASE_URL}/download-catalogue/{filename}"
+        "google_drive_link": google_drive_url  # Single link for view/download
     }
 
 def list_catalogues_controller(db: Session):
-    # Query active catalogues (exclude deleted)
     catalogues = db.query(Catalogue).filter(Catalogue.is_deleted == False).order_by(Catalogue.created_at.desc()).all()
     return catalogues
 
@@ -75,7 +47,8 @@ def update_catalogue_controller(
     name: str | None, 
     category: str | None, 
     brand: str | None, 
-    pdf: UploadFile | None = None
+    google_drive_url: str | None, 
+    created_by: str | None
 ):
     catalogue = db.query(Catalogue).filter(
         and_(Catalogue.id == catalogue_id, Catalogue.is_deleted == False)
@@ -83,33 +56,19 @@ def update_catalogue_controller(
     if not catalogue:
         raise HTTPException(status_code=404, detail="Catalogue not found")
 
-    # Update metadata if provided
+    # Update fields if provided
     if name is not None:
         catalogue.name = name
     if category is not None:
         catalogue.category = category
     if brand is not None:
         catalogue.brand = brand
-
-    # Handle optional PDF update
-    if pdf:
-        if pdf.content_type != "application/pdf":
-            raise HTTPException(status_code=400, detail="Only PDF files are allowed")
-        
-        # Delete old file
-        if catalogue.pdf_url:
-            old_filename = catalogue.pdf_url.split("/")[-1]
-            old_file_path = os.path.join(UPLOAD_DIR, old_filename)
-            if os.path.exists(old_file_path):
-                os.remove(old_file_path)
-        
-        # Save new file
-        new_filename = f"{uuid.uuid4()}.pdf"
-        new_file_path = os.path.join(UPLOAD_DIR, new_filename)
-        with open(new_file_path, "wb") as buffer:
-            shutil.copyfileobj(pdf.file, buffer)
-        
-        catalogue.pdf_url = f"/view-catalogue/{new_filename}"
+    if google_drive_url is not None:
+        if not google_drive_url.startswith("https://drive.google.com"):
+            raise HTTPException(status_code=400, detail="Invalid Google Drive URL")
+        catalogue.google_drive_url = google_drive_url
+    if created_by is not None:
+        catalogue.created_by = created_by
 
     db.commit()
     db.refresh(catalogue)
@@ -117,8 +76,7 @@ def update_catalogue_controller(
     return {
         "message": "Catalogue updated successfully ✅",
         "id": catalogue.id,
-        "view_link": f"{BASE_URL}{catalogue.pdf_url}" if catalogue.pdf_url else None,
-        "download_link": f"{BASE_URL}/download-catalogue/{new_filename}" if pdf else None
+        "google_drive_link": catalogue.google_drive_url
     }
 
 def delete_catalogue_controller(db: Session, catalogue_id: int):
@@ -128,13 +86,7 @@ def delete_catalogue_controller(db: Session, catalogue_id: int):
     if not catalogue:
         raise HTTPException(status_code=404, detail="Catalogue not found")
 
-    # Hard delete (remove from DB and file)
-    if catalogue.pdf_url:
-        filename = catalogue.pdf_url.split("/")[-1]
-        file_path = os.path.join(UPLOAD_DIR, filename)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    
+    # Hard delete (no file to remove)
     db.delete(catalogue)
     db.commit()
 
