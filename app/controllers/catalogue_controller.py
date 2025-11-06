@@ -13,6 +13,22 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 BASE_URL = "https://api.panvic.in"  # replace with VPS domain or IP
 
 def upload_catalogue_controller(db: Session, name: str, category: str, brand: str, pdf: UploadFile):
+    MAX_FILE_SIZE = 200 * 1024 * 1024  # 200MB in bytes
+    
+    # Check file size (pdf.size may be None for streamed uploads; fallback to manual read if needed)
+    if pdf.size and pdf.size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail=f"File too large. Max size: 200MB")
+    
+    # For precise check (if size unavailable), read in chunks:
+    # content = await pdf.read()
+    # if len(content) > MAX_FILE_SIZE:
+    #     raise HTTPException(status_code=413, detail=f"File too large. Max size: 200MB")
+    # pdf.file.seek(0)  # Reset for later use
+    
+    # Validate file type
+    if pdf.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+    
     # Validate file type
     if pdf.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
