@@ -1,0 +1,11 @@
+item_code, description,brand,model,category,module_size,back_Grid_Mrp,white_ mrp,galaxy_black_mrp,silver_grey_mrp,champagne_gold
+RP911,1 Module Plate,wipro,Artisa,Plates,1M,175,245,405,405,405
+RP922,2 Module Plate,wipro,Artisa,Plates,2M,175,270,435,435,435
+RP933,3 Module Plate,wipro,Artisa,Plates,3M,195,305,485,485,485
+RP944,4 Module Plate,wipro,Artisa,Plates,4M,200,325,535,535,535
+RP966,6 Mod Plate with Met Frame,wipro,Artisa,Plates,6M,475,645,1100,1100,1100
+RP968H,8 Module Horizontal Plate,wipro,Artisa,Plates,8MH,510,695,1200,1200,1200
+RP968,8 Module Square Plate,wipro,Artisa,Plates,8MS,520,825,1370,1370,1370
+RP9712S,12 Module Plate,wipro,Artisa,Plates,12M,625,995,1695,1695,1695
+RP9716S,16 Module Plate,wipro,Artisa,Plates,16M,0,1065,1795,1795,1795
+RP9718S,18 Module Plate,wipro,Artisa,Plates,18M,0,1165,1945,1945,1945
