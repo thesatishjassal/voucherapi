@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.services.csv_service import CSVService
-from app.schemas.csv_schema import CSVResponse
+from app.schema.csv_schema import CSVResponse
 
 router = APIRouter(prefix="/csv", tags=["CSV Reader"])
 

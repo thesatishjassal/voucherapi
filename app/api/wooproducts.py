@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File
 from app.controllers.woocommerce import upload_products_to_woocommerce
-from utils.excel_parser import parse_excel
+from app.utils.excel_parser import parse_excel
 
 router = APIRouter()
 
