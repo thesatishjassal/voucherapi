@@ -26,6 +26,7 @@ from database import get_db_connection
 from app.api.products_router import router as products_update_router
 from app.api.purchaseorder_api import router as purchaseorder_router
 from app.api.catalogue_routes import router as catalogue_routes
+from app.api.csv_routers import router as csv_routers
 
 # Create app
 app = FastAPI()
@@ -100,6 +101,7 @@ app.include_router(switches_quotation)
 app.include_router(products_update_router)
 app.include_router(purchaseorder_router)
 app.include_router(catalogue_routes)
+app.include_router(csv_routers)
 
 # ✅ Run app
 if __name__ == "__main__":
