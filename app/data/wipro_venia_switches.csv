@@ -1,0 +1,45 @@
+item_code,description,brand,model,category,module_size,white_mrp,dark_grey
+BS110,Switch 6A One Way,Wipro,Veina,Switch,1M,125,150
+BS120,Switch 10A One Way,Wipro,Veina,Switch,1M,125,150
+BS111,Switch 6A One Way with Indicator,Wipro,Veina,Switch,1M,205,255
+BS210,Switch 6A Two Way,Wipro,Veina,Switch,1M,195,245
+BS220,10A 2way,Wipro,Veina,Switch,1M,200,250
+BS130, Switch 16A ONE WAY ,Wipro,Veina,Switch,1M,220,270
+BS230,16A 2 Way Switch without indicator,Wipro,Veina,Switch,1M,280,333
+BS131,Switch 16A One way with Indicator,Wipro,Veina,Switch,1M,290,345
+BS160,Switch 20A One way,Wipro,Veina,Switch,1M,210,255
+BS161,Switch 20A One way with indicator,Wipro,Veina,Switch,1M,270,320
+BS150,Switch 25A One way,Wipro,Veina,Switch,1M,245,295
+B0151,Switch 25A One way with indicator,Wipro,Veina,Switch,1M,315,385
+B0551,Switch 32A 1 Way With Indicator - DP,Wipro,Veina,Switch,2M,610,735
+BS310,Bell Push 6A,Wipro,Veina,Switch,1M,197,245
+BS311,6A Bell Push Switch with Indicator 1M,Wipro,Veina,Switch,1M,280,340
+B0341,6A Bell Push Switch with Indicator-palm,Wipro,Veina,Switch,2M,325,391
+B1212,Socket 6A 3 Pin With Round Pin,Wipro,Veina,Sockets,2M,215,255
+B1332,Socket 6-16A 3 Pin Power,Wipro,Veina,Sockets,2M,350,420
+B1352,6/16A 6 Pin Heavy Duty- Power,Wipro,Veina,Sockets,2M,425,505
+B1700, Fan Regulator 4+1 Position Stap Type 360*,Wipro,Veina,Fan Regulators,1M,620,745
+B1900, Fan Regulator 5+1 Position Stap Type 360*,Wipro,Veina,Fan Regulators,1M,750,900
+B4900,Telephone Socket with Single Shutter RJ11,Wipro,Veina,Communication and Support Modules,1M,240,295
+B4797,Co-Axial Tv Socket 1 Point,Wipro,Veina,Communication and Support Modules,1M,245,300
+B5200,Computer Socket With Shutter -RJ-45 Cat 6,Wipro,Veina,Communication and Support Modules,1M,725,795
+B5310,Computer Socket With Shutter -RJ-45 Cat 6A UTP,Wipro,Veina,Communication and Support Modules,1M,790,895
+B4600,Venia Indicator lamp,Wipro,Veina,Communication and Support Modules,1M,200,245
+B4921,2A USB Changer,Wipro,Veina,Communication and Support Modules,1M,1200,1440
+B4922,2.4A Type A+C Comb Charger,Wipro,Veina,Communication and Support Modules,1M,2925,3510
+B4500,Cord Outlet,Wipro,Veina,Communication and Support Modules,1M,175,205
+B3900,Blanking Plate,Wipro,Veina,Communication and Support Modules,1M,60,70
+BBP911,1 M Plate With Frame,Wipro,Veina,Plates,1M,135,165
+BP922,2 M Plate  With Frame,Wipro,Veina,Plates,2M,135,165
+BP933,3 M Plate  With Frame(RIB),Wipro,Veina,Plates,3M,170,205
+BP944,4 M Plate  With Frame,Wipro,Veina,Plates,4M,215,260
+BP956,6 M Plate  With Frame,Wipro,Veina,Plates,6M,290,340
+BP968H,8 MH Plate With Frame (Horizontal),Wipro,Veina,Plates,8M,335,405
+BP968S,8 MS Plate With Frame (Square),Wipro,Veina,Plates,8M,355,430
+BP969H,9 MS Plate With Frame  (Horizontal),Wipro,Veina,Plates,9M,400,485
+ ,12 M Plate With Frame,Wipro,Veina,Plates,12M,490,590
+BP9716S,16 M Plate With Frame,Wipro,Veina,Plates,16M,675,815
+BP9718S,18 M Plate With Frame,Wipro,Veina,Plates,18M,745,890
+6A-32A-SINGLE ,6A -32A Singal Pole Tiny Trip,Wipro,Veina,TT and MS,0,530,650
+6A-32A-DOUBLE,6A -32A Double Pole Tiny Trip,Wipro,Veina,TT and MS,0,1180,1455
+25A MOTOR STATER,"20A, 25A Motor Stater Single Phase ",Wipro,Veina,TT and MS,0,1195,1440
