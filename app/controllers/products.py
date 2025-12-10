@@ -109,57 +109,63 @@ def get_product_by_id(product_id: int, db: Session):
 
 def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
     product = db.query(Products).filter(Products.id == product_id).first()
-    if product:
-        if product_data.itemcode:
-            product.itemcode = product_data.itemcode
-        if product_data.itemname:
-            product.itemname = product_data.itemname
-        # if product_data.hsncode:
-        #     product.hsncode = product_data.hsncode
-        if product_data.price:
-            product.price = product_data.price
-        if product_data.quantity:
-            product.quantity = product_data.quantity
-        if product_data.rackcode:
-            product.rackcode = product_data.rackcode
-        if product_data.category:
-            product.category = product_data.category
-        if product_data.subcategory:
-            product.subcategory = product_data.subcategory
-        if product_data.size:
-            product.size = product_data.size
-        if product_data.model:
-            product.model = product_data.model
-        if product_data.description:
-            product.description = product_data.description
-        if product_data.unit:
-            product.unit = product_data.unit
-        if product_data.color:
-            product.color = product_data.color
-        if product_data.brand:
-            product.brand = product_data.brand
-        if product_data.in_display is not None:
-            product.in_display = product_data.in_display
-
-        # ✅ New fields
-        if product_data.cct:
-            product.cct = product_data.cct
-        if product_data.beamangle:
-            product.beamangle = product_data.beamangle
-        if product_data.cutoutdia:
-            product.cutoutdia = product_data.cutoutdia
-        if product_data.cri:
-            product.cri = product_data.cri
-        if product_data.lumens:
-            product.lumens = product_data.lumens
-        if product_data.watt:
-            product.watt = product_data.watt
-
-        db.commit()
-        db.refresh(product)
-        return product
-    else:
+    if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+
+    # General fields
+    if product_data.itemcode is not None:
+        product.itemcode = product_data.itemcode
+    if product_data.itemname is not None:
+        product.itemname = product_data.itemname
+    if product_data.description is not None:
+        product.description = product_data.description
+    if product_data.category is not None:
+        product.category = product_data.category
+    if product_data.subcategory is not None:
+        product.subcategory = product_data.subcategory
+    if product_data.price is not None:
+        product.price = product_data.price
+    if product_data.quantity is not None:
+        product.quantity = product_data.quantity
+    if product_data.rackcode is not None:
+        product.rackcode = product_data.rackcode
+    # if product_data.thumbnail is not None:
+    #     product.thumbnail = product_data.thumbnail
+    if product_data.size is not None:
+        product.size = product_data.size
+    if product_data.color is not None:
+        product.color = product_data.color
+    if product_data.model is not None:
+        product.model = product_data.model
+    if product_data.brand is not None:
+        product.brand = product_data.brand
+    if product_data.unit is not None:
+        product.unit = product_data.unit
+    if product_data.reorderqty is not None:
+        product.reorderqty = product_data.reorderqty
+
+    # Technical fields
+    if product_data.cct is not None:
+        product.cct = product_data.cct
+    if product_data.beamangle is not None:
+        product.beamangle = product_data.beamangle
+    if product_data.cutoutdia is not None:
+        product.cutoutdia = product_data.cutoutdia
+    if product_data.cri is not None:
+        product.cri = product_data.cri
+    if product_data.lumens is not None:
+        product.lumens = product_data.lumens
+    if product_data.watt is not None:
+        product.watt = product_data.watt
+
+    # Boolean field
+    if product_data.in_display is not None:
+        product.in_display = product_data.in_display
+
+    db.commit()
+    db.refresh(product)
+    return product
+
 
 
 def delete_product(product_id: int, db: Session):
