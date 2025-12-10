@@ -136,6 +136,8 @@ def update_product(product_data: ProductsUpdate, product_id: int, db: Session):
             product.unit = product_data.unit
         if product_data.color:
             product.color = product_data.color
+        if product_data.brand:
+            product.brand = product_data.brand
         if product_data.in_display is not None:
             product.in_display = product_data.in_display
 
