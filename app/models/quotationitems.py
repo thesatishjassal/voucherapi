@@ -9,6 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from base import Base
+from sqlalchemy import Numeric
 
 
 class QuotationItem(Base):
@@ -29,7 +30,8 @@ class QuotationItem(Base):
     price = Column(Numeric(10, 2), nullable=True)
 
     quantity = Column(Integer, nullable=False)
-    discount = Column(Integer, nullable=False)
+    # discount = Column(Integer, nullable=False)
+    discount = Column(Numeric(5, 2), nullable=False)
 
     # Text allows longer item names
     item_name = Column(Text, nullable=True)

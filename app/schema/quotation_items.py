@@ -22,7 +22,13 @@ class QuotationItemBase(BaseModel):
     price: Optional[float] = Field(None, description="Price for quotation")
 
     quantity: int = Field(..., description="Quantity of product", ge=0)
-    discount: int = Field(..., description="Discount percentage", ge=0)
+    # discount: int = Field(..., description="Discount percentage", ge=0)
+    discount: float = Field(
+        ...,
+        description="Discount (percentage or flat value)",
+        ge=0
+    )
+
     item_name: Optional[str] = Field(None, description="Name of the item", max_length=100)
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
 
