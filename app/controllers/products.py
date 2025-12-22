@@ -74,6 +74,7 @@ def upload_products(products_data: Union[ProductsCreate, List[ProductsCreate]], 
     inserted_count = 0
     errors = []
 
+
     for idx, product_data in enumerate(products_data):
         logger.info(f"Processing product {idx + 1}:  itemcode={product_data.itemcode}")
 

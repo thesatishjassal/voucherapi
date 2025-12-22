@@ -29,7 +29,7 @@ class QuotationItemBase(BaseModel):
         ge=0
     )
 
-    item_name: Optional[str] = Field(None, description="Name of the item", max_length=100)
+    item_name: Optional[str] = Field(None, description="Name of the item")
     unit: Optional[str] = Field(None, description="Measurement unit (e.g., pcs, box)")
 
     # ✅ All amount fields as float for fractional values
