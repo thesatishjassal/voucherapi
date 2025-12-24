@@ -8,7 +8,7 @@ class OutvoucherItem(Base):
     item_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     voucher_id = Column(Integer, ForeignKey("outvouchers.id"), nullable=True)
     product_id = Column(String(50), ForeignKey("products.itemcode"))
-    item_name = Column(String(100), nullable=True)
+    item_name =  Column(Text, nullable=True)
     unit = Column(String(20), nullable=True)
     rack_code = Column(String(50), nullable=True)
     quantity = Column(Integer, nullable=False)
