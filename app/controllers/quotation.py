@@ -11,6 +11,7 @@ from app.schema.quotation_items import QuotationItemCreate, QuotationItemRespons
 from fastapi import HTTPException
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 from sqlalchemy import func
+from sqlalchemy import asc, nullsfirst
 
 def create_quotation_revision(
     db: Session,
@@ -477,15 +478,27 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
         ) for history in histories
     ]
 
-def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationItem]:
+def get_items_by_quotation_id(
+    db: Session,
+    quotation_id: str
+) -> List[QuotationItem]:
+    
     items = (
         db.query(QuotationItem)
         .filter(QuotationItem.quotation_id == int(quotation_id))
-        .order_by(QuotationItem.position.asc(nullsfirst=True), QuotationItem.id.asc())  # Sort by position, fallback to ID
+        .order_by(
+            nullsfirst(QuotationItem.position),
+            QuotationItem.id.asc()
+        )
         .all()
     )
+
     if not items:
-        raise HTTPException(status_code=404, detail="No items found for this quotation id")
+        raise HTTPException(
+            status_code=404,
+            detail="No items found for this quotation id"
+        )
+
     return items
 
 def create_quotation(db: Session, quotation_data: QuotationCreate):
