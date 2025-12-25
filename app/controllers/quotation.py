@@ -69,15 +69,17 @@ def create_quotation_revision(
     orig_items = (
         db.query(QuotationItem)
         .filter(QuotationItem.quotation_id == base_quotation_id)
+        .order_by(QuotationItem.position.asc(), QuotationItem.id.asc())  # Preserve order with fallback
         .all()
     )
-    for it in orig_items:
+    for i, it in enumerate(orig_items):
         item_dict = {
             c.name: getattr(it, c.name)
             for c in QuotationItem.__table__.columns
             if c.name not in ("id", "quotation_id")
         }
         item_dict["quotation_id"] = new_quote.quotation_id
+        item_dict["position"] = i  # Reassign sequential positions for the new revision
         db.add(QuotationItem(**item_dict))
 
     db.commit()
@@ -137,15 +139,17 @@ def clone_quotation(
     orig_items = (
         db.query(QuotationItem)
         .filter(QuotationItem.quotation_id == base_quotation_id)
+        .order_by(QuotationItem.position.asc(), QuotationItem.id.asc())  # Preserve order with fallback
         .all()
     )
-    for it in orig_items:
+    for i, it in enumerate(orig_items):
         item_dict = {
             c.name: getattr(it, c.name)
             for c in QuotationItem.__table__.columns
             if c.name not in ("id", "quotation_id")
         }
         item_dict["quotation_id"] = new_quote.quotation_id
+        item_dict["position"] = i  # Reassign sequential positions for the clone
         db.add(QuotationItem(**item_dict))
 
     db.commit()
@@ -227,6 +231,7 @@ def update_single_quotation_item(
             item_name=db_item.item_name,
             unit=db_item.unit,
             amount=db_item.amount,
+            position=db_item.position,  # Include position in response
             amount_including_gst=db_item.amount_including_gst,
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
@@ -288,6 +293,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             item_name=existing_item.item_name,
                             unit=existing_item.unit,
                             amount=existing_item.amount,
+                            position=existing_item.position,  # Include position in response
                             amount_including_gst=existing_item.amount_including_gst,
                             without_gst=existing_item.without_gst,
                             gst_amount=existing_item.gst_amount,
@@ -322,6 +328,7 @@ def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[Quot
                             item_name=new_item.item_name,
                             unit=new_item.unit,
                             amount=new_item.amount,
+                            position=new_item.position,  # Include position in response
                             amount_including_gst=new_item.amount_including_gst,
                             without_gst=new_item.without_gst,
                             gst_amount=new_item.gst_amount,
@@ -390,6 +397,7 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             item_name=db_item.item_name,
             unit=db_item.unit,
             amount=db_item.amount,
+            position=db_item.position,  # Include position in response
             amount_including_gst=db_item.amount_including_gst,
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
@@ -470,7 +478,12 @@ def get_history_by_quotation_item_id(db: Session, quotation_item_id: int) -> Lis
     ]
 
 def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationItem]:
-    items = db.query(QuotationItem).filter(QuotationItem.quotation_id == int(quotation_id)).all()
+    items = (
+        db.query(QuotationItem)
+        .filter(QuotationItem.quotation_id == int(quotation_id))
+        .order_by(QuotationItem.position.asc(nullsfirst=True), QuotationItem.id.asc())  # Sort by position, fallback to ID
+        .all()
+    )
     if not items:
         raise HTTPException(status_code=404, detail="No items found for this quotation id")
     return items
