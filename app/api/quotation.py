@@ -87,6 +87,24 @@ def patch_quotation_item(
         item_data=item
     )
 
+@router.put(
+    "/quotation/{quotation_id}/items/{item_id}",
+    response_model=QuotationItemResponse
+)
+def patch_quotation_item(
+    quotation_id: int,
+    item_id: int,
+    item: QuotationItemCreate,
+    db: Session = Depends(get_db_connection)
+):
+    return update_single_quotation_item(
+        db=db,
+        quotation_id=quotation_id,
+        item_id=item_id,
+        item_data=item
+    )
+
+
 @router.put("/quotation/{quotation_id}/items/{quotation_item_id}/image", response_model=QuotationItemResponse)
 def upload_item_image(
     quotation_id: int,
