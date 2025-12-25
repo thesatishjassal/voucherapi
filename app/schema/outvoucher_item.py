@@ -10,7 +10,7 @@ class OutvoucherItemBase(BaseModel):
     rack_code: Optional[str] = Field(None, description="Rackcode from product info")
     quantity: int = Field(..., ge=0, description="Quantity of the product")  # ✅ Required and non-negative
     comments: Optional[str] = Field(None, description="Comments from product info")
-
+    # position: Optional[int] = Field(None, description="Position of the item")
     model_config = ConfigDict(
         from_attributes = True 
     )
