@@ -20,7 +20,7 @@ class QuotationItemBase(BaseModel):
     mrp: Optional[float] = Field(None, description="Maximum Retail Price")
     netPrice: Optional[float] = Field(None, description="Net price for quotation")
     price: Optional[float] = Field(None, description="Price for quotation")
-
+    position: Optional[int] = Field(None, description="Position for sorting")
     quantity: int = Field(..., description="Quantity of product", ge=0)
     # discount: int = Field(..., description="Discount percentage", ge=0)
     discount: float = Field(

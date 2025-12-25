@@ -481,7 +481,7 @@ def get_items_by_quotation_id(db: Session, quotation_id: str) -> List[QuotationI
     items = (
         db.query(QuotationItem)
         .filter(QuotationItem.quotation_id == int(quotation_id))
-        .order_by(QuotationItem.position.asc(nullsfirst=True), QuotationItem.id.asc())  # Sort by position, fallback to ID
+        .order_by(QuotationItem.position.asc(nullsfirst=True), QuotationItem.id.asc())  # nullsfirst=True puts NULLs first (treat as 0)
         .all()
     )
     if not items:
