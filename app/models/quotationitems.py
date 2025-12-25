@@ -36,7 +36,7 @@ class QuotationItem(Base):
     # Text allows longer item names
     item_name = Column(Text, nullable=True)
     unit = Column(String(20), nullable=True)
-
+    position = Column(Integer, nullable=True, index=True)
     amount_including_gst = Column(Numeric(10, 2), nullable=True)
     without_gst = Column(Numeric(10, 2), nullable=True)
     gst_amount = Column(Numeric(10, 2), nullable=True)
