@@ -13,7 +13,7 @@ class OutvoucherItem(Base):
     rack_code = Column(String(50), nullable=True)
     quantity = Column(Integer, nullable=False)
     comments = Column(Text, nullable=True)
-    position = Column(Integer, null=True, blank=True)
+    position = Column(Integer, nullable=True)  # Fixed here
     amount_including_gst = Column(Integer, nullable=True)
     without_gst = Column(Integer, nullable=True)
     gst_amount = Column(Integer, nullable=True)
