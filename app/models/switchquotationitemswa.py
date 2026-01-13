@@ -17,36 +17,31 @@ class SwitchQuotationItem_Wa(Base):
 
     quotation_id = Column(
         Integer,
-        ForeignKey("SwitchQuotation_Wa.quotation_id", ondelete="CASCADE"),
+        ForeignKey("switches_quotation_wa.quotation_id", ondelete="CASCADE"),
         nullable=False
     )
 
-    # 📌 SR No
-    sr_no = Column(Integer, nullable=True, index=True)
+    sr_no = Column(Integer, index=True)
 
-    # 🧾 Item Details
-    item_name = Column(Text, nullable=True)
-    description = Column(Text, nullable=True)
-    color = Column(String(50), nullable=True)
-    category = Column(String(100), nullable=True)
-    brand = Column(String(100), nullable=True)
-    itemcode = Column(String(100), nullable=True)
-    image = Column(String(150), nullable=True)
+    item_name = Column(Text)
+    description = Column(Text)
+    color = Column(String(50))
+    category = Column(String(100))
+    brand = Column(String(100))
+    itemcode = Column(String(100))
+    image = Column(String(150))
 
-    # 📦 Pricing
     quantity = Column(Integer, nullable=False)
-    mrp = Column(Numeric(10, 2), nullable=True)
-    amount = Column(Numeric(12, 2), nullable=True)
+    mrp = Column(Numeric(10, 2))
+    amount = Column(Numeric(12, 2))
 
-    # 💸 Discount
     discount_percent = Column(Numeric(5, 2), nullable=False)
-    net_price = Column(Numeric(12, 2), nullable=True)
+    net_price = Column(Numeric(12, 2))
 
-    # 📝 Misc
-    unit = Column(String(20), nullable=True)
-    remarks = Column(String(500), nullable=True)
+    unit = Column(String(20))
+    remarks = Column(String(500))
 
-    # 🔁 Relationship
+    # ✅ FIXED relationship
     switch_quotation = relationship(
         "SwitchQuotation_Wa",
         back_populates="items"

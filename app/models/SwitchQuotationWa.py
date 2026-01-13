@@ -18,20 +18,19 @@ class SwitchQuotation_Wa(Base):
     quotation_id = Column(Integer, primary_key=True, index=True)
     quotation_no = Column(String(50), unique=True, nullable=False)
 
-    salesperson = Column(String(50), nullable=True)
-    subject = Column(String(50), nullable=True)
+    salesperson = Column(String(50))
+    subject = Column(String(50))
 
-    # 💰 Amounts (Decimal safe)
-    amount_including_gst = Column(Numeric(12, 2), nullable=True)
-    without_gst = Column(Numeric(12, 2), nullable=True)
-    gst_amount = Column(Numeric(12, 2), nullable=True)
-    amount_with_gst = Column(Numeric(12, 2), nullable=True)
+    amount_including_gst = Column(Numeric(12, 2))
+    without_gst = Column(Numeric(12, 2))
+    gst_amount = Column(Numeric(12, 2))
+    amount_with_gst = Column(Numeric(12, 2))
 
-    warranty_guarantee = Column(String(100), nullable=True)
-    remarks = Column(String(255), nullable=True)
-    status = Column(String(50), nullable=True)
+    warranty_guarantee = Column(String(100))
+    remarks = Column(String(255))
+    status = Column(String(50))
 
-    date = Column(Date, nullable=True)
+    date = Column(Date)
 
     client_id = Column(
         Integer,
@@ -42,10 +41,15 @@ class SwitchQuotation_Wa(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(String(255), nullable=False, default="System")
 
-    # 🔁 Relationships
-    client = relationship("Client", back_populates="SwitchQuotation_Wa")
+    # ✅ FIXED relationships
+    client = relationship(
+        "Client",
+        back_populates="switches_quotation_wa"
+    )
+
     items = relationship(
         "SwitchQuotationItem_Wa",
-        back_populates="switch_quotation_wa",
-        cascade="all, delete-orphan"
+        back_populates="switch_quotation",
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
