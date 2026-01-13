@@ -21,7 +21,7 @@ from app.products_import import router as product_import_router
 from app.api.wooproducts import router as woo_router
 from app.api.csv_upload import upload_csv
 from app.api.inventory import router as inventory_router
-from app.api.switches_quotation import router as switches_quotation
+from app.api.switch_quotation_routes import router as switches_quotation
 from database import get_db_connection
 from app.api.products_router import router as products_update_router
 from app.api.purchaseorder_api import router as purchaseorder_router
