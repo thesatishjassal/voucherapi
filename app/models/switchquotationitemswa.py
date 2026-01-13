@@ -17,7 +17,7 @@ class SwitchQuotationItem_Wa(Base):
 
     quotation_id = Column(
         Integer,
-        ForeignKey("switches_quotation_wa.quotation_id", ondelete="CASCADE"),
+        ForeignKey("SwitchQuotation_Wa.quotation_id", ondelete="CASCADE"),
         nullable=False
     )
 

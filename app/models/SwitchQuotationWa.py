@@ -43,7 +43,7 @@ class SwitchQuotation_Wa(Base):
     created_by = Column(String(255), nullable=False, default="System")
 
     # 🔁 Relationships
-    client = relationship("Client", back_populates="switches_quotation_wa")
+    client = relationship("Client", back_populates="SwitchQuotation_Wa")
     items = relationship(
         "SwitchQuotationItem_Wa",
         back_populates="switch_quotation_wa",
