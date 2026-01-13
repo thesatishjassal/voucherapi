@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.schema.switchQuotation import SwitchQuotationSchema, SwitchQuotationCreate 
-from app.controllers.SwitchQuotation import (
+from app.controllers.switch_quotation_controller import (
     create_switch_quotation,
     get_switch_quotation,
     get_switch_quotations,
