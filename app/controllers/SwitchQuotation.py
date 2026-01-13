@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.SwitchQuotation import SwitchQuotation
+from app.models.SwitchQuotationWa import SwitchQuotation
 from app.schema.switchQuotation import SwitchQuotationCreate
 
 def create_switch_quotation(db: Session, data: SwitchQuotationCreate):

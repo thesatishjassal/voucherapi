@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from base import Base
+
 
 class Client(Base):
     __tablename__ = "clients"
@@ -17,12 +18,22 @@ class Client(Base):
     client_email = Column(String(255), nullable=True)
     client_type = Column(String(50))
 
-    # ✅ New field: Logged-in user info
+    # Logged-in user info
     created_by = Column(String(255), nullable=False, default="System")
 
-    # Relationships
+    # 🔁 Relationships
+    switches_quotation_wa = relationship(
+        "SwitchQuotation_Wa",
+        back_populates="client",
+        cascade="all, delete-orphan"
+    )
+
     quotations = relationship("Quotation", back_populates="client")
     invouchers = relationship("Invoucher", back_populates="client")
     outvouchers = relationship("Outvoucher", back_populates="client")
     salesorder = relationship("SalesOrder", back_populates="client")
-    purchaseorder = relationship("PurchaseOrder", back_populates="client", cascade="all, delete-orphan")
+    purchaseorder = relationship(
+        "PurchaseOrder",
+        back_populates="client",
+        cascade="all, delete-orphan"
+    )
