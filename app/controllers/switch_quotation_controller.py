@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models.SwitchQuotationWa import SwitchQuotation_Wa
 from app.models.switchquotationitemswa import SwitchQuotationItem_Wa
 from app.schema.switch_quotation_wa import SwitchQuotationCreate
@@ -41,14 +41,18 @@ def create_switch_quotation(db: Session, payload: SwitchQuotationCreate, created
 
 # READ ALL
 def get_all_switch_quotations(db: Session):
-    return db.query(SwitchQuotation_Wa).order_by(
+    return db.query(SwitchQuotation_Wa).options(
+        joinedload(SwitchQuotation_Wa.items)
+    ).order_by(
         SwitchQuotation_Wa.quotation_id.desc()
     ).all()
 
 
 # READ ONE
 def get_switch_quotation_by_id(db: Session, quotation_id: int):
-    return db.query(SwitchQuotation_Wa).filter(
+    return db.query(SwitchQuotation_Wa).options(
+        joinedload(SwitchQuotation_Wa.items)
+    ).filter(
         SwitchQuotation_Wa.quotation_id == quotation_id
     ).first()
 
