@@ -1,7 +1,7 @@
 import os
 import shutil
 from typing import List, Optional
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import  APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
@@ -27,9 +27,10 @@ from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, Q
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 from app.models.quotationitems import QuotationItem
 
-app = FastAPI()
-router = APIRouter(tags=["Quotations API"])
-
+router = APIRouter(
+    prefix="/quotation",
+    tags=["Quotations API"]
+)
 # Directory for uploads
 UPLOAD_DIR = "uploads/quotations"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -250,6 +251,3 @@ def delete_quotation_item_api(quotation_id: int, item_id: int, db: Session = Dep
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-# Include router in FastAPI app
-app.include_router(router)
