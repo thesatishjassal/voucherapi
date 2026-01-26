@@ -39,7 +39,7 @@ origins = [
     # "https://www.panvik.in"
 ]
 
-✅ Apply CORS middleware
+# ✅ Apply CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
