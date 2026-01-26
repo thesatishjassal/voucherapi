@@ -36,7 +36,7 @@ app = FastAPI(title="Panvic API")
 origins = [
     "http://localhost:3000",
     "https://www.panvik.in",
-    # "https://www.panvik.in"
+    "https://panvik.in"
 ]
 
 # ✅ Apply CORS middleware
