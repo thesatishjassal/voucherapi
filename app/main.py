@@ -19,27 +19,27 @@ from app.api.quotation import router as quotations_router
 from app.api.SalesOrder import router as sales_router
 from app.products_import import router as product_import_router
 from app.api.wooproducts import router as woo_router
-from app.api.csv_upload import upload_csv
 from app.api.inventory import router as inventory_router
 from app.api.switch_quotation_routes import router as switches_quotation
-from database import get_db_connection
 from app.api.products_router import router as products_update_router
 from app.api.purchaseorder_api import router as purchaseorder_router
 from app.api.catalogue_routes import router as catalogue_routes
 from app.api.csv_routers import router as csv_routers
+from app.api.csv_upload import upload_csv
+
+from database import get_db_connection
 
 # Create app
-app = FastAPI()
+app = FastAPI(title="Panvic API")
 
-# ✅ Set allowed origins including frontend and API domains
+# ✅ Allowed origins
 origins = [
     "http://localhost:3000",
     "https://panvik.in",
-    "https://www.panvik.in",
-    "https://api.panvic.in"
+    "https://www.panvik.in"
 ]
 
-# ✅ Apply CORS middleware before anything else
+# ✅ Apply CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -48,19 +48,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Log incoming request origin (for debugging CORS issues)
-@app.middleware("http")
-async def log_origin(request: Request, call_next):
-    print("🔍 Request from Origin:", request.headers.get("origin"))
-    return await call_next(request)
-
-# ✅ Trusted Host Middleware (accept all for now)
+# ✅ Trusted Host Middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
-# ✅ Enable GZIP compression
+# ✅ GZIP middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# ✅ Upload size middleware (10MB limit)
+# ✅ Max upload size middleware (10MB)
 class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         max_size = 10 * 1024 * 1024  # 10 MB
@@ -71,39 +65,32 @@ class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(MaxUploadSizeMiddleware)
 
-# ✅ Mount static folder
+# ✅ Mount static uploads folder
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# ✅ Root route
+# ✅ Root
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "Panvic API running"}
 
-# ✅ Upload CSV route
+# ✅ CSV upload
 @app.post("/upload-csv/")
 async def upload_csv_endpoint(file: UploadFile = File(...), db: Session = Depends(get_db_connection)):
     return upload_csv(file, db)
 
 # ✅ Include all routers
-app.include_router(user_router)
-app.include_router(clients_router)
-app.include_router(category_router)
-app.include_router(subcategory_router)
-app.include_router(invouchers_router)
-app.include_router(products_router)
-app.include_router(outvouchers_router)
-app.include_router(quotations_router)
-app.include_router(product_import_router)
-app.include_router(sales_router)
-app.include_router(woo_router)
-app.include_router(inventory_router)
-app.include_router(switches_quotation)
-app.include_router(products_update_router)
-app.include_router(purchaseorder_router)
-app.include_router(catalogue_routes)
-app.include_router(csv_routers)
+routers = [
+    user_router, clients_router, category_router, subcategory_router,
+    invouchers_router, products_router, outvouchers_router, quotations_router,
+    product_import_router, sales_router, woo_router, inventory_router,
+    switches_quotation, products_update_router, purchaseorder_router,
+    catalogue_routes, csv_routers
+]
+
+for r in routers:
+    app.include_router(r)
 
 # ✅ Run app
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=80, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
