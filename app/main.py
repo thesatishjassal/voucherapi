@@ -33,20 +33,20 @@ from database import get_db_connection
 app = FastAPI(title="Panvic API")
 
 # ✅ Allowed origins
-# origins = [
-#     "http://localhost:3000",
-#     "https://panvik.in",
-#     "https://www.panvik.in"
-# ]
+origins = [
+    # "http://localhost:3000",
+    "https://panvik.in",
+    # "https://www.panvik.in"
+]
 
-# ✅ Apply CORS middleware
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+✅ Apply CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ✅ Trusted Host Middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
