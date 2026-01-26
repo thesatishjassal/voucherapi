@@ -196,7 +196,7 @@ def read_quotation_api(quotation_id: int, db: Session = Depends(get_db_connectio
 
 # Get all quotations with pagination
 @router.get("/", response_model=List[Quotation])
-def read_all_quotations_api(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_connection)):
+def read_all_quotations_api(skip: int = 0, limit: int = 10000, db: Session = Depends(get_db_connection)):
     return get_all_quotations(db, skip, limit)
 
 # Update quotation by ID
