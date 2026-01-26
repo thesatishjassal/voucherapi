@@ -40,19 +40,14 @@ origins = [
 ]
 
 # ✅ Apply CORS middleware before anything else
-# ✅ CORS MUST BE FIRST
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://www.panvik.in",
-        "https://panvik.in",
-        "https://api.panvic.in",
-        "http://localhost:3000",
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # ✅ Log incoming request origin (for debugging CORS issues)
 @app.middleware("http")
 async def log_origin(request: Request, call_next):
