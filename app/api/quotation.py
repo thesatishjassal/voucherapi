@@ -27,10 +27,8 @@ from app.schema.quotation_items import QuotationItemBase, QuotationItemCreate, Q
 from app.schema.QuotationItemHistory import QuotationItemHistoryResponse
 from app.models.quotationitems import QuotationItem
 
-router = APIRouter(
-    prefix="/quotation",
-    tags=["Quotations API"]
-)
+router = APIRouter(tags=["Quotations API"])
+
 # Directory for uploads
 UPLOAD_DIR = "uploads/quotations"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
