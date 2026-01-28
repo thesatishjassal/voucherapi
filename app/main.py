@@ -35,7 +35,7 @@ app = FastAPI(title="Panvic API")
 # ✅ Allowed origins
 origins = [
     "http://localhost:3000",
-    # "https://www.panvik.in",
+    "https://www.panvik.in",
     "https://panvik.in"
 ]
 
