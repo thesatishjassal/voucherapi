@@ -1,0 +1,69 @@
+item_code,material_description,brand,model,category,module_size,white_mrp,galaxy_black_mrp,silver_grey_mrp
+AS110,Switch  6A One  Way,Wipro,Nowa,Switch,1 M,145,200,200
+AS111,Switch  6A One  Way With Ind,Wipro,Nowa,Switch,1 M,255,320,320
+AS210,Switch  6A Two Way,Wipro,Nowa,Switch,1 M,237,300,300
+AS120,Switch  10A One Way,Wipro,Nowa,Switch,1 M,165,235,235
+AS121,Switch  1 0A One Way with Ind,Wipro,Nowa,Switch,1 M,270,380,380
+AS130,Switch  16A One  Way,Wipro,Nowa,Switch,1 M,261,328,328
+AS131,Switch  16A One Way With Indicator,Wipro,Nowa,Switch,1 M,320,420,420
+AS230,Switch  l 6A Two Way,Wipro,Nowa,Switch,1M,350,430,430
+AS160,Switch 20A One Way,Wipro,Nowa,Switch,1M,270,370,370
+AS161,Switch 20A One Way With Indicator,Wipro,Nowa,Switch,1 M,350,475,475
+AS150,Switch 25A One Way,Wipro,Nowa,Switch,1 M,400,535,535
+AS151,Switch 25A  One   Way With Indicator,Wipro,Nowa,Switch,1 M,510,690,690
+AS310,Switch  Bell Push 6A,Wipro,Nowa,Switch,1 M,245,310,310
+AS311,Switch  Bell Push 6A  with Ind,Wipro,Nowa,Switch,1 M,405,535,535
+AS11 OCMR,Switch  6A One  Way - CMR,Wipro,Nowa,Switch,1 M,175,240,240
+AS21 ODND,Switch  6A Two Way - DND,Wipro,Nowa,Switch,1 M,265,330,330
+A0551,Switch 32A One Way With Indicator  - DP 2M,Wipro,Nowa,Switch,2M,750,955,955
+A0341,Bell Push 6A With Indicator  - Palm   2M,Wipro,Nowa,Switch,2M,455,615,615
+A1212,Socket 6A 3 Pin with Round  Pin,Wipro,Nowa,Sockets,2M,265,355,355
+A1332,Socket 6/16A 3 Pin - Power,Wipro,Nowa,Sockets,2M,445,570,570
+A1352,6/16A 6 Pin Heavy Duty  - Power,Wipro,Nowa,Sockets,2M,510,630,630
+A1700,Fan Reg. 4+ 1  Position Step Type 360 degree 1 M,Wipro,Nowa,Fan Regulator,l M,725,925,925
+A1900,Fan Reg. 5 + 1  Position Step Type 360 degree 2M,Wipro,Nowa,Fan Regulator,2M,965,1235,1235
+A1500,Dimmer 400W 1 M,Wipro,Nowa,Fan Regulator,1M,885,1135,1135
+A2700,Dimmer 1 OOOW  2M,Wipro,Nowa,Fan Regulator,2M,1325,1725,1725
+A4900     ,   Telephone Socket with single shutter - RJ11,Wipro,Nowa,Communication Modules,1M,250,340,340
+A5200     ,Computer Socket with shutter - RJ45  Cat 6,Wipro,Nowa,Communication Modules,1M,795,895,895
+A5300,Computer Socket with shutter - RJ45 Cat6A STP,Wipro,Nowa,Communication Modules,1M,0,0,0
+A5310,Computer Socket with shutter - RJ45 Cat6A UTP,Wipro,Nowa,Communication Modules,1M,930,1030,1030
+A4797     ,    Co-Axial TV Socket 1  Point,Wipro,Nowa,Communication Modules,1M,259,355,355
+A4910    ,    USB Port,Wipro,Nowa,Communication Modules,1M,1325,1600,1600
+A4921      , 2A USB Charger,Wipro,Nowa,Communication Modules,1M,1405,1780,1780
+A4912         , HDMI Port,Wipro,Nowa,Communication Modules,1M,1530,1995,1995
+A4931      , 3A USB Type C Charger,Wipro,Nowa,Communication Modules,1M,3155,3715,3715
+A4932      , 3A Type C Fast Charger,Wipro,Nowa,Communication Modules,1M,4570,5385,5385
+AFL922   , LED Night Lamp (Foot Light),Wipro,Nowa,Communication Modules,2M,1070,1370,1370
+A5500,Electronic Key Tag - 20A,Wipro,Nowa,Support Modules,3M,4395,5900,5900
+A3900,Blanking  Plate,Wipro,Nowa,Support Modules,1 M,65,110,110
+A4500 A4600,Cord Outlet Indicator Lamp - LED,Wipro,Nowa,Support Modules,"1 M
+1 M","215
+280","285
+350","285
+350"
+A4603,DND  and CMR Combination,Wipro,Nowa,Support Modules,1 M,375,460,460
+A4401,Buzzer,Wipro,Nowa,Support Modules,2M,450,580,580
+A4400,RJ45  Receptacle,Wipro,Nowa,Support Modules,1 M,140,340,340
+6A-32A-SINGLE,6A  - 32A Single Pole Tiny Trip,Wipro,Nowa,Tiny Trip and Motor Starter,0,550,675,675
+6A-32A-DOUBLE,6A  - 32A Double Pole Tiny Trip,Wipro,Nowa,Tiny Trip and Motor Starter,0,1200,1475,1475
+20A-25A-STARTER,"20A , 25A Motor Starter Single Phase",Wipro,Nowa,Tiny Trip and Motor Starter,0,1060,1235,1235
+NW-PU3MBTIP66  ,Nowa 3M IP66 Surface Mounted Enclosure,Wipro,Nowa,Enclosures,0,2150,0,0
+AP911,1 M   Plate with  frame,Wipro,Nowa,Plates,1 M,160,285,285
+AP922,2M Plate with  frame,Wipro,Nowa,Plates,2M,160,285,285
+AP933,3M Plate with  frame,Wipro,Nowa,Plates,3M,215,365,365
+AP933M,3M Plate with  frame  W/o Rib,Wipro,Nowa,Plates,3M,215,365,365
+AP944,4M Plate with  frame,Wipro,Nowa,Plates,4M,245,395,395
+"AP956
+","6M Plate with  frame
+",Wipro,Nowa,Plates,"6M
+","310
+","495
+","495
+"
+AP968H,8MH Plate with frame (Horizontal),Wipro,Nowa,Plates,8M,385,620,620
+AP968S ,8MS  Plate with frame  (Square),Wipro,Nowa,Plates,8MS,400,655,655
+AP979,9M Plate with frame,Wipro,Nowa,Plates,9M,510,770,770
+AP9712S,12M Plate with frame,Wipro,Nowa,Plates,12M,560,885,885
+AP9716S,16M Plate with frame,Wipro,Nowa,Plates,16M,750,1175,1175
+AP9718S,18M Plate with frame,Wipro,Nowa,Plates,18M,840,1310,1310
