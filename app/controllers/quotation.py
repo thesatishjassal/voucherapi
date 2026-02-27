@@ -212,117 +212,80 @@ def update_single_quotation_item(
     db.refresh(db_item)
     return db_item
 
-def bulk_update_quotation_items(db: Session, quotation_id: int, items: List[QuotationItemCreate]) -> List[QuotationItemResponse]:
-    try:
-        updated_items_list = []
+def bulk_update_quotation_items(
+    db: Session,
+    quotation_id: int,
+    items: List[QuotationItemCreate]
+) -> List[QuotationItemResponse]:
 
-        with db.begin():  # Transaction start
-            # Check if the quotation exists
-            quotation = db.query(Quotation).filter(Quotation.quotation_id == quotation_id).first()
+    try:
+        updated_items = []
+
+        with db.begin():
+
+            quotation = db.query(Quotation).filter(
+                Quotation.quotation_id == quotation_id
+            ).first()
+
             if not quotation:
                 raise HTTPException(status_code=404, detail="Quotation not found")
 
-            # Fetch existing items mapped by product_id
-            existing_items = db.query(QuotationItem).filter(QuotationItem.quotation_id == quotation_id).all()
-            existing_items_map = {item.product_id: item for item in existing_items}
-            submitted_product_ids = set()
+            # Fetch existing items by ID
+            existing_items = db.query(QuotationItem).filter(
+                QuotationItem.quotation_id == quotation_id
+            ).all()
 
-            # Process each item in the request
+            existing_items_map = {item.id: item for item in existing_items}
+            submitted_ids = set()
+
             for item_data in items:
-                product_id = item_data.product_id
-                submitted_product_ids.add(product_id)
 
-                if product_id in existing_items_map:
-                    existing_item = existing_items_map[product_id]
+                item_dict = item_data.dict()
+                item_id = item_dict.get("id")
 
-                    # Update existing item
-                    for key, value in item_data.dict().items():  # Convert to dict before iterating
-                        setattr(existing_item, key, value)
-                    db.add(existing_item)
+                # ---------------- UPDATE ----------------
+                if item_id and item_id in existing_items_map:
 
-                    # Append updated item to response list
-                    updated_items_list.append(
-                        QuotationItemResponse(
-                            id=existing_item.id,
-                            quotation_id=existing_item.quotation_id,
-                            product_id=existing_item.product_id,
-                            customercode=existing_item.customercode,
-                            customerdescription=existing_item.customerdescription,
-                            image=existing_item.image,
-                            itemcode=existing_item.itemcode,
-                            brand=existing_item.brand,
-                            mrp=existing_item.mrp,
-                            netPrice=existing_item.netPrice,
-                            price=existing_item.price,
-                            quantity=existing_item.quantity,
-                            discount=existing_item.discount,
-                            item_name=existing_item.item_name,
-                            unit=existing_item.unit,
-                            amount=existing_item.amount,
-                            position=existing_item.position,  # Include position in response
-                            amount_including_gst=existing_item.amount_including_gst,
-                            without_gst=existing_item.without_gst,
-                            gst_amount=existing_item.gst_amount,
-                            amount_with_gst=existing_item.amount_with_gst,
-                            remarks=existing_item.remarks,
-                        )
-                    )
+                    db_item = existing_items_map[item_id]
+                    submitted_ids.add(item_id)
 
+                    for key, value in item_dict.items():
+                        if key != "id":
+                            setattr(db_item, key, value)
+
+                    db.add(db_item)
+                    db.flush()
+
+                    updated_items.append(db_item)
+
+                # ---------------- CREATE ----------------
                 else:
-                    # Add new item
-                    new_item_data = item_data.dict(exclude={"item_id", "quotation_id"})
-                    new_item = QuotationItem(quotation_id=quotation_id, **new_item_data)
-                    db.add(new_item)
-                    db.flush()  # To generate ID immediately
-
-                    # Append new item to response list
-                    updated_items_list.append(
-                        QuotationItemResponse(
-                            id=new_item.id,
-                            quotation_id=new_item.quotation_id,
-                            product_id=new_item.product_id,
-                            customercode=new_item.customercode,
-                            customerdescription=new_item.customerdescription,
-                            image=new_item.image,
-                            itemcode=new_item.itemcode,
-                            brand=new_item.brand,
-                            mrp=new_item.mrp,
-                            netPrice=new_item.netPrice,
-                            price=new_item.price,
-                            quantity=new_item.quantity,
-                            discount=new_item.discount,
-                            item_name=new_item.item_name,
-                            unit=new_item.unit,
-                            amount=new_item.amount,
-                            position=new_item.position,  # Include position in response
-                            amount_including_gst=new_item.amount_including_gst,
-                            without_gst=new_item.without_gst,
-                            gst_amount=new_item.gst_amount,
-                            amount_with_gst=new_item.amount_with_gst,
-                            remarks=new_item.remarks,
-                        )
+                    new_item_data = item_data.dict(exclude={"id", "quotation_id"})
+                    new_item = QuotationItem(
+                        quotation_id=quotation_id,
+                        **new_item_data
                     )
+                    db.add(new_item)
+                    db.flush()
 
-            # Delete items that are in the database but not in the submitted list
-            for product_id, existing_item in existing_items_map.items():
-                if product_id not in submitted_product_ids:
-                    delete_quotation_item(db, existing_item)
+                    updated_items.append(new_item)
 
-        db.commit()  # Commit transaction
-        return updated_items_list  # Return updated/created items list
+            # ---------------- DELETE removed items ----------------
+            for existing_id, existing_item in existing_items_map.items():
+                if existing_id not in submitted_ids:
+                    db.delete(existing_item)
 
-    except IntegrityError as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=f"Integrity error: {e.orig}")
+        db.commit()
 
-    except HTTPException:
-        db.rollback()
-        raise
+        return [
+            QuotationItemResponse.from_orm(item)
+            for item in updated_items
+        ]
 
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
+        raise HTTPException(status_code=500, detail=str(e))
+    
 def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCreate) -> QuotationItemResponse:
     try:
         with db.begin():  # Start transaction
