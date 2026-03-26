@@ -14,6 +14,10 @@ def create_switch_quotation(db: Session, payload: SwitchQuotationCreate, created
         without_gst=payload.without_gst,
         gst_amount=payload.gst_amount,
         amount_with_gst=payload.amount_with_gst,
+
+        # ✅ NEW FIELD
+        gst_exclude_percentage=payload.gst_exclude_percentage or 0,
+
         warranty_guarantee=payload.warranty_guarantee,
         remarks=payload.remarks,
         status=payload.status,
@@ -37,7 +41,6 @@ def create_switch_quotation(db: Session, payload: SwitchQuotationCreate, created
     db.commit()
     db.refresh(quotation)
     return quotation
-
 
 # READ ALL
 def get_all_switch_quotations(db: Session):
@@ -63,15 +66,19 @@ def update_switch_quotation(db: Session, quotation_id: int, payload: SwitchQuota
     if not quotation:
         return None
 
+    # ✅ Update all normal fields
     for field, value in payload.dict(exclude={"items"}).items():
         setattr(quotation, field, value)
 
-    # Delete old items
+    # ✅ FORCE UPDATE (important safety)
+    quotation.gst_exclude_percentage = payload.gst_exclude_percentage or 0
+
+    # ❌ Delete old items
     db.query(SwitchQuotationItem_Wa).filter(
         SwitchQuotationItem_Wa.quotation_id == quotation_id
     ).delete()
 
-    # Insert new items
+    # ✅ Insert new items
     for idx, item in enumerate(payload.items, start=1):
         db.add(
             SwitchQuotationItem_Wa(
@@ -84,7 +91,6 @@ def update_switch_quotation(db: Session, quotation_id: int, payload: SwitchQuota
     db.commit()
     db.refresh(quotation)
     return quotation
-
 
 # DELETE
 def delete_switch_quotation(db: Session, quotation_id: int):

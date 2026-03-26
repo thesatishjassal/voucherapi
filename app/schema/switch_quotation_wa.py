@@ -16,7 +16,7 @@ class SwitchQuotationBase(BaseModel):
     without_gst: Optional[Decimal] = None
     gst_amount: Optional[Decimal] = None
     amount_with_gst: Optional[Decimal] = None
-
+    gst_exclude_percentage: Optional[float] = 0
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[str] = None

@@ -25,7 +25,7 @@ class SwitchQuotation_Wa(Base):
     without_gst = Column(Numeric(12, 2))
     gst_amount = Column(Numeric(12, 2))
     amount_with_gst = Column(Numeric(12, 2))
-
+    gst_exclude_percentage = Column(Numeric(5, 2), default=0)
     warranty_guarantee = Column(String(100))
     remarks = Column(String(255))
     status = Column(String(50))
