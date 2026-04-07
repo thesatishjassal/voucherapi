@@ -36,13 +36,15 @@ def create_invoucher(db: Session, invoucher: InvoucherCreate):
 def create_invoucher_item(db: Session, voucher_id: str, item: InvoucherItemCreate):
     """Create a new item for an invoucher using invouchers.id."""
     # Query by id instead of voucher_id
-    db_voucher = db.query(InvoucherModel).filter(InvoucherModel.id == int(voucher_id)).first()
+    # db_voucher = db.query(InvoucherModel).filter(InvoucherModel.id == int(voucher_id)).first()
+    db_voucher = db.query(InvoucherModel).filter(InvoucherModel.voucher_id == int(voucher_id)).first()
     if not db_voucher:
         raise HTTPException(status_code=404, detail="Invoucher not found")
     
     item_data = item.model_dump(exclude={"item_id", "voucher_id"})
     # Use db_voucher.id (e.g., 48) instead of voucher_id (e.g., "5")
-    db_item = InvoucherItem(voucher_id=db_voucher.id, **item_data)
+    # db_item = InvoucherItem(voucher_id=db_voucher.id, **item_data)
+    db_item = InvoucherItem(voucher_id=db_voucher.voucher_id, **item_data)
     
     db.add(db_item)
     db.commit()
