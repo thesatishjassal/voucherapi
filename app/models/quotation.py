@@ -20,7 +20,10 @@ class Quotation(Base):
     client_id = Column(Integer, ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
     created_at   = Column(DateTime(timezone=True), server_default=func.now())  # ✅
     created_by = Column(String(255), nullable=False, default="System")
-    
+        # ✅ NEW DISCOUNT FIELDS
+    additional_discount_percentage = Column(Integer, nullable=True, default=0)
+    additional_discount_amount = Column(Integer, nullable=True, default=0)
+    amount_after_discount = Column(Integer, nullable=True)
     # Relationships
     client = relationship("Client", back_populates="quotations")
     items = relationship("QuotationItem", back_populates="quotation")

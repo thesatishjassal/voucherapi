@@ -27,6 +27,10 @@ class QuotationCreate(BaseModel):
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None
     amount_with_gst: Optional[int] = None
+    # ✅ ADD HERE ALSO
+    additional_discount_percentage: Optional[int] = 0
+    additional_discount_amount: Optional[int] = 0
+    amount_after_discount: Optional[int] = None
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[str] = None
