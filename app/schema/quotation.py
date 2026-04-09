@@ -11,6 +11,9 @@ class QuotationBase(BaseModel):
     without_gst: Optional[int] = None
     gst_amount: Optional[int] = None
     amount_with_gst: Optional[int] = None
+    additional_discount_percentage: int = 0
+    additional_discount_amount: float = 0
+    amount_after_discount: float = 0
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[str] = None
