@@ -331,7 +331,10 @@ def create_quotation_item(db: Session, quotation_id: int, item: QuotationItemCre
             without_gst=db_item.without_gst,
             gst_amount=db_item.gst_amount,
             amount_with_gst=db_item.amount_with_gst,
-            remarks=db_item.remarks,
+            additional_discount_percentage= db_item.additional_discount_percentage,
+            additional_discount_amount = db_item.additional_discount_amount,
+            amount_after_discount = db_item.amount_after_discount,
+            remarks=db_item.remarks
         )
 
     except IntegrityError as e:
