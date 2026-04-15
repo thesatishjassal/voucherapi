@@ -21,7 +21,10 @@ class QuotationBase(BaseModel):
     remarks: Optional[str] = None
     status: Optional[str] = None
     date: Optional[date] = None
-
+    # ✅ NEW FIELDS
+    gst_percentage: Optional[int] = 18
+    gst_type: Optional[str] = "include"
+    
     client_id: int
     created_at: Optional[datetime] = None
     created_by: Optional[str] = "System"
@@ -40,7 +43,9 @@ class QuotationCreate(BaseModel):
     additional_discount_percentage: Optional[int] = 0
     additional_discount_amount: Optional[float] = 0
     amount_after_discount: Optional[float] = 0
-
+    # ✅ NEW FIELDS
+    gst_percentage: Optional[int] = 18
+    gst_type: Optional[str] = "include"
     warranty_guarantee: Optional[str] = None
     remarks: Optional[str] = None
     status: Optional[str] = None

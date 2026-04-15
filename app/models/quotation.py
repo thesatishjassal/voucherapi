@@ -29,7 +29,8 @@ class Quotation(Base):
     additional_discount_percentage = Column(Integer, nullable=False, default=0)
     additional_discount_amount = Column(Numeric(12, 2), nullable=False, default=0)
     amount_after_discount = Column(Numeric(12, 2), nullable=False, default=0)
-
-    # Relationships
+    gst_percentage = Column(Integer, nullable=False, default=18)
+    gst_type = Column(String(10), nullable=False, default="include")
+        # Relationships
     client = relationship("Client", back_populates="quotations")
     items = relationship("QuotationItem", back_populates="quotation")
