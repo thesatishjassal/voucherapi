@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.brand_qr import BrandQR
 from app.schema.brand_qr import BrandCreate
 
-import qrcode
+import qrcode # type: ignore
 import os
 
 QR_FOLDER = "qr_codes"
