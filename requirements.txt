@@ -1,12 +1,13 @@
 fastapi
-uvicorn
+uvicorn[standard]
 psycopg2-binary
 sqlalchemy
 python-dotenv
 pytest
 pytest-asyncio
-uuid
 httpx
 bcrypt
-python-multipart 
+python-multipart
 openpyxl
+qrcode[pil]
+pillow
