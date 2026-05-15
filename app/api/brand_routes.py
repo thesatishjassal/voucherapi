@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db_connection
 from app.schema.brand_qr import BrandCreate
 
-from controllers.brand_controller import (
+from app.controllers.brand_controller import (
     create_brand_controller,
     get_all_brands_controller,
     get_brand_by_name_controller,
