@@ -26,12 +26,18 @@ from app.api.purchaseorder_api import router as purchaseorder_router
 from app.api.catalogue_routes import router as catalogue_routes
 from app.api.csv_routers import router as csv_routers
 from app.api.csv_upload import upload_csv
+from app.api.brand_routes import router as brand_router
 
 from database import get_db_connection
 
 # Create app
 app = FastAPI(title="Panvic API")
-
+# STATIC QR FOLDER
+app.mount(
+    "/qr_codes",
+    StaticFiles(directory="qr_codes"),
+    name="qr_codes"
+)
 # ✅ Allowed origins
 origins = [
     "http://localhost:3000",
