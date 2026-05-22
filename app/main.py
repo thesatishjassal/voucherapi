@@ -27,7 +27,9 @@ from app.api.catalogue_routes import router as catalogue_routes
 from app.api.csv_routers import router as csv_routers
 from app.api.csv_upload import upload_csv
 from app.api.brand_routes import router as brand_router
-
+from app.api.arch_register_routes import (
+    router as arch_register_router
+)
 from database import get_db_connection
 
 # Create app
@@ -38,6 +40,7 @@ app.mount(
     StaticFiles(directory="qr_codes"),
     name="qr_codes"
 )
+
 # ✅ Allowed origins
 origins = [
     "http://localhost:3000",
@@ -90,7 +93,7 @@ routers = [
     invouchers_router, products_router, outvouchers_router, quotations_router,
     product_import_router, sales_router, woo_router, inventory_router,
     switches_quotation, products_update_router, purchaseorder_router,
-    catalogue_routes, csv_routers, brand_router
+    catalogue_routes, csv_routers, brand_router, arch_register_router
 ]
 
 for r in routers:
@@ -100,3 +103,4 @@ for r in routers:
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
