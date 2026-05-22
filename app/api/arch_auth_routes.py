@@ -1,17 +1,43 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, EmailStr
 
 from database import get_db_connection
-from app.utils.arch_auth_service import send_otp, verify_user_otp
 
-router = APIRouter(prefix="/api/arch-auth", tags=["Arch OTP Auth"])
+from app.utils.arch_auth_service import (
+    send_otp,
+    verify_user_otp
+)
+
+router = APIRouter(
+    prefix="/api/arch-auth",
+    tags=["Arch OTP Auth"]
+)
+
+# -------------------------
+# SCHEMAS
+# -------------------------
+
+class SendOtpSchema(BaseModel):
+    email: EmailStr
 
 
-# 📩 SEND OTP
+class VerifyOtpSchema(BaseModel):
+    email: EmailStr
+    otp: str
+
+
+# -------------------------
+# SEND OTP
+# -------------------------
+
 @router.post("/send-otp")
-def send_otp_api(email: str, db: Session = Depends(get_db_connection)):
+def send_otp_api(
+    payload: SendOtpSchema,
+    db: Session = Depends(get_db_connection)
+):
 
-    send_otp(db, email)
+    send_otp(db, payload.email)
 
     return {
         "success": True,
@@ -19,15 +45,21 @@ def send_otp_api(email: str, db: Session = Depends(get_db_connection)):
     }
 
 
-# 🔐 VERIFY OTP
+# -------------------------
+# VERIFY OTP
+# -------------------------
+
 @router.post("/verify-otp")
 def verify_otp_api(
-    email: str,
-    otp: str,
+    payload: VerifyOtpSchema,
     db: Session = Depends(get_db_connection)
 ):
 
-    ok = verify_user_otp(db, email, otp)
+    ok = verify_user_otp(
+        db,
+        payload.email,
+        payload.otp
+    )
 
     if not ok:
         raise HTTPException(
