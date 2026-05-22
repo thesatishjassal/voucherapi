@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from app.models.arch_user import ArchUser
 from app.utils.arch_security import (
-    arch_verify_password,
-    arch_create_access_token
+    generate_otp,
+    hash_otp,
+    verify_otp
 )
-
 
 def arch_authenticate_user(db: Session, email: str, password: str):
     user = db.query(ArchUser).filter(ArchUser.email == email).first()
