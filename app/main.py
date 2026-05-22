@@ -44,10 +44,10 @@ app.mount(
 # ✅ Allowed origins
 origins = [
     "http://localhost:3000",
-    "https://www.panvik.in",
     "https://panvik.in",
+    "https://www.panvik.in",
+    "https://archapp-blush.vercel.app",
     "https://www.archapp-blush.vercel.app"
-    "https://archapp-blush.vercel.app"
 ]
 
 # ✅ Apply CORS middleware
