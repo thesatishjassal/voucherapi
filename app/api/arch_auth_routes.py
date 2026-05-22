@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
-from app.services.arch_otp_service import send_otp, verify_user_otp
+from app.utils.arch_auth_service import send_otp, verify_user_otp
 
 router = APIRouter(prefix="/api/arch-auth", tags=["Arch OTP Auth"])
 

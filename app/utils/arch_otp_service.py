@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.arch_user import ArchUser
 from app.models.arch_otp import ArchOtp
-from app.utils.arch_auth_service import generate_otp, hash_otp, verify_otp
+from app.utils.arch_otp_service import generate_otp, hash_otp, verify_otp
 
 
 def send_otp(db: Session, email: str):
