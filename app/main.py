@@ -30,6 +30,8 @@ from app.api.brand_routes import router as brand_router
 from app.api.arch_register_routes import (
     router as arch_register_router
 )
+from app.api.arch_auth_routes import router as arch_auth_router
+
 from database import get_db_connection
 
 # Create app
@@ -41,7 +43,6 @@ app.mount(
     name="qr_codes"
 )
 
-# ✅ Allowed origins
 origins = [
     "http://localhost:3000",
     "https://panvik.in",
@@ -50,7 +51,6 @@ origins = [
     "https://www.archapp-blush.vercel.app"
 ]
 
-# ✅ Apply CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -95,7 +95,7 @@ routers = [
     invouchers_router, products_router, outvouchers_router, quotations_router,
     product_import_router, sales_router, woo_router, inventory_router,
     switches_quotation, products_update_router, purchaseorder_router,
-    catalogue_routes, csv_routers, brand_router, arch_register_router
+    catalogue_routes, csv_routers, brand_router, arch_register_router, arch_auth_router
 ]
 
 for r in routers:
