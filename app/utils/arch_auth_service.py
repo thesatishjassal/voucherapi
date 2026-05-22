@@ -1,38 +1,108 @@
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+
 from app.models.arch_user import ArchUser
+from app.models.arch_otp import ArchOtp
+
 from app.utils.arch_security import (
     generate_otp,
     hash_otp,
     verify_otp
 )
 
-def arch_authenticate_user(db: Session, email: str, password: str):
-    user = db.query(ArchUser).filter(ArchUser.email == email).first()
+# -------------------------
+# SEND OTP
+# -------------------------
+def send_otp(
+    db: Session,
+    email: str
+):
 
-    if not user:
-        return None
+    # generate otp
+    otp = generate_otp()
 
-    if not arch_verify_password(password, user.password):
-        return None
+    # hash otp
+    otp_hash = hash_otp(otp)
 
-    return user
+    # expiry
+    expires_at = datetime.utcnow() + timedelta(minutes=5)
 
-
-def arch_login_user(db: Session, email: str, password: str):
-    user = arch_authenticate_user(db, email, password)
-
-    if not user:
-        return None
-
-    token = arch_create_access_token(
-        {"user_id": user.id, "email": user.email}
+    # save otp
+    otp_record = ArchOtp(
+        email=email,
+        otp_hash=otp_hash,
+        expires_at=expires_at
     )
 
+    db.add(otp_record)
+    db.commit()
+
+    # create user if not exists
+    user = (
+        db.query(ArchUser)
+        .filter(ArchUser.email == email)
+        .first()
+    )
+
+    if not user:
+
+        user = ArchUser(
+            email=email,
+            is_verified=False
+        )
+
+        db.add(user)
+        db.commit()
+
+    # temporary debug otp
+    print(f"OTP for {email}: {otp}")
+
     return {
-        "access_token": token,
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "full_name": user.full_name,
-        },
+        "success": True,
+        "message": "OTP sent successfully"
     }
+
+# -------------------------
+# VERIFY OTP
+# -------------------------
+def verify_user_otp(
+    db: Session,
+    email: str,
+    otp: str
+):
+
+    otp_record = (
+        db.query(ArchOtp)
+        .filter(ArchOtp.email == email)
+        .order_by(ArchOtp.id.desc())
+        .first()
+    )
+
+    if not otp_record:
+        return False
+
+    # check expiry
+    if otp_record.expires_at < datetime.utcnow():
+        return False
+
+    # verify otp
+    is_valid = verify_otp(
+        otp,
+        otp_record.otp_hash
+    )
+
+    if not is_valid:
+        return False
+
+    # verify user
+    user = (
+        db.query(ArchUser)
+        .filter(ArchUser.email == email)
+        .first()
+    )
+
+    if user:
+        user.is_verified = True
+        db.commit()
+
+    return True
