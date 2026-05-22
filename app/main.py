@@ -45,7 +45,9 @@ app.mount(
 origins = [
     "http://localhost:3000",
     "https://www.panvik.in",
-    "https://panvik.in"
+    "https://panvik.in",
+    "https://www.archapp-blush.vercel.app"
+    "https://archapp-blush.vercel.app"
 ]
 
 # ✅ Apply CORS middleware
