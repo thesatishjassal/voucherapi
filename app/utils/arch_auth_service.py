@@ -1,5 +1,12 @@
+import random
+import smtplib
+import os
+
+from email.mime.text import MIMEText
+
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
 
 from app.models.arch_user import ArchUser
 from app.models.arch_otp import ArchOtp
@@ -11,8 +18,22 @@ from app.utils.arch_security import (
 )
 
 # -------------------------
+# LOAD ENV
+# -------------------------
+
+load_dotenv()
+
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+
+
+# -------------------------
 # SEND OTP
 # -------------------------
+
 def send_otp(
     db: Session,
     email: str
@@ -54,17 +75,76 @@ def send_otp(
         db.add(user)
         db.commit()
 
-    # temporary debug otp
-    print(f"OTP for {email}: {otp}")
+    # -------------------------
+    # EMAIL CONTENT
+    # -------------------------
+
+    subject = "Your OTP Verification Code"
+
+    body = f"""
+Hello,
+
+Your OTP verification code is:
+
+{otp}
+
+This OTP is valid for 5 minutes.
+
+- Panvic Team
+"""
+
+    msg = MIMEText(body)
+
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = email
+
+    # -------------------------
+    # SEND EMAIL
+    # -------------------------
+
+    try:
+
+        server = smtplib.SMTP(
+            SMTP_SERVER,
+            SMTP_PORT
+        )
+
+        server.starttls()
+
+        server.login(
+            EMAIL_ADDRESS,
+            EMAIL_PASSWORD
+        )
+
+        server.sendmail(
+            EMAIL_ADDRESS,
+            email,
+            msg.as_string()
+        )
+
+        server.quit()
+
+        print(f"OTP email sent to {email}")
+
+    except Exception as e:
+
+        print("EMAIL ERROR:", e)
+
+        raise Exception(
+            "Failed to send OTP email"
+        )
 
     return {
         "success": True,
         "message": "OTP sent successfully"
     }
 
+
 # -------------------------
 # VERIFY OTP
 # -------------------------
+
 def verify_user_otp(
     db: Session,
     email: str,
