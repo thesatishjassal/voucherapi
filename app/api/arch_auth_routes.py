@@ -1,28 +1,41 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.schema.arch_auth import ArchLoginRequest
-from app.utils.arch_auth_service import arch_login_user
 from database import get_db_connection
+from app.services.arch_otp_service import send_otp, verify_user_otp
 
-router = APIRouter(prefix="/api/arch-auth", tags=["Arch Auth"])
+router = APIRouter(prefix="/api/arch-auth", tags=["Arch OTP Auth"])
 
 
-@router.post("/login")
-def arch_login(
-    payload: ArchLoginRequest,
+# 📩 SEND OTP
+@router.post("/send-otp")
+def send_otp_api(email: str, db: Session = Depends(get_db_connection)):
+
+    send_otp(db, email)
+
+    return {
+        "success": True,
+        "message": "OTP sent successfully"
+    }
+
+
+# 🔐 VERIFY OTP
+@router.post("/verify-otp")
+def verify_otp_api(
+    email: str,
+    otp: str,
     db: Session = Depends(get_db_connection)
 ):
 
-    result = arch_login_user(db, payload.email, payload.password)
+    ok = verify_user_otp(db, email, otp)
 
-    if not result:
+    if not ok:
         raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password"
+            status_code=400,
+            detail="Invalid or expired OTP"
         )
 
     return {
         "success": True,
-        "data": result
+        "message": "User verified successfully"
     }
