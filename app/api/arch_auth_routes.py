@@ -1,6 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException
+)
+
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr
+from pydantic import (
+    BaseModel,
+    EmailStr
+)
 
 from database import get_db_connection
 
@@ -34,15 +42,39 @@ class VerifyOtpSchema(BaseModel):
 @router.post("/send-otp")
 def send_otp_api(
     payload: SendOtpSchema,
-    db: Session = Depends(get_db_connection)
+    db: Session = Depends(
+        get_db_connection
+    )
 ):
+    try:
 
-    send_otp(db, payload.email)
+        print(
+            "SEND OTP REQUEST:",
+            payload.email
+        )
 
-    return {
-        "success": True,
-        "message": "OTP sent successfully"
-    }
+        send_otp(
+            db,
+            payload.email
+        )
+
+        return {
+            "success": True,
+            "message":
+            "OTP sent successfully"
+        }
+
+    except Exception as e:
+
+        print(
+            "SEND OTP ERROR:",
+            str(e)
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 # -------------------------
@@ -52,22 +84,48 @@ def send_otp_api(
 @router.post("/verify-otp")
 def verify_otp_api(
     payload: VerifyOtpSchema,
-    db: Session = Depends(get_db_connection)
-):
-
-    ok = verify_user_otp(
-        db,
-        payload.email,
-        payload.otp
+    db: Session = Depends(
+        get_db_connection
     )
+):
+    try:
 
-    if not ok:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid or expired OTP"
+        print(
+            "VERIFY OTP:",
+            payload.email,
+            payload.otp
         )
 
-    return {
-        "success": True,
-        "message": "User verified successfully"
-    }
+        ok = verify_user_otp(
+            db,
+            payload.email,
+            payload.otp
+        )
+
+        if not ok:
+            raise HTTPException(
+                status_code=400,
+                detail=
+                "Invalid or expired OTP"
+            )
+
+        return {
+            "success": True,
+            "message":
+            "User verified successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+
+        print(
+            "VERIFY OTP ERROR:",
+            str(e)
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
