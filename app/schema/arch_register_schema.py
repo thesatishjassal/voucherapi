@@ -2,7 +2,12 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import date
 
+
 class ArchRegisterSchema(BaseModel):
+
+    # AUTH
+
+    role: str = "architect"
 
     # STEP 1
 

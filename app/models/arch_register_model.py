@@ -2,16 +2,31 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Date
+    Date,
+    Boolean
 )
 
 from database import Base
+
 
 class ArchRegister(Base):
 
     __tablename__ = "arch_register_users"
 
     id = Column(Integer, primary_key=True, index=True)
+
+    # AUTH
+
+    role = Column(
+        String,
+        nullable=False,
+        default="architect"
+    )
+
+    is_approved = Column(
+        Boolean,
+        default=False
+    )
 
     # STEP 1
 

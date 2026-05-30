@@ -1,6 +1,7 @@
 from fastapi import (
     APIRouter,
-    Depends
+    Depends,
+    Body
 )
 
 from sqlalchemy.orm import Session
@@ -13,7 +14,9 @@ from app.schema.arch_register_schema import (
 
 from app.controllers.arch_register_controller import (
     create_arch_register_user,
-    get_arch_register_users
+    get_arch_register_users,
+    approve_architect_user,
+    login_user
 )
 
 router = APIRouter(
@@ -21,7 +24,8 @@ router = APIRouter(
     tags=["Arch Register"]
 )
 
-# CREATE USER
+
+# REGISTER USER
 
 @router.post("/")
 def register_user(
@@ -34,7 +38,8 @@ def register_user(
         db
     )
 
-# GET USERS
+
+# GET ALL USERS
 
 @router.get("/")
 def get_users(
@@ -42,3 +47,31 @@ def get_users(
 ):
 
     return get_arch_register_users(db)
+
+
+# APPROVE ARCHITECT
+
+@router.put("/approve/{user_id}")
+def approve_user(
+    user_id: int,
+    db: Session = Depends(get_db_connection)
+):
+
+    return approve_architect_user(
+        user_id,
+        db
+    )
+
+
+# LOGIN USER
+
+@router.post("/login")
+def login(
+    email: str = Body(...),
+    db: Session = Depends(get_db_connection)
+):
+
+    return login_user(
+        email,
+        db
+    )
