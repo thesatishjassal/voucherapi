@@ -31,6 +31,7 @@ from app.api.arch_register_routes import (
     router as arch_register_router
 )
 from app.api.arch_auth_routes import router as arch_auth_router
+from app.api.architect_project_routes import router as architect_project_router
 
 from database import get_db_connection
 
@@ -121,7 +122,7 @@ routers = [
     invouchers_router, products_router, outvouchers_router, quotations_router,
     product_import_router, sales_router, woo_router, inventory_router,
     switches_quotation, products_update_router, purchaseorder_router,
-    catalogue_routes, csv_routers, brand_router, arch_register_router, arch_auth_router
+    catalogue_routes, csv_routers, brand_router, arch_register_router, arch_auth_router, architect_project_router
 ]
 
 for r in routers:
