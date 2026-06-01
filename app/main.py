@@ -43,7 +43,8 @@ app.mount(
     StaticFiles(directory="qr_codes"),
     name="qr_codes"
 )
-
+# After creating app = FastAPI()
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # =========================================
 # CORS ORIGINS
 # =========================================
@@ -124,7 +125,6 @@ routers = [
     switches_quotation, products_update_router, purchaseorder_router,
     catalogue_routes, csv_routers, brand_router, arch_register_router, arch_auth_router, architect_project_router
 ]
-
 for r in routers:
     app.include_router(r)
 

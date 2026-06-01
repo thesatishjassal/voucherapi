@@ -107,37 +107,27 @@ def update_project(
     payload,
     db: Session
 ):
-
-    project = (
-        db.query(
-            ArchitectProject
-        )
-        .filter(
-            ArchitectProject.id == project_id,
-            ArchitectProject.architect_id == architect_id
-        )
-        .first()
-    )
+    project = db.query(ArchitectProject).filter(
+        ArchitectProject.id == project_id,
+        ArchitectProject.architect_id == architect_id
+    ).first()
 
     if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
 
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found"
-        )
-
-    project.title = payload.title
-
-    project.location = payload.location
-
-    project.description = payload.description
-
-    project.status = payload.status
-
-    project.image_url = payload.image_url
+    # Only update fields that are provided (not None)
+    if payload.title is not None:
+        project.title = payload.title
+    if payload.location is not None:
+        project.location = payload.location
+    if payload.description is not None:
+        project.description = payload.description
+    if payload.status is not None:
+        project.status = payload.status
+    if payload.image_url is not None:           # Only update image if new one uploaded
+        project.image_url = payload.image_url
 
     db.commit()
-
     db.refresh(project)
 
     return {
@@ -145,7 +135,6 @@ def update_project(
         "message": "Project updated successfully",
         "data": project
     }
-
 
 # DELETE PROJECT
 
