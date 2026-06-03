@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 import shutil
 import uuid
+from datetime import date
 
 from database import get_db_connection
 from app.controllers.architect_project_controller import (
@@ -12,16 +13,13 @@ from app.controllers.architect_project_controller import (
 
 router = APIRouter(prefix="/api/projects", tags=["Architect Projects"])
 
-# Create upload directory
 UPLOAD_DIR = Path("uploads/projects")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def save_uploaded_image(image: UploadFile) -> str:
-    """Save image and return path"""
     if not image:
         return None
-
     if not image.content_type.startswith("image/"):
         raise HTTPException(400, detail="Only image files are allowed")
 
@@ -35,7 +33,7 @@ def save_uploaded_image(image: UploadFile) -> str:
     return f"uploads/projects/{unique_name}"
 
 
-# ===================== CREATE PROJECT =====================
+# ===================== CREATE =====================
 @router.post("/{architect_id}")
 async def add_project(
     architect_id: int,
@@ -43,24 +41,29 @@ async def add_project(
     location: str = Form(None),
     description: str = Form(None),
     status: str = Form("In Progress"),
+    client: str = Form(None),
+    budget: float = Form(None),
+    date: date = Form(None),
     image: UploadFile = File(None),
     db: Session = Depends(get_db_connection)
 ):
     image_url = save_uploaded_image(image)
 
-    # Create payload manually
     payload = type('obj', (object,), {
         'title': title,
         'location': location,
         'description': description,
         'status': status,
-        'image_url': image_url
+        'image_url': image_url,
+        'client': client,
+        'budget': budget,
+        'date': date
     })()
 
     return create_project(architect_id, payload, db)
 
 
-# ===================== UPDATE PROJECT =====================
+# ===================== UPDATE =====================
 @router.put("/{architect_id}/{project_id}")
 async def edit_project(
     architect_id: int,
@@ -69,6 +72,9 @@ async def edit_project(
     location: str = Form(None),
     description: str = Form(None),
     status: str = Form(None),
+    client: str = Form(None),
+    budget: float = Form(None),
+    date: date = Form(None),
     image: UploadFile = File(None),
     db: Session = Depends(get_db_connection)
 ):
@@ -79,13 +85,16 @@ async def edit_project(
         'location': location,
         'description': description,
         'status': status,
-        'image_url': image_url
+        'image_url': image_url,
+        'client': client,
+        'budget': budget,
+        'date': date
     })()
 
     return update_project(project_id, architect_id, payload, db)
 
 
-# Keep GET and DELETE unchanged
+# GET & DELETE remain same
 @router.get("/{architect_id}")
 def my_projects(architect_id: int, db: Session = Depends(get_db_connection)):
     return get_my_projects(architect_id, db)
@@ -94,7 +103,7 @@ def my_projects(architect_id: int, db: Session = Depends(get_db_connection)):
 @router.get("/{architect_id}/{project_id}")
 def get_project(architect_id: int, project_id: int, db: Session = Depends(get_db_connection)):
     return get_project_by_id(project_id, architect_id, db)
-
+ 
 
 @router.delete("/{architect_id}/{project_id}")
 def remove_project(architect_id: int, project_id: int, db: Session = Depends(get_db_connection)):

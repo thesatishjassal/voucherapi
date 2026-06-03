@@ -1,38 +1,24 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-from app.models.architect_project_model import (
-    ArchitectProject
-)
+from app.models.architect_project_model import ArchitectProject
 
 
 # CREATE PROJECT
-
-def create_project(
-    architect_id: int,
-    payload,
-    db: Session
-):
-
+def create_project(architect_id: int, payload, db: Session):
     project = ArchitectProject(
-
         architect_id=architect_id,
-
         title=payload.title,
-
         location=payload.location,
-
         description=payload.description,
-
         status=payload.status,
-
-        image_url=payload.image_url
+        image_url=payload.image_url,
+        client=payload.client,
+        budget=payload.budget,
+        date=payload.date,
     )
 
     db.add(project)
-
     db.commit()
-
     db.refresh(project)
 
     return {
@@ -43,23 +29,12 @@ def create_project(
 
 
 # GET MY PROJECTS
-
-def get_my_projects(
-    architect_id: int,
-    db: Session
-):
-
+def get_my_projects(architect_id: int, db: Session):
     projects = (
-        db.query(
-            ArchitectProject
-        )
-        .filter(
-            ArchitectProject.architect_id
-            == architect_id
-        )
+        db.query(ArchitectProject)
+        .filter(ArchitectProject.architect_id == architect_id)
         .all()
     )
-
     return {
         "success": True,
         "count": len(projects),
@@ -68,45 +43,23 @@ def get_my_projects(
 
 
 # GET SINGLE PROJECT
-
-def get_project_by_id(
-    project_id: int,
-    architect_id: int,
-    db: Session
-):
-
+def get_project_by_id(project_id: int, architect_id: int, db: Session):
     project = (
-        db.query(
-            ArchitectProject
-        )
+        db.query(ArchitectProject)
         .filter(
             ArchitectProject.id == project_id,
             ArchitectProject.architect_id == architect_id
         )
         .first()
     )
-
     if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
 
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found"
-        )
-
-    return {
-        "success": True,
-        "data": project
-    }
+    return {"success": True, "data": project}
 
 
 # UPDATE PROJECT
-
-def update_project(
-    project_id: int,
-    architect_id: int,
-    payload,
-    db: Session
-):
+def update_project(project_id: int, architect_id: int, payload, db: Session):
     project = db.query(ArchitectProject).filter(
         ArchitectProject.id == project_id,
         ArchitectProject.architect_id == architect_id
@@ -115,7 +68,6 @@ def update_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    # Only update fields that are provided (not None)
     if payload.title is not None:
         project.title = payload.title
     if payload.location is not None:
@@ -124,8 +76,14 @@ def update_project(
         project.description = payload.description
     if payload.status is not None:
         project.status = payload.status
-    if payload.image_url is not None:           # Only update image if new one uploaded
+    if payload.image_url is not None:
         project.image_url = payload.image_url
+    if payload.client is not None:
+        project.client = payload.client
+    if payload.budget is not None:
+        project.budget = payload.budget
+    if payload.date is not None:
+        project.date = payload.date
 
     db.commit()
     db.refresh(project)
@@ -136,37 +94,17 @@ def update_project(
         "data": project
     }
 
-# DELETE PROJECT
 
-def delete_project(
-    project_id: int,
-    architect_id: int,
-    db: Session
-):
-
-    project = (
-        db.query(
-            ArchitectProject
-        )
-        .filter(
-            ArchitectProject.id == project_id,
-            ArchitectProject.architect_id == architect_id
-        )
-        .first()
-    )
+# DELETE PROJECT (unchanged)
+def delete_project(project_id: int, architect_id: int, db: Session):
+    project = db.query(ArchitectProject).filter(
+        ArchitectProject.id == project_id,
+        ArchitectProject.architect_id == architect_id
+    ).first()
 
     if not project:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found"
-        )
+        raise HTTPException(status_code=404, detail="Project not found")
 
     db.delete(project)
-
     db.commit()
-
-    return {
-        "success": True,
-        "message": "Project deleted successfully"
-    }
+    return {"success": True, "message": "Project deleted successfully"}

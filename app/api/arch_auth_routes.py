@@ -47,7 +47,6 @@ def send_otp_api(
     )
 ):
     try:
-
         print(
             "SEND OTP REQUEST:",
             payload.email
