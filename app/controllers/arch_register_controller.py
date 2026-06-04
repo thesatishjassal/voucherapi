@@ -1,4 +1,8 @@
-from fastapi import HTTPException
+import os
+import uuid
+import shutil
+
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.models.arch_register_model import ArchRegister
@@ -8,6 +12,10 @@ ALLOWED_ROLES = [
     "architect",
     "sales_person"
 ]
+
+# Where profile images are saved on disk
+PROFILE_IMAGE_DIR = "static/profile_images"
+os.makedirs(PROFILE_IMAGE_DIR, exist_ok=True)
 
 
 # ── REGISTER USER ────────────────────────────────────────────
@@ -220,6 +228,7 @@ def _build_response_data(user: ArchRegister) -> dict:
         "account_number": user.account_number,
         "ifsc_code": user.ifsc_code,
         "upi_id": user.upi_id,
+        "profile_image": user.profile_image,
     }
 
 
@@ -248,7 +257,6 @@ def update_arch_user(
             detail="User not found"
         )
 
-    # Only apply fields that belong to this category and were actually sent
     allowed = CATEGORY_FIELDS[category]
     incoming = payload.model_dump(exclude_unset=True)
     updated_fields = []
@@ -272,4 +280,66 @@ def update_arch_user(
         "message": f"{category.capitalize()} details updated successfully",
         "updated_fields": updated_fields,
         "data": _build_response_data(user)
+    }
+
+
+# ── UPLOAD PROFILE IMAGE ─────────────────────────────────────
+
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_IMAGE_SIZE_MB = 5
+
+
+def upload_profile_image(user_id: int, file: UploadFile, db: Session):
+
+    user = (
+        db.query(ArchRegister)
+        .filter(ArchRegister.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '{file.content_type}'. Allowed: JPEG, PNG, WEBP"
+        )
+
+    # Delete old image from disk if it exists
+    if user.profile_image:
+        old_path = user.profile_image.lstrip("/")
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    # Save new image with a unique filename
+    ext = file.filename.rsplit(".", 1)[-1].lower()
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    save_path = os.path.join(PROFILE_IMAGE_DIR, filename)
+
+    with open(save_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Check file size after saving
+    size_mb = os.path.getsize(save_path) / (1024 * 1024)
+    if size_mb > MAX_IMAGE_SIZE_MB:
+        os.remove(save_path)
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size is {MAX_IMAGE_SIZE_MB} MB."
+        )
+
+    # Store relative URL path in DB
+    image_url = f"/static/profile_images/{filename}"
+    user.profile_image = image_url
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "success": True,
+        "message": "Profile image uploaded successfully",
+        "data": {
+            "id": user.id,
+            "profile_image": user.profile_image
+        }
     }

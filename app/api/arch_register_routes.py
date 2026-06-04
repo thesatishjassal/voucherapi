@@ -3,7 +3,9 @@ from fastapi import (
     Depends,
     Body,
     Path,
-    Query
+    Query,
+    UploadFile,
+    File,
 )
 
 from sqlalchemy.orm import Session
@@ -23,6 +25,7 @@ from app.controllers.arch_register_controller import (
     approve_architect_user,
     login_user,
     update_arch_user,
+    upload_profile_image,
 )
 
 router = APIRouter(
@@ -101,3 +104,14 @@ def update_user(
     payload = SchemaClass(**body)
 
     return update_arch_user(user_id, category, payload, db)
+
+
+# ── UPLOAD PROFILE IMAGE ─────────────────────────────────────
+
+@router.patch("/{user_id}/profile-image")
+def update_profile_image(
+    user_id: int = Path(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db_connection)
+):
+    return upload_profile_image(user_id, file, db)

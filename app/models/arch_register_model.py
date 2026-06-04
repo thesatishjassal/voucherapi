@@ -91,3 +91,10 @@ class ArchRegister(Base):
         String,
         nullable=True
     )
+
+    # PROFILE IMAGE
+
+    profile_image = Column(
+        String,
+        nullable=True
+    )

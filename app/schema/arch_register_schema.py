@@ -50,3 +50,7 @@ class UpdateBankSchema(BaseModel):
     account_number: Optional[str] = None
     ifsc_code: Optional[str] = None
     upi_id: Optional[str] = None
+
+
+# Profile image is uploaded as multipart/form-data,
+# so no Pydantic schema is needed — handled directly in the router.
