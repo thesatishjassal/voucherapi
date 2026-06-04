@@ -103,7 +103,11 @@ class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 app.add_middleware(MaxUploadSizeMiddleware)
-
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static"
+)
 # ✅ Mount static uploads folder
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
