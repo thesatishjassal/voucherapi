@@ -60,6 +60,8 @@ origins = [
 
     "https://archapp-blush.vercel.app",
     "https://www.archapp-blush.vercel.app",
+
+    "https://partners.panvik.com",
 ]
 
 # =========================================
@@ -71,11 +73,10 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"https://.*\.(panvik\.com|vercel\.app)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
 )
 
 # =========================================
