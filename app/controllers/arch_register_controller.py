@@ -17,14 +17,14 @@ ALLOWED_ROLES = [
     "sales_person"
 ]
 
-ADMIN_EMAIL = "panviklighting@gmail.com"
+ADMIN_EMAIL = "tusharguglani19@gmail.com"
 ADMIN_APPROVAL_LINK = "https://partners.panvik.com/admin"
 
 # ── Put your SMTP credentials in env vars ──
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = "panviklighting@gmail.com"   # replace or load from os.environ
-SMTP_PASS = "qqkgkkyxojzgnakk"
+SMTP_USER = "tusharguglani19@gmail.com"   # replace or load from os.environ
+SMTP_PASS = "hzsigcffytfmgylg"
    
 # Where profile images are saved on disk
 PROFILE_IMAGE_DIR = "static/profile_images"
