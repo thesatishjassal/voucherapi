@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.arch_register_model import ArchRegister
-from app.models.arch_reference_model import ArchReference
+from app.models.arch_register_model  import ArchReference
 
 
 # ── HELPERS ──────────────────────────────────────────────────
