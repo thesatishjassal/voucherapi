@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from app.database import Base  # adjust import to your project
-
+from database import Base  # adjust import to your project
 
 class ArchReference(Base):
     """
