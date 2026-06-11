@@ -1,8 +1,123 @@
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Text
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Date,
+    Boolean,
+    ForeignKey,
+    DateTime,
+    Text
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from database import Base  # adjust import to your project
+from database import Base
+
+
+class ArchRegister(Base):
+
+    __tablename__ = "arch_register_users"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # AUTH
+
+    role = Column(
+        String,
+        nullable=False,
+        default="architect"
+    )
+
+    is_approved = Column(
+        Boolean,
+        default=False
+    )
+
+    # STEP 1
+
+    full_name = Column(String, nullable=False)
+
+    firm_name = Column(String, nullable=False)
+
+    mobile_number = Column(
+        String,
+        nullable=False
+    )
+
+    email = Column(
+        String,
+        unique=True,
+        nullable=False
+    )
+
+    date_of_birth = Column(
+        Date,
+        nullable=False
+    )
+
+    profession = Column(
+        String,
+        nullable=False
+    )
+
+    marital_status = Column(
+        String,
+        nullable=False
+    )
+
+    anniversary_date = Column(
+        Date,
+        nullable=True
+    )
+
+    # STEP 2
+
+    account_holder_name = Column(
+        String,
+        nullable=False
+    )
+
+    bank_name = Column(
+        String,
+        nullable=False
+    )
+
+    account_number = Column(
+        String,
+        nullable=False
+    )
+
+    ifsc_code = Column(
+        String,
+        nullable=False
+    )
+
+    upi_id = Column(
+        String,
+        nullable=True
+    )
+
+    # PROFILE IMAGE
+
+    profile_image = Column(
+        String,
+        nullable=True
+    )
+
+    # RELATIONSHIPS
+
+    references_added = relationship(
+        "ArchReference",
+        foreign_keys="ArchReference.sales_person_id",
+        back_populates="sales_person"
+    )
+
+    referenced_by = relationship(
+        "ArchReference",
+        foreign_keys="ArchReference.architect_id",
+        back_populates="architect"
+    )
+
 
 class ArchReference(Base):
     """
@@ -12,21 +127,26 @@ class ArchReference(Base):
     """
     __tablename__ = "arch_references"
 
-    id              = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    # The salesperson who is adding the reference
-    # sales_person_id = Column(Integer, ForeignKey("arch_registers.id", ondelete="CASCADE"), nullable=False)
+    sales_person_id = Column(
+        Integer,
+        ForeignKey("arch_register_users.id", ondelete="CASCADE"),
+        nullable=False
+    )
 
-    # The architect being referenced
-    # architect_id    = Column(Integer, ForeignKey("arch_registers.id", ondelete="CASCADE"), nullable=False)
-    sales_person_id = Column(Integer, ForeignKey("arch_register_users.id", ondelete="CASCADE"), nullable=False)
-    architect_id    = Column(Integer, ForeignKey("arch_register_users.id", ondelete="CASCADE"), nullable=False)
-    # Optional notes the salesperson can attach (e.g. "Met at expo 2025")
-    notes           = Column(Text, nullable=True)
+    architect_id = Column(
+        Integer,
+        ForeignKey("arch_register_users.id", ondelete="CASCADE"),
+        nullable=False
+    )
 
-    added_at        = Column(DateTime, default=datetime.utcnow)
+    notes = Column(Text, nullable=True)
 
-    # ── Relationships ────────────────────────────────────────
+    added_at = Column(DateTime, default=datetime.utcnow)
+
+    # RELATIONSHIPS
+
     sales_person = relationship(
         "ArchRegister",
         foreign_keys=[sales_person_id],
