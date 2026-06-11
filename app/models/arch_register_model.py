@@ -12,7 +12,8 @@ from database import Base
 class ArchRegister(Base):
 
     __tablename__ = "arch_register_users"
-
+    __table_args__ = {"extend_existing": True}  # ✅ add this
+    
     id = Column(Integer, primary_key=True, index=True)
 
     # AUTH
