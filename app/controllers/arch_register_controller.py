@@ -594,3 +594,39 @@ def upload_profile_image(user_id: int, file: UploadFile, db: Session):
             "profile_image": user.profile_image
         }
     }
+# ── DELETE USER ─────────────────────────────────────────────
+
+def delete_arch_user(user_id: int, db: Session):
+
+    user = (
+        db.query(ArchRegister)
+        .filter(ArchRegister.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    # Delete profile image from disk
+    if user.profile_image:
+        image_path = user.profile_image.lstrip("/")
+
+        if os.path.exists(image_path):
+            try:
+                os.remove(image_path)
+            except Exception:
+                pass
+
+    db.delete(user)
+    db.commit()
+
+    return {
+        "success": True,
+        "message": "User deleted successfully",
+        "data": {
+            "id": user_id
+        }
+    }

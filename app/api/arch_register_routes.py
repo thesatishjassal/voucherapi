@@ -25,7 +25,7 @@ from app.controllers.arch_register_controller import (
     approve_architect_user,
     login_user,
     update_arch_user,
-    upload_profile_image,
+    upload_profile_image,  delete_arch_user,  
 )
 
 router = APIRouter(
@@ -115,3 +115,11 @@ def update_profile_image(
     db: Session = Depends(get_db_connection)
 ):
     return upload_profile_image(user_id, file, db)
+# ── DELETE USER ─────────────────────────────────────────────
+
+@router.delete("/{user_id}")
+def delete_user(
+    user_id: int = Path(...),
+    db: Session = Depends(get_db_connection)
+):
+    return delete_arch_user(user_id, db)
