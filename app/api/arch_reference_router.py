@@ -66,3 +66,4 @@ def delete_reference(
     db: Session = Depends(get_db_connection)
 ):
     return delete_arch_reference(sales_person_id, reference_id, db)
+# //ghg
