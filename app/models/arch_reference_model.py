@@ -16,11 +16,12 @@ class ArchReference(Base):
     id              = Column(Integer, primary_key=True, index=True)
 
     # The salesperson who is adding the reference
-    sales_person_id = Column(Integer, ForeignKey("arch_registers.id", ondelete="CASCADE"), nullable=False)
+    # sales_person_id = Column(Integer, ForeignKey("arch_registers.id", ondelete="CASCADE"), nullable=False)
 
     # The architect being referenced
-    architect_id    = Column(Integer, ForeignKey("arch_registers.id", ondelete="CASCADE"), nullable=False)
-
+    # architect_id    = Column(Integer, ForeignKey("arch_registers.id", ondelete="CASCADE"), nullable=False)
+    sales_person_id = Column(Integer, ForeignKey("arch_register_users.id", ondelete="CASCADE"), nullable=False)
+    architect_id    = Column(Integer, ForeignKey("arch_register_users.id", ondelete="CASCADE"), nullable=False)
     # Optional notes the salesperson can attach (e.g. "Met at expo 2025")
     notes           = Column(Text, nullable=True)
 
