@@ -20,7 +20,7 @@ router = APIRouter(prefix="/references", tags=["Arch References"])
 def add_reference(
     sales_person_id: int,
     payload: AddArchReferenceSchema,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db_connection)
 ):
     return add_arch_reference(sales_person_id, payload, db)
 
@@ -30,7 +30,7 @@ def add_reference(
 @router.get("/sales/{sales_person_id}")
 def get_my_references(
     sales_person_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db_connection)
 ):
     return get_references_by_sales_person(sales_person_id, db)
 
@@ -40,7 +40,7 @@ def get_my_references(
 @router.get("/architect/{architect_id}")
 def get_architect_references(
     architect_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db_connection)
 ):
     return get_sales_persons_for_architect(architect_id, db)
 
@@ -52,7 +52,7 @@ def update_reference(
     sales_person_id: int,
     reference_id: int,
     payload: UpdateArchReferenceSchema,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db_connection)
 ):
     return update_arch_reference(sales_person_id, reference_id, payload, db)
 
@@ -63,6 +63,6 @@ def update_reference(
 def delete_reference(
     sales_person_id: int,
     reference_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db_connection)
 ):
     return delete_arch_reference(sales_person_id, reference_id, db)

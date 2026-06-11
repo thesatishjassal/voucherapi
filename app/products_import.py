@@ -77,7 +77,7 @@ def clean_bool(val):
 
 # ---------- Main Import Route ----------
 @router.post("/import-products/", response_model=List[ProductsResponse])
-async def import_products(file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def import_products(file: UploadFile = File(...), db: Session = Depends(get_db_connection)):
     """
     Imports products from Excel into DB using header-based column mapping.
     Expected headers:
