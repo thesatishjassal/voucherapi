@@ -418,7 +418,7 @@ def login_user(email: str, db: Session):
                 "id": user.id,
                 "full_name": user.full_name,
                 "email": user.email,
-                "role": user.role,
+                "profession": user.profession,
                 "is_approved": user.is_approved
             }
         }
