@@ -1,90 +1,64 @@
-from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
-from database import get_db_connection, get_db_connection
-from app.controllers.salesperson_controller import SalesPersonController
-from app.schema.salesperson import (
-    SalesPersonCreate, SalesPersonUpdate,
-    SalesPersonUpdate
-)
-
-router = APIRouter(
-    prefix="/salespersons",
-    tags=["Salespersons"]
-)
+from app.models.salesperson import SalesPerson
 
 
-@router.post("/")
-def create_salesperson(
-    payload: SalesPersonCreate,
-    db: Session = Depends(get_db_connection)
-):
-    return SalesPersonController.create(db, payload)
+class SalesPersonController:
 
+    @staticmethod
+    def create(db: Session, payload):
+        salesperson = SalesPerson(**payload.dict())
 
-@router.get("/")
-def get_all_salespersons(
-    db: Session = Depends(get_db_connection)
-):
-    return SalesPersonController.get_all(db)
+        db.add(salesperson)
+        db.commit()
+        db.refresh(salesperson)
 
+        return salesperson
 
-@router.get("/{salesperson_id}")
-def get_salesperson(
-    salesperson_id: int,
-    db: Session = Depends(get_db_connection)
-):
-    salesperson = SalesPersonController.get_by_id(
-        db,
-        salesperson_id
-    )
+    @staticmethod
+    def get_all(db: Session):
+        return db.query(SalesPerson).all()
 
-    if not salesperson:
-        raise HTTPException(
-            status_code=404,
-            detail="Salesperson not found"
+    @staticmethod
+    def get_by_id(db: Session, salesperson_id: int):
+        return (
+            db.query(SalesPerson)
+            .filter(SalesPerson.id == salesperson_id)
+            .first()
         )
 
-    return salesperson
-
-
-@router.put("/{salesperson_id}")
-def update_salesperson(
-    salesperson_id: int,
-    payload: SalesPersonUpdate,
-    db: Session = Depends(get_db_connection)
-):
-    salesperson = SalesPersonController.update(
-        db,
-        salesperson_id,
-        payload
-    )
-
-    if not salesperson:
-        raise HTTPException(
-            status_code=404,
-            detail="Salesperson not found"
+    @staticmethod
+    def update(db: Session, salesperson_id: int, payload):
+        salesperson = (
+            db.query(SalesPerson)
+            .filter(SalesPerson.id == salesperson_id)
+            .first()
         )
 
-    return salesperson
+        if not salesperson:
+            return None
 
+        update_data = payload.dict(exclude_unset=True)
 
-@router.delete("/{salesperson_id}")
-def delete_salesperson(
-    salesperson_id: int,
-    db: Session = Depends(get_db_connection)
-):
-    deleted = SalesPersonController.delete(
-        db,
-        salesperson_id
-    )
+        for key, value in update_data.items():
+            setattr(salesperson, key, value)
 
-    if not deleted:
-        raise HTTPException(
-            status_code=404,
-            detail="Salesperson not found"
+        db.commit()
+        db.refresh(salesperson)
+
+        return salesperson
+
+    @staticmethod
+    def delete(db: Session, salesperson_id: int):
+        salesperson = (
+            db.query(SalesPerson)
+            .filter(SalesPerson.id == salesperson_id)
+            .first()
         )
 
-    return {
-        "message": "Salesperson deleted successfully"
-    }
+        if not salesperson:
+            return False
+
+        db.delete(salesperson)
+        db.commit()
+
+        return True
