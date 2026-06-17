@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
-from controllers.salesperson_controller import SalesPersonController
+from app.controllers.salesperson_controller import SalesPersonController
 from app.schema.salesperson import (
     SalesPersonCreate,
     SalesPersonUpdate
