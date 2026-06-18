@@ -28,10 +28,10 @@ def get_all_salespersons(
 ):
     return SalesPersonController.get_all(db)
 
-
+    
 @router.get("/{salesperson_id}")
 def get_salesperson(
-    salesperson_id: int,
+    salesperson_id: int,    
     db: Session = Depends(get_db_connection)
 ):
     salesperson = SalesPersonController.get_by_id(

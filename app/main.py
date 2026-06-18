@@ -54,15 +54,11 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-
     "https://panvik.in",
     "https://www.panvik.in",
-
     "https://api.panvic.in",
-
     "https://archapp-blush.vercel.app",
     "https://www.archapp-blush.vercel.app",
-
     "https://partners.panvik.com",
 ]
 
@@ -75,10 +71,12 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.(panvik\.com|vercel\.app)$",
+    allow_origin_regex=r"^https?://.*\.(panvik\.com|vercel\.app)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],           # Add this
+    max_age=3600,                   # Cache preflight
 )
 
 # =========================================
