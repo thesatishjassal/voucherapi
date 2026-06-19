@@ -39,18 +39,10 @@ from database import get_db_connection
 
 # Create app
 app = FastAPI(title="Panvic API")
-# STATIC QR FOLDER
-app.mount(
-    "/qr_codes",
-    StaticFiles(directory="qr_codes"),
-    name="qr_codes"
-)
-# After creating app = FastAPI()
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-# =========================================
-# CORS ORIGINS
-# =========================================
 
+# =========================================
+# CORS MIDDLEWARE - MUST BE FIRST
+# =========================================
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -62,12 +54,6 @@ origins = [
     "https://partners.panvik.com",
 ]
 
-# =========================================
-# CORS MIDDLEWARE
-# ADD THIS JUST BELOW:
-# app = FastAPI(title="Panvic API")
-# =========================================
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -75,18 +61,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],           # Add this
-    max_age=3600,                   # Cache preflight
+    expose_headers=["*"],
+    max_age=3600,
 )
-
-# =========================================
-# PREFLIGHT OPTIONS FIX
-# ADD THIS BELOW ROOT ROUTE
-# =========================================
-
-@app.options("/{full_path:path}")
-async def options_handler(full_path: str):
-    return {"message": "OK"}
 
 # ✅ Trusted Host Middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
@@ -104,25 +81,39 @@ class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 app.add_middleware(MaxUploadSizeMiddleware)
+
+# =========================================
+# STATIC FILES
+# =========================================
+app.mount(
+    "/qr_codes",
+    StaticFiles(directory="qr_codes"),
+    name="qr_codes"
+)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.mount(
     "/static",
     StaticFiles(directory="static"),
     name="static"
 )
-# ✅ Mount static uploads folder
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# ✅ Root
+# =========================================
+# ROOT ENDPOINT
+# =========================================
 @app.get("/")
 def read_root():
     return {"message": "Panvic API running"}
 
-# ✅ CSV upload
+# =========================================
+# CSV UPLOAD ENDPOINT
+# =========================================
 @app.post("/upload-csv/")
 async def upload_csv_endpoint(file: UploadFile = File(...), db: Session = Depends(get_db_connection)):
     return upload_csv(file, db)
 
-# ✅ Include all routers
+# =========================================
+# INCLUDE ALL ROUTERS
+# =========================================
 routers = [
     user_router, clients_router, category_router, subcategory_router,
     invouchers_router, products_router, outvouchers_router, quotations_router,
@@ -133,7 +124,9 @@ routers = [
 for r in routers:
     app.include_router(r)
 
-# ✅ Run app
+# =========================================
+# RUN APP
+# =========================================
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
