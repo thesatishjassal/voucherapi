@@ -1,3 +1,6 @@
+from http.client import HTTPException
+
+from pymysql import IntegrityError
 from sqlalchemy.orm import Session
 from app.models.salesperson import SalesPerson
 
@@ -6,13 +9,21 @@ class SalesPersonController:
 
     @staticmethod
     def create(db: Session, payload):
-        salesperson = SalesPerson(**payload.dict())
+        try:
+            salesperson = SalesPerson(**payload.dict())
 
-        db.add(salesperson)
-        db.commit()
-        db.refresh(salesperson)
+            db.add(salesperson)
+            db.commit()
+            db.refresh(salesperson)
 
-        return salesperson
+            return salesperson
+
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(
+                status_code=400,
+                detail="A salesperson with this email already exists."
+            )
 
     @staticmethod
     def get_all(db: Session):
