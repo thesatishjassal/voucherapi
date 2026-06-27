@@ -5,7 +5,9 @@ from database import get_db_connection
 from app.controllers.salesperson_controller import SalesPersonController
 from app.schema.salesperson import (
     SalesPersonCreate,
-    SalesPersonUpdate
+    SalesPersonUpdate,
+    SalesPersonSendOtp,
+    SalesPersonVerifyOtp,
 )
 
 router = APIRouter(
@@ -22,16 +24,40 @@ def create_salesperson(
     return SalesPersonController.create(db, payload)
 
 
+@router.post("/send-otp/")
+def send_otp_salesperson(
+    payload: SalesPersonSendOtp,
+    db: Session = Depends(get_db_connection)
+):
+    """
+    Step 1 of team login: looks the salesperson up by email and emails
+    them an OTP. No password involved. Also used for "resend OTP" on the
+    frontend — calling this again just issues a fresh code.
+    """
+    return SalesPersonController.send_otp(db, payload)
+
+
+@router.post("/verify-otp/")
+def verify_otp_salesperson(
+    payload: SalesPersonVerifyOtp,
+    db: Session = Depends(get_db_connection)
+):
+    """
+    Step 2 of team login: verifies the OTP and completes login.
+    """
+    return SalesPersonController.verify_otp(db, payload)
+
+
 @router.get("/")
 def get_all_salespersons(
     db: Session = Depends(get_db_connection)
 ):
     return SalesPersonController.get_all(db)
 
-    
+
 @router.get("/{salesperson_id}")
 def get_salesperson(
-    salesperson_id: int,    
+    salesperson_id: int,
     db: Session = Depends(get_db_connection)
 ):
     salesperson = SalesPersonController.get_by_id(

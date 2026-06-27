@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 
+
 class SalesPersonCreate(BaseModel):
     name: str
     email: EmailStr
@@ -26,3 +27,14 @@ class SalesPersonResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ── Team login is email + OTP only — no password involved ──────────────
+
+class SalesPersonSendOtp(BaseModel):
+    email: EmailStr
+
+
+class SalesPersonVerifyOtp(BaseModel):
+    email: EmailStr
+    otp: str
