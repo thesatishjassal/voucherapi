@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db_connection
+
 from app.controllers.salesperson_controller import SalesPersonController
+
 from app.schema.salesperson import (
     SalesPersonCreate,
     SalesPersonUpdate,
@@ -16,6 +18,10 @@ router = APIRouter(
 )
 
 
+# --------------------------------------------------------
+# Create
+# --------------------------------------------------------
+
 @router.post("/")
 def create_salesperson(
     payload: SalesPersonCreate,
@@ -24,29 +30,39 @@ def create_salesperson(
     return SalesPersonController.create(db, payload)
 
 
-@router.post("/send-otp/")
-def send_otp_salesperson(
+# --------------------------------------------------------
+# Send OTP
+# --------------------------------------------------------
+
+@router.post("/send-otp")
+def send_otp(
     payload: SalesPersonSendOtp,
     db: Session = Depends(get_db_connection)
 ):
-    """
-    Step 1 of team login: looks the salesperson up by email and emails
-    them an OTP. No password involved. Also used for "resend OTP" on the
-    frontend — calling this again just issues a fresh code.
-    """
-    return SalesPersonController.send_otp(db, payload)
+    return SalesPersonController.send_otp(
+        db,
+        payload
+    )
 
 
-@router.post("/verify-otp/")
-def verify_otp_salesperson(
+# --------------------------------------------------------
+# Verify OTP
+# --------------------------------------------------------
+
+@router.post("/verify-otp")
+def verify_otp(
     payload: SalesPersonVerifyOtp,
     db: Session = Depends(get_db_connection)
 ):
-    """
-    Step 2 of team login: verifies the OTP and completes login.
-    """
-    return SalesPersonController.verify_otp(db, payload)
+    return SalesPersonController.verify_otp(
+        db,
+        payload
+    )
 
+
+# --------------------------------------------------------
+# Get All
+# --------------------------------------------------------
 
 @router.get("/")
 def get_all_salespersons(
@@ -55,11 +71,16 @@ def get_all_salespersons(
     return SalesPersonController.get_all(db)
 
 
+# --------------------------------------------------------
+# Get By ID
+# --------------------------------------------------------
+
 @router.get("/{salesperson_id}")
 def get_salesperson(
     salesperson_id: int,
     db: Session = Depends(get_db_connection)
 ):
+
     salesperson = SalesPersonController.get_by_id(
         db,
         salesperson_id
@@ -74,12 +95,17 @@ def get_salesperson(
     return salesperson
 
 
+# --------------------------------------------------------
+# Update
+# --------------------------------------------------------
+
 @router.put("/{salesperson_id}")
 def update_salesperson(
     salesperson_id: int,
     payload: SalesPersonUpdate,
     db: Session = Depends(get_db_connection)
 ):
+
     salesperson = SalesPersonController.update(
         db,
         salesperson_id,
@@ -95,11 +121,16 @@ def update_salesperson(
     return salesperson
 
 
+# --------------------------------------------------------
+# Delete
+# --------------------------------------------------------
+
 @router.delete("/{salesperson_id}")
 def delete_salesperson(
     salesperson_id: int,
     db: Session = Depends(get_db_connection)
 ):
+
     deleted = SalesPersonController.delete(
         db,
         salesperson_id
@@ -112,5 +143,6 @@ def delete_salesperson(
         )
 
     return {
-        "message": "Salesperson deleted successfully"
+        "success": True,
+        "message": "Salesperson deleted successfully."
     }
