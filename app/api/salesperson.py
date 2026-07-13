@@ -13,7 +13,7 @@ from app.schema.salesperson import (
 )
 
 router = APIRouter(
-    prefix="/salespersons",
+    prefix="/api/salespersons",
     tags=["Salespersons"]
 )
 
