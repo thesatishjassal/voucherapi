@@ -13,8 +13,8 @@ from datetime import datetime
 
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = "tusharguglani19@gmail.com"
-SMTP_PASS = "hzsigcffytfmgylg"
+SMTP_USER = "panviklighting@gmail.com"
+SMTP_PASS = "dshwxchuudwjvixs"
 # Replace this with your actual email sender
 def send_otp_email(email: str, name: str, otp: str):
 
