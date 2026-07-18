@@ -1,21 +1,41 @@
+import os
 import random
 from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 from pymysql import IntegrityError
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
 
 from app.models.salesperson import SalesPerson
+
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import datetime
 
-SMTP_HOST = "smtp.gmail.com"
+# -------------------------
+# LOAD ENV
+# -------------------------
+
+load_dotenv()
+
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = "panviklighting@gmail.com"
-SMTP_PASS = "dshwxchuudwjvixs"
-# Replace this with your actual email sender
+
+# -------------------------
+# OTP SETTINGS
+# -------------------------
+# These were referenced in send_otp() but never defined anywhere in the
+# original file, which would raise a NameError the first time an OTP was
+# requested. Defining them here alongside the email/SMTP settings.
+
+OTP_LENGTH = 6
+OTP_VALID_MINUTES = 10
+
+
 def send_otp_email(email: str, name: str, otp: str):
 
     html_body = f"""
@@ -82,7 +102,7 @@ color:#111827;
 </div>
 
 <p style="color:#EF4444;font-weight:600;">
-This OTP is valid for 10 minutes.
+This OTP is valid for {OTP_VALID_MINUTES} minutes.
 </p>
 
 <p style="color:#6B7280;">
@@ -122,7 +142,7 @@ Your Login OTP is:
 
 {otp}
 
-This OTP is valid for 10 minutes.
+This OTP is valid for {OTP_VALID_MINUTES} minutes.
 
 If you didn't request this login, ignore this email.
 
@@ -131,20 +151,27 @@ Panvik Lighting
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Your Panvik Login OTP"
-    message["From"] = f"Panvik Lighting <{SMTP_USER}>"
+    message["From"] = f"Panvik Lighting <{EMAIL_ADDRESS}>"
     message["To"] = email
 
     message.attach(MIMEText(text_body, "plain"))
     message.attach(MIMEText(html_body, "html"))
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASS)
-        server.sendmail(
-            SMTP_USER,
-            email,
-            message.as_string()
-        )
+    try:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            server.sendmail(
+                EMAIL_ADDRESS,
+                email,
+                message.as_string()
+            )
+
+        print(f"OTP email sent to {email}")
+
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+        raise Exception("Failed to send OTP email")
 
 
 class SalesPersonController:
@@ -206,6 +233,7 @@ class SalesPersonController:
 
         send_otp_email(
             salesperson.email,
+            salesperson.name,
             otp
         )
 
