@@ -8,7 +8,7 @@ class SalesPerson(Base):
     name = Column(String(100), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     phone = Column(String(20), nullable=False)
-    architecture_name = Column(String(255), nullable=False)
+    architecture_id = Column(Integer, nullable=False)
     company_name = Column(String(255), nullable=False)
 
     # ── team login OTP fields ──

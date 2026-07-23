@@ -5,7 +5,7 @@ class SalesPersonCreate(BaseModel):
     name: str
     email: EmailStr
     phone: str
-    architecture_name: str
+    architecture_id: int
     company_name: str
 
 
@@ -13,7 +13,7 @@ class SalesPersonUpdate(BaseModel):
     name: str | None = None
     email: EmailStr | None = None
     phone: str | None = None
-    architecture_name: str | None = None
+    architecture_id: int | None = None
     company_name: str | None = None
 
 
@@ -22,7 +22,7 @@ class SalesPersonResponse(BaseModel):
     name: str
     email: str
     phone: str
-    architecture_name: str
+    architecture_id: int
     company_name: str
 
     class Config:

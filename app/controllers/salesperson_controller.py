@@ -289,18 +289,17 @@ class SalesPersonController:
         db.commit()
 
         return {
-            "success": True,
-            "message": "Login successful.",
-            "data": {
-                "id": salesperson.id,
-                "name": salesperson.name,
-                "email": salesperson.email,
-                "phone": salesperson.phone,
-                "architecture_name": salesperson.architecture_name,
-                "company_name": salesperson.company_name,
-            }
-        }
-
+                    "success": True,
+                    "message": "Login successful.",
+                    "data": {
+                        "id": salesperson.id,
+                        "name": salesperson.name,
+                        "email": salesperson.email,
+                        "phone": salesperson.phone,
+                        "architecture_id": salesperson.architecture_id,
+                        "company_name": salesperson.company_name,
+                    }
+                }
     # --------------------------------------------------------
     # Get All
     # --------------------------------------------------------
